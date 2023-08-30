@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luuisavelino/level-control-system/service"
 	"github.com/luuisavelino/level-control-system/controllers"
+	"github.com/luuisavelino/level-control-system/controllers/routes"
 )
 
 func main() {
