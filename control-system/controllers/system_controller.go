@@ -8,6 +8,7 @@ import (
 type SystemControllerInterface interface {
 	GetSystems(c *gin.Context)
 	AddSystem(c *gin.Context)
+	DeleteSystem(c *gin.Context)
 }
 
 type systemControllerInterface struct {

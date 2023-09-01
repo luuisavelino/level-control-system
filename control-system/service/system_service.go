@@ -1,5 +1,7 @@
 package service
 
+import "github.com/google/uuid"
+
 func NewSystemServiceInterface() SystemServiceInterface {
 	return &systemServiceInterface{}
 }
@@ -8,6 +10,7 @@ type systemServiceInterface struct {
 }
 
 type SystemServiceInterface interface {
-	GetSystems() (string, error)
 	AddSystem() error
+	GetSystems() (string, error)
+	DeleteSystem(uuid.UUID) error
 }
