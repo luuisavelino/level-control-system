@@ -5,7 +5,7 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jinzhu/gorm"
-	"github.com/luuisavelino/level-control-system/pkg/orquestrator"
+	"github.com/luuisavelino/level-control-system/internal/orquestrator"
 	"github.com/luuisavelino/level-control-system/src/models"
 )
 

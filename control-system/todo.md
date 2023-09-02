@@ -1,3 +1,11 @@
-[] Sistema mais robusto de log
-[] Sistema mais robusto de tratamento de erro
-[] Repository
+- Sistema mais robusto de log
+- Sistema mais robusto de tratamento de erro
+- Implementar banco de dados
+- Middleware de Autorização e autenticação
+- Testes, principalmente para o Orquestrador
+- Configurar Endpoints corretamente
+- Pegar informações em um .env
+- Comentários nas funções
+- Implementar sistema de controle
+- Implementar o recebimento de informações do MQTT
+- Implementar o envio de dados para o MQTT

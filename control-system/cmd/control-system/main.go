@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luuisavelino/level-control-system/pkg/database"
 	"github.com/luuisavelino/level-control-system/pkg/messaging"
-	"github.com/luuisavelino/level-control-system/pkg/orquestrator"
+	"github.com/luuisavelino/level-control-system/internal/orquestrator"
 	"github.com/luuisavelino/level-control-system/src/controllers"
 	"github.com/luuisavelino/level-control-system/src/controllers/routes"
 	"github.com/luuisavelino/level-control-system/src/models/service"
