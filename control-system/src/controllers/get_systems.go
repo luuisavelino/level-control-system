@@ -7,7 +7,7 @@ import (
 )
 
 func (sc *systemControllerInterface) GetSystems(c *gin.Context) {
-	msg, err := sc.service.GetSystems()
+	msg, err := sc.service.GetSystems(c.Request.Context(), nil)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, err)

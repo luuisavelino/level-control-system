@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/luuisavelino/level-control-system/controllers"
+	"github.com/luuisavelino/level-control-system/src/controllers"
 )
 
 const apiVersion = "/api/v1"
