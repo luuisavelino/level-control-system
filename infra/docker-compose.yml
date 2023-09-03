@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mysql-level-control-system:
+    image: mysql:5.7
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'system-level-control'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'pass'
+      MYSQL_ROOT_PASSWORD: 'pass'
+    ports:
+      - '3306:3306'
+    volumes:
+      - "mysql-level-control-system:/var/lib/mysql"
+
+  mosquitto-level-control-system:
+    build:
+      context: ./messaging
+      dockerfile: Dockerfile
+    container_name: mosquitto-container
+    restart: always
+    ports:
+      - '1883:1883'
+    volumes:
+      - "mosquitto-level-control-system:/mosquitto/data"
+      - "mosquitto-level-control-system:/mosquitto/log"
+
+volumes:
+  mosquitto-level-control-system:
+  mysql-level-control-system:
