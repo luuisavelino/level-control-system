@@ -8,11 +8,11 @@ import (
 )
 
 type DBConfig struct {
-	host               string
-	dbname             string
-	user               string
-	password           string
-	maxIdleConns       int
+	Host               string
+	Dbname             string
+	User               string
+	Password           string
+	MaxIdleConns       int
 	ConnMaxLifetimeSec int
 }
 
@@ -35,10 +35,10 @@ type mySQLDatabase struct {
 
 func (my mySQLDatabase) NewConnection() (*gorm.DB, error) {
 	cfg := mysql.Config{
-		Addr:                 my.config.host,
-		User:                 my.config.user,
-		Passwd:               my.config.password,
-		DBName:               my.config.dbname,
+		Addr:                 my.config.Host,
+		User:                 my.config.User,
+		Passwd:               my.config.Password,
+		DBName:               my.config.Dbname,
 		Net:                  "tcp",
 		Loc:                  time.Local,
 		AllowNativePasswords: true,
@@ -53,7 +53,7 @@ func (my mySQLDatabase) NewConnection() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.DB().SetMaxIdleConns(my.config.maxIdleConns)
+	db.DB().SetMaxIdleConns(my.config.MaxIdleConns)
 	db.DB().SetConnMaxLifetime(time.Second * time.Duration(my.config.ConnMaxLifetimeSec))
 
 	return db, nil

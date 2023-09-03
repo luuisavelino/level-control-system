@@ -7,9 +7,11 @@ import (
 )
 
 type MessagingConfig struct {
-	clientID string
-	host     string
-	port     string
+	Host     string
+	Port     string
+	User		 string
+	Password string
+	ClientID string
 }
 
 type Database interface {
@@ -30,12 +32,12 @@ type mqttMessaging struct {
 }
 
 func (my mqttMessaging) NewConnection() (MQTT.Client, error) {
-	broker := fmt.Sprintf("tcp://%s:%s", my.config.host, my.config.port)
+	broker := fmt.Sprintf("tcp://%s:%s", my.config.Host, my.config.Port)
 
 	opts := MQTT.
 		NewClientOptions().
 		AddBroker(broker).
-		SetClientID(my.config.clientID)
+		SetClientID(my.config.ClientID)
 
 	client := MQTT.NewClient(opts)
 
