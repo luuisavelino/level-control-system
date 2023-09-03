@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -34,6 +35,7 @@ type mySQLDatabase struct {
 }
 
 func (my mySQLDatabase) NewConnection() (*gorm.DB, error) {
+	fmt.Println(my.config)
 	cfg := mysql.Config{
 		Addr:                 my.config.Host,
 		User:                 my.config.User,

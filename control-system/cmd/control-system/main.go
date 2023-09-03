@@ -3,30 +3,31 @@ package main
 import (
 	"log"
 	"os"
+
 	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/luuisavelino/level-control-system/internal/orquestrator"
 	"github.com/luuisavelino/level-control-system/pkg/database"
 	"github.com/luuisavelino/level-control-system/pkg/messaging"
-	"github.com/luuisavelino/level-control-system/internal/orquestrator"
 	"github.com/luuisavelino/level-control-system/src/controllers"
 	"github.com/luuisavelino/level-control-system/src/controllers/routes"
 	"github.com/luuisavelino/level-control-system/src/models/service"
 )
 
 func main() {
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error loading .env file", err)
 	}
 
 	dbConfig := database.DBConfig{
-		Host:               os.Getenv("DB_HOST"),
-		Dbname:             os.Getenv("DB_NAME"),
-		User:               os.Getenv("DB_USER"),
-		Password:           os.Getenv("DB_PASSWORD"),
-		MaxIdleConns:       os.Getenv("DB_MAX_IDLE_CONNS"),
-		ConnMaxLifetimeSec: os.Getenv("DB_CONN_MAX_LIFETIME_SEC"),
+		Host:               os.Getenv("MYSQL_HOST"),
+		Dbname:             os.Getenv("MYSQL_DB_NAME"),
+		User:               os.Getenv("MYSQL_USER"),
+		Password:           os.Getenv("MYSQL_PASSWORD"),
+		MaxIdleConns:       10,
+		ConnMaxLifetimeSec: 1400,
 	}
 	db := database.NewDatabase("mysql", dbConfig)
 	mysqlConn, err := db.NewConnection()
