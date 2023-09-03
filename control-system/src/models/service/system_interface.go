@@ -3,24 +3,24 @@ package service
 import (
 	"context"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jinzhu/gorm"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
 	"github.com/luuisavelino/level-control-system/src/models"
+	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
 )
 
-func NewSystemServiceInterface(conn *gorm.DB, mqtt mqtt.Client, manager orquestrator.Manager) SystemServiceInterface {
+func NewSystemServiceInterface(conn *gorm.DB, mqttActions mqtt_actions.MqttActions, manager orquestrator.Manager) SystemServiceInterface {
 	return &systemServiceInterface{
-		conn:    conn,
-		mqtt:    mqtt,
-		manager: manager,
+		conn:        conn,
+		mqttActions: mqttActions,
+		manager:     manager,
 	}
 }
 
 type systemServiceInterface struct {
-	conn    *gorm.DB
-	mqtt    mqtt.Client
-	manager orquestrator.Manager
+	conn        *gorm.DB
+	mqttActions mqtt_actions.MqttActions
+	manager     orquestrator.Manager
 }
 
 type SystemServiceInterface interface {

@@ -13,6 +13,7 @@ import (
 	"github.com/luuisavelino/level-control-system/src/controllers"
 	"github.com/luuisavelino/level-control-system/src/controllers/routes"
 	"github.com/luuisavelino/level-control-system/src/models/service"
+	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
 )
 
 func main() {
@@ -43,15 +44,17 @@ func main() {
 		ClientID: os.Getenv("MQTT_CLIENT_ID"),
 	}
 	mqtt := messaging.NewMessaging("mqtt", messagingConfig)
-	mqttConn, err := mqtt.NewConnection()
+	mqttClient, err := mqtt.NewConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	mqttActions := mqtt_actions.NewMqttActions(mqttClient)
+
 	manager := orquestrator.NewBasicManager()
 	manager.StartMonitoringAndRestart()
 
-	service := service.NewSystemServiceInterface(mysqlConn, mqttConn, manager)
+	service := service.NewSystemServiceInterface(mysqlConn, mqttActions, manager)
 	systemController := controllers.NewSystemControllerInterface(service)
 
 	// TODO: change to New()

@@ -9,16 +9,16 @@ import (
 type MessagingConfig struct {
 	Host     string
 	Port     string
-	User		 string
+	User     string
 	Password string
 	ClientID string
 }
 
-type Database interface {
+type Messaging interface {
 	NewConnection() (MQTT.Client, error)
 }
 
-func NewMessaging(databse string, config MessagingConfig) Database {
+func NewMessaging(databse string, config MessagingConfig) Messaging {
 	switch databse {
 	case "mqtt":
 		return mqttMessaging{config}
@@ -31,13 +31,13 @@ type mqttMessaging struct {
 	config MessagingConfig
 }
 
-func (my mqttMessaging) NewConnection() (MQTT.Client, error) {
-	broker := fmt.Sprintf("tcp://%s:%s", my.config.Host, my.config.Port)
+func (mq mqttMessaging) NewConnection() (MQTT.Client, error) {
+	broker := fmt.Sprintf("tcp://%s:%s", mq.config.Host, mq.config.Port)
 
 	opts := MQTT.
 		NewClientOptions().
 		AddBroker(broker).
-		SetClientID(my.config.ClientID)
+		SetClientID(mq.config.ClientID)
 
 	client := MQTT.NewClient(opts)
 
