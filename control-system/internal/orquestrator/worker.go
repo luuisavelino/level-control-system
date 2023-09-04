@@ -5,15 +5,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
 	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
+	"go.uber.org/zap"
 )
 
 type worker interface {
 	start()
-	stop()
-	GetUUID() uuid.UUID
-	GetPath() string
+	stop() error
+	getUUID() uuid.UUID
 }
 
 type basicWorker struct {
@@ -23,16 +24,16 @@ type basicWorker struct {
 	mqttActions mqtt_actions.MqttActions
 }
 
-func (bw *basicWorker) GetUUID() uuid.UUID {
+// NewBasicWorker is a function that will create a new worker.
+func (bw *basicWorker) getUUID() uuid.UUID {
 	return bw.uuid
 }
 
-func (bw *basicWorker) GetPath() string {
-	return bw.data.GetPath()
-}
-
+// NewBasicWorker is a function that will create a new worker.
 func (bw *basicWorker) start() {
-	fmt.Println("Starting basicWorker...")
+	logger.Info("Worker started",
+		zap.String("journey", "Worker"),
+	)
 
 	messageChannel := make(chan string)
 	bw.mqttActions.Subscribe(bw.data.GetPath(), 1, messageChannel)
@@ -41,10 +42,11 @@ func (bw *basicWorker) start() {
 		for {
 			select {
 			case <-bw.stopChan:
-				fmt.Printf("Worker %s has been stopped.\n", bw.uuid.String())
+				logger.Info(fmt.Sprintf("Worker %s has been stopped", bw.uuid.String()),
+					zap.String("journey", "Worker"),
+				)
 				return
-			case message := <- messageChannel:
-				fmt.Printf("Worker %s has received a message.\n", bw.uuid.String())
+			case message := <-messageChannel:
 				bw.mqttActions.Publish("/tem/v2", 1, false, message)
 			default:
 				time.Sleep(time.Second)
@@ -53,7 +55,22 @@ func (bw *basicWorker) start() {
 	}()
 }
 
-func (bw *basicWorker) stop() {
-	fmt.Println("Stopping basicWorker...")
+// NewBasicWorker is a function that will create a new worker.
+func (bw *basicWorker) stop() error {
+	logger.Info("Worker stoped",
+		zap.String("journey", "Worker"),
+	)
+
+	err := bw.mqttActions.Unsubscribe(bw.data.GetPath())
+	if err != nil {
+		logger.Error("Error on unsubscribe topic",
+			err,
+			zap.String("journey", "Worker"),
+		)
+
+		return err
+	}
+
 	close(bw.stopChan)
+	return nil
 }

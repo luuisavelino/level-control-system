@@ -1,20 +1,27 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/controllers/model/request"
 	"github.com/luuisavelino/level-control-system/src/models"
+	"go.uber.org/zap"
 )
 
 func (sc *systemControllerInterface) AddSystem(c *gin.Context) {
-	fmt.Println("AddSystem")
+	logger.Info("Init AddSystem controller",
+		zap.String("journey", "AddSystem"),
+	)
+
 	var systemRequest request.SystemRequest
 
 	if err := c.ShouldBindJSON(&systemRequest); err != nil {
-		fmt.Println(err)
+		logger.Info("Error to bind request",
+			zap.String("journey", "AddSystem"),
+			zap.String("file", "add_system.go"),
+		)
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
@@ -30,16 +37,16 @@ func (sc *systemControllerInterface) AddSystem(c *gin.Context) {
 		systemRequest.Gains,
 	)
 
-	fmt.Println("domain:", domain)
-
-	err := sc.service.AddSystem(c.Request.Context(), domain)
+	system, err := sc.service.AddSystem(c.Request.Context(), domain)
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"Status": "success", "Message": "sistema iniciado",
-	})
+	logger.Info("Success add system",
+		zap.String("journey", "AddSystem"),
+		zap.String("file", "add_system.go"),
+	)
+
+	c.JSON(http.StatusOK, system)
 }

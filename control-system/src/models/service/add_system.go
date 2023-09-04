@@ -2,16 +2,23 @@ package service
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
+	"go.uber.org/zap"
 )
 
-func (ss *systemServiceInterface) AddSystem(ctx context.Context, systemDomain models.SystemDomainInterface) error {
-	fmt.Println("AddSystem")
+func (ss *systemServiceInterface) AddSystem(ctx context.Context, systemDomain models.SystemDomainInterface) (map[string]string, error) {
+	logger.Info("Init AddSystem service",
+		zap.String("journey", "AddSystem"),
+	)
 
 	system := ss.manager.NewBasicWorker(ss.mqttActions, systemDomain)
 	ss.manager.Add(system)
 
-	return nil
+	logger.Info("System added by manager with success",
+		zap.String("journey", "AddSystem"),
+	)
+
+	return nil, nil
 }

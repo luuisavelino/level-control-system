@@ -7,6 +7,7 @@ import (
 type MqttActions interface {
 	Subscribe(topic string, qos byte, messageChannel chan string) error
 	Publish(topic string, qos byte, retained bool, payload interface{}) error
+	Unsubscribe(topic string) error
 	Disconnect(quiesce uint)
 }
 
@@ -27,6 +28,12 @@ func (mq mqttActions) Subscribe(topic string, qos byte, messageChannel chan stri
 
 func (mq mqttActions) Publish(topic string, qos byte, retained bool, payload interface{}) error {
 	token := mq.client.Publish(topic, qos, retained, payload)
+	token.Wait()
+	return token.Error()
+}
+
+func (mq mqttActions) Unsubscribe(topic string) error {
+	token := mq.client.Unsubscribe(topic)
 	token.Wait()
 	return token.Error()
 }

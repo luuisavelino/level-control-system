@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 
@@ -52,7 +53,7 @@ func main() {
 	mqttActions := mqtt_actions.NewMqttActions(mqttClient)
 
 	manager := orquestrator.NewBasicManager()
-	manager.StartMonitoringAndRestart()
+	manager.StartMonitoringAndRestart(time.Second * 10)
 
 	service := service.NewSystemServiceInterface(mysqlConn, mqttActions, manager)
 	systemController := controllers.NewSystemControllerInterface(service)

@@ -10,14 +10,3 @@ type SystemRequest struct {
 	ControlType  string  `json:"control_type" binding:"required"`
 	Gains        map[string]float64  `json:"gains" binding:"required"`
 }
-
-type SystemRequest2 struct {
-	Name         string  `json:"name"`
-	Path         string  `json:"path"`
-	Description  string  `json:"description"`
-	Setpoint     float64 `json:"setpoint"`
-	MinLevel     float64 `json:"min_level"`
-	MaxLevel     float64 `json:"max_level"`
-	ControlType  string  `json:"control_type"`
-	Gains        map[string]float64  `json:"gains"`
-}
