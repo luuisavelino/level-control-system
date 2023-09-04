@@ -1,28 +1,66 @@
 package models
 
-import "github.com/google/uuid"
-
 type SystemDomainInterface interface {
-	GetUUID() uuid.UUID
 	GetPath() string
+	GetName() string
+	GetDescription() string
+	GetSetpoint() float64
 }
 
-func NewSystemDomain(uuid uuid.UUID, path string) SystemDomainInterface {
+func (sc systemDomain) GetPath() string {
+	return sc.path
+}
+
+func (sc systemDomain) GetName() string {
+	return sc.name
+}
+
+func (sc systemDomain) GetDescription() string {
+	return sc.description
+}
+
+func (sc systemDomain) GetSetpoint() float64 {
+	return sc.scheme.setpoint
+}
+
+func NewSystemDomain(
+	name, path, description string,
+	setpoint, minLevel, maxLevel float64,
+	controlType string,
+	gains map[string]float64,
+	) SystemDomainInterface {
+
 	return &systemDomain{
-		uuid: uuid,
-		path: path,
+		name:        name,
+		path:        path,
+		description: description,
+		scheme: scheme{
+			setpoint: 1.0,
+			minLevel: 0.0,
+			maxLevel: 10.0,
+		},
+		control: control{
+			controlType: "PID",
+			gains: gains,
+		},
 	}
 }
 
 type systemDomain struct {
-	uuid uuid.UUID
-	path string
+	name        string
+	path        string
+	description string
+	scheme      scheme
+	control     control
 }
 
-func (u *systemDomain) GetUUID() uuid.UUID {
-	return u.uuid
+type scheme struct {
+	setpoint float64
+	minLevel float64
+	maxLevel float64
 }
 
-func (u *systemDomain) GetPath() string {
-	return u.path
+type control struct {
+	controlType string
+	gains map[string]float64
 }

@@ -11,15 +11,13 @@ import (
 func (ss *systemServiceInterface) GetSystems(ctx context.Context, systemDomain models.SystemDomainInterface) (string, error) {
 	fmt.Println("GetSystems")
 
-	worker := ss.manager.NewBasicWorker("/tem/v1")
-
-	ss.manager.Add(worker)
+	system := ss.manager.NewBasicWorker(ss.mqttActions, systemDomain)
+	ss.manager.Add(system)
 
 	time.Sleep(time.Second * 5)
 	fmt.Println(ss.manager.GetWorkers())
 
-
-	ss.manager.Remove(worker)
+	ss.manager.Remove(system)
 
 	return "sucesso", nil
 }

@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/luuisavelino/level-control-system/src/models"
+	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
 )
 
 type Manager interface {
-	NewBasicWorker(path string) (worker worker)
+	NewBasicWorker(mqttActions mqtt_actions.MqttActions, systemData models.SystemDomainInterface) (worker worker)
 	GetWorkers() (workers map[uuid.UUID]worker)
 	GetWorkersUUID() (workersUUID []uuid.UUID)
 	Add(worker worker)
@@ -28,11 +30,12 @@ func NewBasicManager() Manager {
 	}
 }
 
-func (wm *basicManager) NewBasicWorker(path string) worker {
+func (wm *basicManager) NewBasicWorker(mqttActions mqtt_actions.MqttActions, systemData models.SystemDomainInterface) worker {
 	return &basicWorker{
-		uuid:     uuid.New(),
-		path:     path,
-		stopChan: make(chan struct{}),
+		uuid:        uuid.New(),
+		stopChan:    make(chan struct{}),
+		data:        systemData,
+		mqttActions: mqttActions,
 	}
 }
 
