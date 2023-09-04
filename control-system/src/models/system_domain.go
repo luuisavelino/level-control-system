@@ -35,9 +35,9 @@ func NewSystemDomain(
 		path:        path,
 		description: description,
 		scheme: scheme{
-			setpoint: 1.0,
-			minLevel: 0.0,
-			maxLevel: 10.0,
+			setpoint: setpoint,
+			minLevel: minLevel,
+			maxLevel: maxLevel,
 		},
 		control: control{
 			controlType: "PID",

@@ -10,4 +10,7 @@ const apiVersion = "/api/v1"
 func InitRoutes(r *gin.RouterGroup, controller controllers.SystemControllerInterface) {
 	r.GET(apiVersion + "/systems", controller.GetSystems)
 	r.POST(apiVersion + "/systems", controller.AddSystem)
+	
+	r.GET(apiVersion + "/systems/:uuid", controller.GetSystemByUUID)
+	r.DELETE(apiVersion + "/systems/:uuid", controller.DeleteSystem)
 }

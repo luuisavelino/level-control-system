@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/luuisavelino/level-control-system/src/models"
+	"github.com/google/uuid"
 )
 
-func (ss *systemServiceInterface) DeleteSystem(ctx context.Context, systemDomain models.SystemDomainInterface) error {
-	fmt.Println("AddSystem")
+func (ss *systemServiceInterface) DeleteSystem(ctx context.Context, uuid uuid.UUID) error {
+	fmt.Println("DeleteSystem")
 
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (sc *systemControllerInterface) DeleteSystem(c *gin.Context) {
+func (sc *systemControllerInterface) GetSystemByUUID(c *gin.Context) {
 	uuid, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		fmt.Println(err)
@@ -16,7 +16,7 @@ func (sc *systemControllerInterface) DeleteSystem(c *gin.Context) {
 		return
 	}
 
-	err = sc.service.DeleteSystem(c.Request.Context(), uuid)
+	msg, err := sc.service.GetSystemByUUID(c.Request.Context(), uuid)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, err)
@@ -24,7 +24,6 @@ func (sc *systemControllerInterface) DeleteSystem(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"Status": "success", "Message": "sistema deletado",
+		"Status": "success", "Message": msg,
 	})
-
 }

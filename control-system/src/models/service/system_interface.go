@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
 	"github.com/luuisavelino/level-control-system/src/models"
@@ -24,7 +25,8 @@ type systemServiceInterface struct {
 }
 
 type SystemServiceInterface interface {
+	GetSystems(ctx context.Context) (string, error)
 	AddSystem(ctx context.Context, systemDomain models.SystemDomainInterface) error
-	GetSystems(ctx context.Context, systemDomain models.SystemDomainInterface) (string, error)
-	DeleteSystem(ctx context.Context, systemDomain models.SystemDomainInterface) error
+	GetSystemByUUID(ctx context.Context, uuid uuid.UUID) (string, error)
+	DeleteSystem(ctx context.Context, uuid uuid.UUID) error
 }
