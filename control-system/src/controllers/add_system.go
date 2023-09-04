@@ -10,13 +10,11 @@ import (
 )
 
 func (sc *systemControllerInterface) AddSystem(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"Status": "success", "Message": "sistema iniciado",
-	})
-
+	fmt.Println("AddSystem")
 	var systemRequest request.SystemRequest
 
 	if err := c.ShouldBindJSON(&systemRequest); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
@@ -32,10 +30,16 @@ func (sc *systemControllerInterface) AddSystem(c *gin.Context) {
 		systemRequest.Gains,
 	)
 
+	fmt.Println("domain:", domain)
+
 	err := sc.service.AddSystem(c.Request.Context(), domain)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status": "success", "Message": "sistema iniciado",
+	})
 }

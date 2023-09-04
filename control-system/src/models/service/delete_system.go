@@ -10,5 +10,7 @@ import (
 func (ss *systemServiceInterface) DeleteSystem(ctx context.Context, uuid uuid.UUID) error {
 	fmt.Println("DeleteSystem")
 
+	ss.manager.Remove(uuid)
+
 	return nil
 }

@@ -15,7 +15,7 @@ type Manager interface {
 	GetWorkers() (workers map[uuid.UUID]worker)
 	GetWorkersUUID() (workersUUID []uuid.UUID)
 	Add(worker worker)
-	Remove(worker worker)
+	Remove(uuid uuid.UUID)
 	StartMonitoringAndRestart()
 }
 
@@ -57,11 +57,11 @@ func (wm *basicManager) Add(worker worker) {
 	worker.start()
 }
 
-func (wm *basicManager) Remove(worker worker) {
+func (wm *basicManager) Remove(uuid uuid.UUID) {
 	wm.mutex.Lock()
 	defer wm.mutex.Unlock()
-	worker.stop()
-	delete(wm.workers, worker.GetUUID())
+	worker.stop(wm.workers[uuid])
+	delete(wm.workers, uuid)
 }
 
 func (wm *basicManager) StartMonitoringAndRestart() {
