@@ -52,10 +52,10 @@ func main() {
 
 	mqttActions := mqtt_actions.NewMqttActions(mqttClient)
 
-	manager := orquestrator.NewBasicManager()
+	manager := orquestrator.NewBasicManager(mqttActions)
 	manager.StartMonitoringAndRestart(time.Second * 10)
 
-	service := service.NewSystemServiceInterface(mysqlConn, mqttActions, manager)
+	service := service.NewSystemServiceInterface(mysqlConn, manager)
 	systemController := controllers.NewSystemControllerInterface(service)
 
 	// TODO: change to New()

@@ -13,7 +13,7 @@ func (ss *systemServiceInterface) AddSystem(ctx context.Context, systemDomain mo
 		zap.String("journey", "AddSystem"),
 	)
 
-	system := ss.manager.NewBasicWorker(ss.mqttActions, systemDomain)
+	system := ss.manager.NewBasicWorker(systemDomain)
 	ss.manager.Add(system)
 
 	logger.Info("System added by manager with success",

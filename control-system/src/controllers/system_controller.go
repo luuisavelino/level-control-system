@@ -10,6 +10,7 @@ type SystemControllerInterface interface {
 	GetSystemByUUID(c *gin.Context)
 	AddSystem(c *gin.Context)
 	DeleteSystem(c *gin.Context)
+	EditSystem(c *gin.Context)
 }
 
 type systemControllerInterface struct {

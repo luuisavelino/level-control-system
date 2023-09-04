@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/pkg/logger"
@@ -12,6 +13,10 @@ func (ss *systemServiceInterface) GetSystemByUUID(ctx context.Context, uuid uuid
 	logger.Info("Init GetSystemByUUID service",
 		zap.String("journey", "GetSystemByUUID"),
 	)
+
+	workers := ss.manager.GetWorkers()
+
+	fmt.Println(workers[uuid])
 
 	return nil, nil
 }

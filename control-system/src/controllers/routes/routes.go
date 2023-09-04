@@ -11,6 +11,7 @@ func InitRoutes(r *gin.RouterGroup, controller controllers.SystemControllerInter
 	r.GET(apiVersion + "/systems", controller.GetSystems)
 	r.POST(apiVersion + "/systems", controller.AddSystem)
 	
+	r.PUT(apiVersion + "/systems/:uuid", controller.EditSystem)
 	r.GET(apiVersion + "/systems/:uuid", controller.GetSystemByUUID)
 	r.DELETE(apiVersion + "/systems/:uuid", controller.DeleteSystem)
 }

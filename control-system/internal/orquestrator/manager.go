@@ -13,33 +13,36 @@ import (
 )
 
 type Manager interface {
-	NewBasicWorker(mqttActions mqtt_actions.MqttActions, systemData models.SystemDomainInterface) (worker worker)
+	NewBasicWorker(systemData models.SystemDomainInterface) (worker worker)
 	GetWorkers() (workers map[uuid.UUID]worker)
 	GetWorkersUUID() (workersUUID []uuid.UUID)
 	Add(worker worker)
 	Remove(uuid uuid.UUID)
+	Edit(uuid uuid.UUID, systemData models.SystemDomainInterface)
 	StartMonitoringAndRestart(delay time.Duration)
 }
 
 type basicManager struct {
 	workers map[uuid.UUID]worker
 	mutex   sync.Mutex
+	mqttActions mqtt_actions.MqttActions
 }
 
 // NewBasicManager is a function that will create a new manager.
-func NewBasicManager() Manager {
+func NewBasicManager(mqttActions mqtt_actions.MqttActions) Manager {
 	return &basicManager{
 		workers: make(map[uuid.UUID]worker),
+		mqttActions: mqttActions,
 	}
 }
 
 // NewBasicWorker is a function that will create a new worker.
-func (wm *basicManager) NewBasicWorker(mqttActions mqtt_actions.MqttActions, systemData models.SystemDomainInterface) worker {
+func (wm *basicManager) NewBasicWorker(systemData models.SystemDomainInterface) worker {
 	return &basicWorker{
 		uuid:        uuid.New(),
 		stopChan:    make(chan struct{}),
 		data:        systemData,
-		mqttActions: mqttActions,
+		mqttActions: wm.mqttActions,
 	}
 }
 
@@ -86,6 +89,19 @@ func (wm *basicManager) Remove(uuid uuid.UUID) {
 	defer wm.mutex.Unlock()
 	worker.stop(wm.workers[uuid])
 	delete(wm.workers, uuid)
+}
+
+// Edit is a function that will edit a worker from the manager.
+func (wm *basicManager) Edit(uuid uuid.UUID, systemData models.SystemDomainInterface) {
+	logger.Info("Edit worker from manager",
+		zap.String("journey", "Manager"),
+	)
+
+	wm.mutex.Lock()
+	defer wm.mutex.Unlock()
+	wm.workers[uuid].stop()
+	wm.workers[uuid].(*basicWorker).data = systemData
+	wm.workers[uuid].start()
 }
 
 // StartMonitoringAndRestart is a function that will check if the workers are running and restart them if they are not.
