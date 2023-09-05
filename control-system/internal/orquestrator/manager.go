@@ -23,15 +23,15 @@ type Manager interface {
 }
 
 type basicManager struct {
-	workers map[uuid.UUID]worker
-	mutex   sync.Mutex
+	workers     map[uuid.UUID]worker
+	mutex       sync.Mutex
 	mqttActions mqtt_actions.MqttActions
 }
 
 // NewBasicManager is a function that will create a new manager.
 func NewBasicManager(mqttActions mqtt_actions.MqttActions) Manager {
 	return &basicManager{
-		workers: make(map[uuid.UUID]worker),
+		workers:     make(map[uuid.UUID]worker),
 		mqttActions: mqttActions,
 	}
 }

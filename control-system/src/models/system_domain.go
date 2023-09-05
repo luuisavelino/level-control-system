@@ -5,22 +5,10 @@ type SystemDomainInterface interface {
 	GetName() string
 	GetDescription() string
 	GetSetpoint() float64
-}
-
-func (sc systemDomain) GetPath() string {
-	return sc.path
-}
-
-func (sc systemDomain) GetName() string {
-	return sc.name
-}
-
-func (sc systemDomain) GetDescription() string {
-	return sc.description
-}
-
-func (sc systemDomain) GetSetpoint() float64 {
-	return sc.scheme.setpoint
+	GetMinLevel() float64
+	GetMaxLevel() float64
+	GetControlType() string
+	GetGains() map[string]float64
 }
 
 func NewSystemDomain(
@@ -28,8 +16,7 @@ func NewSystemDomain(
 	setpoint, minLevel, maxLevel float64,
 	controlType string,
 	gains map[string]float64,
-	) SystemDomainInterface {
-
+) SystemDomainInterface {
 	return &systemDomain{
 		name:        name,
 		path:        path,
@@ -41,7 +28,7 @@ func NewSystemDomain(
 		},
 		control: control{
 			controlType: "PID",
-			gains: gains,
+			gains:       gains,
 		},
 	}
 }
@@ -62,5 +49,37 @@ type scheme struct {
 
 type control struct {
 	controlType string
-	gains map[string]float64
+	gains       map[string]float64
+}
+
+func (sd *systemDomain) GetPath() string {
+	return sd.path
+}
+
+func (sd *systemDomain) GetName() string {
+	return sd.name
+}
+
+func (sd *systemDomain) GetDescription() string {
+	return sd.description
+}
+
+func (sd *systemDomain) GetSetpoint() float64 {
+	return sd.scheme.setpoint
+}
+
+func (sd *systemDomain) GetMinLevel() float64 {
+	return sd.scheme.minLevel
+}
+
+func (sd *systemDomain) GetMaxLevel() float64 {
+	return sd.scheme.maxLevel
+}
+
+func (sd *systemDomain) GetControlType() string {
+	return sd.control.controlType
+}
+
+func (sd *systemDomain) GetGains() map[string]float64 {
+	return sd.control.gains
 }

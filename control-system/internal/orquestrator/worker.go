@@ -2,9 +2,11 @@ package orquestrator
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/luuisavelino/level-control-system/internal/algorithm"
 	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
 	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
@@ -35,6 +37,8 @@ func (bw *basicWorker) start() {
 		zap.String("journey", "Worker"),
 	)
 
+	control := algorithm.NewAlgorithm(bw.data.GetControlType(), bw.data.GetSetpoint(), bw.data.GetGains())
+
 	messageChannel := make(chan string)
 	bw.mqttActions.Subscribe(bw.data.GetPath(), 1, messageChannel)
 
@@ -46,10 +50,17 @@ func (bw *basicWorker) start() {
 					zap.String("journey", "Worker"),
 				)
 				return
+
 			case message := <-messageChannel:
-				bw.mqttActions.Publish("/tem/v2", 1, false, message)
+				currentLevel, err := strconv.ParseFloat(message, 64)
+				if err != nil {
+					return
+				}
+				actionControl := control.Compute(currentLevel)
+				bw.mqttActions.Publish(fmt.Sprintf("%s/action", bw.data.GetPath()), 1, false, actionControl)
+
 			default:
-				time.Sleep(time.Second)
+				time.Sleep(time.Millisecond * 10)
 			}
 		}
 	}()
