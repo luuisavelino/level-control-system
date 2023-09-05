@@ -5,13 +5,13 @@ services:
     container_name: mysql-container
     restart: always
     environment:
-      MYSQL_DATABASE: 'system-level-control'
       MYSQL_USER: 'admin'
       MYSQL_PASSWORD: 'pass'
       MYSQL_ROOT_PASSWORD: 'pass'
     ports:
       - '3306:3306'
     volumes:
+      - "./database/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql"
       - "mysql-level-control-system:/var/lib/mysql"
 
   mosquitto-level-control-system:
