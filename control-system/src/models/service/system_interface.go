@@ -22,9 +22,7 @@ type systemServiceInterface struct {
 }
 
 type SystemServiceInterface interface {
-	GetSystems(ctx context.Context) (map[string]string, error)
 	AddSystem(ctx context.Context, systemDomain models.SystemDomainInterface) (map[string]string, error)
-	GetSystemByUUID(ctx context.Context, uuid uuid.UUID) (map[string]string, error)
 	DeleteSystem(ctx context.Context, uuid uuid.UUID) error
 	EditSystem(ctx context.Context, uuid uuid.UUID, systemDomain models.SystemDomainInterface) error
 }

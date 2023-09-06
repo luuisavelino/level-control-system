@@ -6,8 +6,6 @@ import (
 )
 
 type SystemControllerInterface interface {
-	GetSystems(c *gin.Context)
-	GetSystemByUUID(c *gin.Context)
 	AddSystem(c *gin.Context)
 	DeleteSystem(c *gin.Context)
 	EditSystem(c *gin.Context)

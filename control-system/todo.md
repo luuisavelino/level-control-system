@@ -1,6 +1,4 @@
-- Sistema mais robusto de tratamento de erro
 - Implementar banco de dados
 - Middleware de Autorização e autenticação
+- Sistema mais robusto de tratamento de erro
 - Testes, principalmente para o Orquestrador
-- Configurar Endpoints corretamente
-- Implementar sistema de controle

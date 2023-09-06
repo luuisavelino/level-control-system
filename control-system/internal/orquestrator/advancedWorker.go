@@ -1,6 +1,7 @@
 package orquestrator
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -13,38 +14,33 @@ import (
 	"go.uber.org/zap"
 )
 
-type worker interface {
-	start()
-	stop() error
-	GetUUID() uuid.UUID
-}
-
-type basicWorker struct {
+type advancedWorker struct {
 	uuid        uuid.UUID
 	data        models.SystemDomainInterface
-	stopChan    chan struct{}
+	ctx         context.Context
+	cancel      context.CancelFunc
 	mqttActions mqtt_actions.MqttActions
 }
 
-func (bw *basicWorker) GetUUID() uuid.UUID {
-	return bw.uuid
+func (aw *advancedWorker) GetUUID() uuid.UUID {
+	return aw.uuid
 }
 
-func (bw *basicWorker) start() {
+func (aw *advancedWorker) start() {
 	logger.Info("Worker started",
 		zap.String("journey", "Worker"),
 	)
 
-	control := algorithm.NewAlgorithm(bw.data.GetControlType(), bw.data.GetSetpoint(), bw.data.GetGains())
+	control := algorithm.NewAlgorithm(aw.data.GetControlType(), aw.data.GetSetpoint(), aw.data.GetGains())
 
 	messageChannel := make(chan string)
-	bw.mqttActions.Subscribe(bw.data.GetPath(), 1, messageChannel)
+	aw.mqttActions.Subscribe(aw.data.GetPath(), 1, messageChannel)
 
 	go func() {
 		for {
 			select {
-			case <-bw.stopChan:
-				logger.Info(fmt.Sprintf("Worker %s has been stopped", bw.uuid.String()),
+			case <-aw.ctx.Done():
+				logger.Info(fmt.Sprintf("Worker %s has been stopped", aw.uuid.String()),
 					zap.String("journey", "Worker"),
 				)
 				return
@@ -55,7 +51,7 @@ func (bw *basicWorker) start() {
 					return
 				}
 				actionControl := control.Compute(currentLevel)
-				bw.mqttActions.Publish(fmt.Sprintf("%s/action", bw.data.GetPath()), 1, false, actionControl)
+				aw.mqttActions.Publish(fmt.Sprintf("%s/action", aw.data.GetPath()), 1, false, actionControl)
 
 			default:
 				time.Sleep(time.Millisecond * 10)
@@ -64,22 +60,21 @@ func (bw *basicWorker) start() {
 	}()
 }
 
-
-func (bw *basicWorker) stop() error {
+func (aw *advancedWorker) stop() error {
 	logger.Info("Worker stoped",
 		zap.String("journey", "Worker"),
 	)
 
-	err := bw.mqttActions.Unsubscribe(bw.data.GetPath())
+	err := aw.mqttActions.Unsubscribe(aw.data.GetPath())
 	if err != nil {
 		logger.Error("Error on unsubscribe topic",
 			err,
 			zap.String("journey", "Worker"),
 		)
-
 		return err
 	}
 
-	close(bw.stopChan)
+	aw.cancel()
+
 	return nil
 }

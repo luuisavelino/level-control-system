@@ -1,6 +1,7 @@
 package orquestrator
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -14,8 +15,8 @@ import (
 
 type Manager interface {
 	NewBasicWorker(systemData models.SystemDomainInterface) (worker worker)
+	NewAdvancedWorker(systemData models.SystemDomainInterface) (worker worker)
 	GetWorkers() (workers map[uuid.UUID]worker)
-	GetWorkersUUID() (workersUUID []uuid.UUID)
 	Add(worker worker)
 	Remove(uuid uuid.UUID)
 	Edit(uuid uuid.UUID, systemData models.SystemDomainInterface)
@@ -46,6 +47,19 @@ func (wm *basicManager) NewBasicWorker(systemData models.SystemDomainInterface) 
 	}
 }
 
+// NewBasicWorker is a function that will create a new worker.
+func (wm *basicManager) NewAdvancedWorker(systemData models.SystemDomainInterface) worker {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	return &advancedWorker{
+		uuid:        uuid.New(),
+		ctx:         ctx,
+		cancel:      cancel,
+		data:        systemData,
+		mqttActions: wm.mqttActions,
+	}
+}
+
 // GetWorkers is a function that will return all workers.
 func (wm *basicManager) GetWorkers() (workers map[uuid.UUID]worker) {
 	logger.Info("Get workers",
@@ -53,18 +67,6 @@ func (wm *basicManager) GetWorkers() (workers map[uuid.UUID]worker) {
 	)
 
 	return wm.workers
-}
-
-// GetWorkersUUID is a function that will return all workers uuid.
-func (wm *basicManager) GetWorkersUUID() (workersUUID []uuid.UUID) {
-	logger.Info("Get workers uuid",
-		zap.String("journey", "Manager"),
-	)
-
-	for _, worker := range wm.workers {
-		workersUUID = append(workersUUID, worker.getUUID())
-	}
-	return workersUUID
 }
 
 // Add is a function that will add a worker to the manager.
@@ -75,7 +77,7 @@ func (wm *basicManager) Add(worker worker) {
 
 	wm.mutex.Lock()
 	defer wm.mutex.Unlock()
-	wm.workers[worker.getUUID()] = worker
+	wm.workers[worker.GetUUID()] = worker
 	worker.start()
 }
 
@@ -125,7 +127,7 @@ func (wm *basicManager) StartMonitoringAndRestart(delay time.Duration) {
 			for _, worker := range wm.workers {
 				select {
 				case <-worker.(*basicWorker).stopChan:
-					logger.Info(fmt.Sprintf("worker %s is not running. Restarting", worker.getUUID().String()),
+					logger.Info(fmt.Sprintf("worker %s is not running. Restarting", worker.GetUUID().String()),
 						zap.String("journey", "Manager"),
 					)
 					worker.start()
