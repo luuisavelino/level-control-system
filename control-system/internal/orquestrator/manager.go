@@ -14,13 +14,12 @@ import (
 )
 
 type Manager interface {
-	NewBasicWorker(systemData models.SystemDomainInterface) (worker worker)
 	NewAdvancedWorker(systemData models.SystemDomainInterface) (worker worker)
 	GetWorkers() (workers map[uuid.UUID]worker)
 	Add(worker worker)
 	Remove(uuid uuid.UUID)
 	Edit(uuid uuid.UUID, systemData models.SystemDomainInterface)
-	StartMonitoringAndRestart(delay time.Duration)
+	StartMonitoring(delay time.Duration)
 }
 
 type basicManager struct {
@@ -37,26 +36,18 @@ func NewBasicManager(mqttActions mqtt_actions.MqttActions) Manager {
 	}
 }
 
-// NewBasicWorker is a function that will create a new worker.
-func (wm *basicManager) NewBasicWorker(systemData models.SystemDomainInterface) worker {
-	return &basicWorker{
-		uuid:        uuid.New(),
-		stopChan:    make(chan struct{}),
-		data:        systemData,
-		mqttActions: wm.mqttActions,
-	}
-}
-
-// NewBasicWorker is a function that will create a new worker.
+// NewadvancedWorker is a function that will create a new worker.
 func (wm *basicManager) NewAdvancedWorker(systemData models.SystemDomainInterface) worker {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &advancedWorker{
-		uuid:        uuid.New(),
-		ctx:         ctx,
-		cancel:      cancel,
-		data:        systemData,
-		mqttActions: wm.mqttActions,
+		uuid: uuid.New(),
+		data: systemData,
+		action: action{
+			ctx:    ctx,
+			cancel: cancel,
+			mqtt:   wm.mqttActions,
+		},
 	}
 }
 
@@ -102,17 +93,17 @@ func (wm *basicManager) Edit(uuid uuid.UUID, systemData models.SystemDomainInter
 	wm.mutex.Lock()
 	defer wm.mutex.Unlock()
 	wm.workers[uuid].stop()
-	wm.workers[uuid].(*basicWorker).data = systemData
+	wm.workers[uuid].(*advancedWorker).data = systemData
 	wm.workers[uuid].start()
 }
 
-// StartMonitoringAndRestart is a function that will check if the workers are running and restart them if they are not.
-func (wm *basicManager) StartMonitoringAndRestart(delay time.Duration) {
+// StartMonitoring is a function that will check if the workers are running and restart them if they are not.
+func (wm *basicManager) StartMonitoring(delay time.Duration) {
 	logger.Info("Start monitoring and restart workers",
 		zap.String("journey", "Manager"),
 	)
 
-	if delay == 0 {
+	if delay < 10 {
 		delay = 10 * time.Second
 	}
 
@@ -123,14 +114,18 @@ func (wm *basicManager) StartMonitoringAndRestart(delay time.Duration) {
 			)
 
 			wm.mutex.Lock()
-
 			for _, worker := range wm.workers {
+
+				fmt.Println(worker.GetUUID())
+
 				select {
-				case <-worker.(*basicWorker).stopChan:
-					logger.Info(fmt.Sprintf("worker %s is not running. Restarting", worker.GetUUID().String()),
+				case <-worker.(*advancedWorker).action.ctx.Done():
+					logger.Error(fmt.Sprintf("worker %s is not running.", worker.GetUUID().String()),
+						worker.GetCtx().Err(),
 						zap.String("journey", "Manager"),
 					)
-					worker.start()
+
+					delete(wm.workers, worker.GetUUID())
 				default:
 				}
 			}
