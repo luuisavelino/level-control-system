@@ -30,11 +30,13 @@ CREATE TABLE systems (
   system_name VARCHAR(20),
   system_path VARCHAR(50),
   system_description VARCHAR(255),
+  configuration_id INT,
   scheme_id INT,
   control_id INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL,
+  FOREIGN KEY (configuration_id) REFERENCES configurations(configuration_id),
   FOREIGN KEY (scheme_id) REFERENCES schemes(scheme_id),
   FOREIGN KEY (control_id) REFERENCES controls(control_id)
 );
@@ -43,4 +45,13 @@ CREATE TABLE workers (
   worker_uuid VARCHAR(36) PRIMARY KEY,
   system_id INT,
   FOREIGN KEY (system_id) REFERENCES systems(system_id)
+);
+
+CREATE TABLE configurations (
+  configuration_id INT AUTO_INCREMENT PRIMARY KEY,
+  configuration_enabled BOOLEAN,
+  configuration_running BOOLEAN,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL
 );

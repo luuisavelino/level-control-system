@@ -19,6 +19,5 @@ func NewSystemRepository(db *sql.DB) systemRepository {
 }
 
 type SystemRepository interface {
-	SaveSystem(ctx context.Context, systemDomain models.SystemDomainInterface) (int64, error)
-	SaveWorker(ctx context.Context, workerUUID uuid.UUID, systemID int64) error
+	GetSystem(ctx context.Context, uuid uuid.UUID) (models.SystemDomainInterface, error)
 }

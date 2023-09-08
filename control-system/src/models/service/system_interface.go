@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
-	"github.com/luuisavelino/level-control-system/src/models"
 	"github.com/luuisavelino/level-control-system/src/models/repository"
 )
 
@@ -22,7 +21,7 @@ type systemServiceInterface struct {
 }
 
 type SystemServiceInterface interface {
-	AddSystem(ctx context.Context, systemDomain models.SystemDomainInterface) (map[string]string, error)
-	DeleteSystem(ctx context.Context, uuid uuid.UUID) error
-	EditSystem(ctx context.Context, uuid uuid.UUID, systemDomain models.SystemDomainInterface) error
+	AddSystem(ctx context.Context, uuid uuid.UUID) error
+	RemoveSystem(ctx context.Context, uuid uuid.UUID) error
+	UpdateSystem(ctx context.Context, uuid uuid.UUID) error
 }

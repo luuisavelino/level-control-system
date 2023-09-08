@@ -22,9 +22,7 @@ func ConvertEntityToDomain(
 	}
 
 	return models.NewSystemDomain(
-		systems.Name,
 		systems.Path,
-		systems.Description,
 		schemes.Setpoint,
 		schemes.MinLevel,
 		schemes.MaxLevel,

@@ -9,29 +9,29 @@ import (
 	"go.uber.org/zap"
 )
 
-func (sc *systemControllerInterface) DeleteSystem(c *gin.Context) {
-	logger.Info("Init DeleteSystem controller",
-		zap.String("journey", "DeleteSystem"),
+func (sc *systemControllerInterface) RemoveSystem(c *gin.Context) {
+	logger.Info("Init RemoveSystem controller",
+		zap.String("journey", "RemoveSystem"),
 	)
 
 	uuid, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		logger.Info("Error to get UUID from request",
-			zap.String("journey", "DeleteSystem"),
+			zap.String("journey", "RemoveSystem"),
 			zap.String("file", "delete_system.go"),
 		)
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	err = sc.service.DeleteSystem(c.Request.Context(), uuid)
+	err = sc.service.RemoveSystem(c.Request.Context(), uuid)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	logger.Info("Success delete system",
-		zap.String("journey", "DeleteSystem"),
+		zap.String("journey", "RemoveSystem"),
 		zap.String("file", "delete_system.go"),
 	)
 

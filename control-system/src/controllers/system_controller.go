@@ -7,8 +7,10 @@ import (
 
 type SystemControllerInterface interface {
 	AddSystem(c *gin.Context)
-	DeleteSystem(c *gin.Context)
-	EditSystem(c *gin.Context)
+	RemoveSystem(c *gin.Context)
+	UpdateSystem(c *gin.Context)
+	// StartSystemV2(c *gin.Context)
+	// StopSystemV2(c *gin.Context)
 }
 
 type systemControllerInterface struct {

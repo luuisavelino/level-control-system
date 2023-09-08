@@ -1,9 +1,10 @@
 package models
 
+import "github.com/google/uuid"
+
 type SystemDomainInterface interface {
+	GetUUID() uuid.UUID
 	GetPath() string
-	GetName() string
-	GetDescription() string
 	GetSetpoint() float64
 	GetMinLevel() float64
 	GetMaxLevel() float64
@@ -12,15 +13,13 @@ type SystemDomainInterface interface {
 }
 
 func NewSystemDomain(
-	name, path, description string,
+	path string,
 	setpoint, minLevel, maxLevel float64,
 	controlType string,
 	gains map[string]float64,
 ) SystemDomainInterface {
 	return &systemDomain{
-		name:        name,
-		path:        path,
-		description: description,
+		path: path,
 		scheme: scheme{
 			setpoint: setpoint,
 			minLevel: minLevel,

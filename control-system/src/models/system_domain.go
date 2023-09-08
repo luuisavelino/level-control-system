@@ -1,9 +1,10 @@
 package models
 
+import "github.com/google/uuid"
+
 type systemDomain struct {
-	name        string
+	uuid        uuid.UUID
 	path        string
-	description string
 	scheme      scheme
 	control     control
 }
@@ -19,16 +20,12 @@ type control struct {
 	gains       map[string]float64
 }
 
+func (sd *systemDomain) GetUUID() uuid.UUID {
+	return sd.uuid
+}
+
 func (sd *systemDomain) GetPath() string {
 	return sd.path
-}
-
-func (sd *systemDomain) GetName() string {
-	return sd.name
-}
-
-func (sd *systemDomain) GetDescription() string {
-	return sd.description
 }
 
 func (sd *systemDomain) GetSetpoint() float64 {
