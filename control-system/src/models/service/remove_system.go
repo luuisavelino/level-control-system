@@ -13,9 +13,12 @@ func (ss *systemServiceInterface) RemoveSystem(ctx context.Context, uuid uuid.UU
 		zap.String("journey", "RemoveSystem"),
 	)
 
-	ss.manager.Remove(uuid)
+	err := ss.manager.Remove(uuid)
+	if err != nil {
+		return err
+	}
 
-	logger.Info("System deleted by manager with success",
+	logger.Info("System removed with success",
 		zap.String("journey", "RemoveSystem"),
 	)
 

@@ -13,7 +13,18 @@ func (ss *systemServiceInterface) UpdateSystem(ctx context.Context, uuid uuid.UU
 		zap.String("journey", "UpdateSystem"),
 	)
 
-	// ss.manager.Edit()
+	err := ss.manager.Remove(uuid)
+	if err != nil {
+		return err
+	}
+
+	system, err := ss.systemRepository.GetSystem(ctx, uuid)
+	if err != nil {
+		return err
+	}
+
+	worker := ss.manager.NewAdvancedWorker(uuid, system)
+	ss.manager.Add(worker)
 
 	logger.Info("System updated by manager with success",
 		zap.String("journey", "UpdateSystem"),

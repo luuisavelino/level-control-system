@@ -8,6 +8,7 @@ import (
 	"github.com/luuisavelino/level-control-system/src/models"
 	"github.com/luuisavelino/level-control-system/src/models/repository/entity"
 	converter "github.com/luuisavelino/level-control-system/src/models/repository/entity/convert"
+	"go.uber.org/zap"
 )
 
 const (
@@ -19,7 +20,9 @@ const (
 
 // GetSystem get system by uuid
 func (sr systemRepository) GetSystem(ctx context.Context, uuid uuid.UUID) (models.SystemDomainInterface, error) {
-	logger.Info("Init SaveWorker")
+	logger.Info("Init GetSystem repository",
+		zap.String("journey", "Repository"),
+	)
 
 	tx, err := sr.db.Begin()
 	if err != nil {
@@ -70,6 +73,10 @@ func (sr systemRepository) GetSystem(ctx context.Context, uuid uuid.UUID) (model
 	}
 
 	domain := converter.ConvertEntityToDomain(systems, controls, schemes)
+
+	logger.Info("Get system with success",
+		zap.String("journey", "Repository"),
+	)
 
 	return domain, nil
 }

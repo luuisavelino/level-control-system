@@ -1,12 +1,9 @@
 package models
 
-import "github.com/google/uuid"
-
 type systemDomain struct {
-	uuid        uuid.UUID
-	path        string
-	scheme      scheme
-	control     control
+	path    string
+	scheme  scheme
+	control control
 }
 
 type scheme struct {
@@ -18,10 +15,6 @@ type scheme struct {
 type control struct {
 	controlType string
 	gains       map[string]float64
-}
-
-func (sd *systemDomain) GetUUID() uuid.UUID {
-	return sd.uuid
 }
 
 func (sd *systemDomain) GetPath() string {

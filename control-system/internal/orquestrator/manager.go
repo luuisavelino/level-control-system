@@ -14,12 +14,12 @@ import (
 )
 
 type Manager interface {
-	NewAdvancedWorker(systemData models.SystemDomainInterface) (worker worker)
+	NewAdvancedWorker(uuid uuid.UUID, systemData models.SystemDomainInterface) (worker worker)
 	GetWorkers() (workers map[uuid.UUID]worker)
 	Add(worker worker)
-	Remove(uuid uuid.UUID)
+	Remove(uuid uuid.UUID) error
 	Edit(uuid uuid.UUID, systemData models.SystemDomainInterface)
-	StartMonitoring(delay time.Duration)
+	GoroutineGarbageCollector(delay time.Duration)
 }
 
 type basicManager struct {
@@ -37,16 +37,16 @@ func NewBasicManager(messaging messaging_action.Messaging) Manager {
 }
 
 // NewadvancedWorker is a function that will create a new worker.
-func (wm *basicManager) NewAdvancedWorker(systemData models.SystemDomainInterface) worker {
+func (wm *basicManager) NewAdvancedWorker(uuid uuid.UUID, systemData models.SystemDomainInterface) worker {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &advancedWorker{
-		uuid: uuid.New(),
+		uuid: uuid,
 		data: systemData,
 		action: action{
-			ctx:    ctx,
-			cancel: cancel,
-			messaging:   wm.messaging,
+			ctx:       ctx,
+			cancel:    cancel,
+			messaging: wm.messaging,
 		},
 	}
 }
@@ -73,15 +73,21 @@ func (wm *basicManager) Add(worker worker) {
 }
 
 // Remove is a function that will remove a worker from the manager.
-func (wm *basicManager) Remove(uuid uuid.UUID) {
+func (wm *basicManager) Remove(uuid uuid.UUID) error {
 	logger.Info("Remove worker from manager",
 		zap.String("journey", "Manager"),
 	)
 
 	wm.mutex.Lock()
 	defer wm.mutex.Unlock()
-	worker.stop(wm.workers[uuid])
+
+	err := worker.stop(wm.workers[uuid])
+	if err != nil {
+		return err
+	}
+
 	delete(wm.workers, uuid)
+	return nil
 }
 
 // Edit is a function that will edit a worker from the manager.
@@ -98,7 +104,7 @@ func (wm *basicManager) Edit(uuid uuid.UUID, systemData models.SystemDomainInter
 }
 
 // StartMonitoring is a function that will check if the workers are running and restart them if they are not.
-func (wm *basicManager) StartMonitoring(delay time.Duration) {
+func (wm *basicManager) GoroutineGarbageCollector(delay time.Duration) {
 	logger.Info("Start monitoring and restart workers",
 		zap.String("journey", "Manager"),
 	)
@@ -115,11 +121,8 @@ func (wm *basicManager) StartMonitoring(delay time.Duration) {
 
 			wm.mutex.Lock()
 			for _, worker := range wm.workers {
-
-				fmt.Println(worker.GetUUID())
-
 				select {
-				case <-worker.(*advancedWorker).action.ctx.Done():
+				case <-worker.GetCtx().Done():
 					logger.Error(fmt.Sprintf("worker %s is not running.", worker.GetUUID().String()),
 						worker.GetCtx().Err(),
 						zap.String("journey", "Manager"),
@@ -129,7 +132,6 @@ func (wm *basicManager) StartMonitoring(delay time.Duration) {
 				default:
 				}
 			}
-
 			wm.mutex.Unlock()
 
 			time.Sleep(delay)

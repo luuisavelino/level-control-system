@@ -56,7 +56,7 @@ func main() {
 	mqttActions := messaging_action.NewMqttActions(mqttClient)
 
 	manager := orquestrator.NewBasicManager(mqttActions)
-	manager.StartMonitoring(time.Second * 10)
+	manager.GoroutineGarbageCollector(time.Second * 10)
 
 	service := service.NewSystemServiceInterface(systemRepository, manager)
 	systemController := controllers.NewSystemControllerInterface(service)

@@ -1,9 +1,6 @@
 package models
 
-import "github.com/google/uuid"
-
 type SystemDomainInterface interface {
-	GetUUID() uuid.UUID
 	GetPath() string
 	GetSetpoint() float64
 	GetMinLevel() float64
