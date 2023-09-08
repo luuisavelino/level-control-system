@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
 	"github.com/luuisavelino/level-control-system/src/models/repository/entity"
@@ -31,12 +32,12 @@ func InsertDataIntoSchemesTable(tx *sql.Tx, schemes entity.SchemesEntity) (int64
 		return 0, err
 	}
 
-	schemesID, err := result.LastInsertId()
+	schemeID, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
 
-	return schemesID, nil
+	return schemeID, nil
 }
 
 // Insert data into the Controls table
@@ -52,26 +53,24 @@ func InsertDataIntoControlsTable(tx *sql.Tx, controls entity.ControlsEntity) (in
 		return 0, err
 	}
 
-	controlsID, err := result.LastInsertId()
+	controlID, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
 
-	return controlsID, nil
+	return controlID, nil
 }
 
 // Insert data into the SystemsEntity table
-func InsertDataIntoSystemsTable(tx *sql.Tx, systems entity.SystemsEntity, schemesID int64, controlsID int64) (int64, error) {
+func InsertDataIntoSystemsTable(tx *sql.Tx, systems entity.SystemsEntity, schemeID int64, controlID int64) (int64, error) {
 	systemsStmt, err := tx.Prepare(fmt.Sprintf("INSERT INTO %s (system_name, system_path, system_description, scheme_id, control_id) VALUES (?, ?, ?, ?, ?)", SystemsTableName))
 	if err != nil {
-		tx.Rollback()
 		return 0, err
 	}
 	defer systemsStmt.Close()
 
-	result, err := systemsStmt.Exec(systems.Name, systems.Path, systems.Description, schemesID, controlsID)
+	result, err := systemsStmt.Exec(systems.Name, systems.Path, systems.Description, schemeID, controlID)
 	if err != nil {
-		tx.Rollback()
 		return 0, err
 	}
 
@@ -83,29 +82,33 @@ func InsertDataIntoSystemsTable(tx *sql.Tx, systems entity.SystemsEntity, scheme
 	return systemsID, nil
 }
 
-func (sr systemRepository) SaveSystem(ctx context.Context, systemDomain models.SystemDomainInterface) error {
-	logger.Info("Init SaveSystem")
+func InsertDataIntoWorkersTable(tx *sql.Tx, workerUUID uuid.UUID, systemID int64) error {
+	workersStmt, err := tx.Prepare(fmt.Sprintf("INSERT INTO %s (worker_uuid, system_id) VALUES (?, ?)", WorkersTableName))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	defer workersStmt.Close()
 
-	systems, controls, schemes := converter.ConvertDomainToEntity(systemDomain)
+	_, err = workersStmt.Exec(workerUUID, systemID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}
+
+// SaveWorker is a function that will save a worker in the database.
+func (sr systemRepository) SaveWorker(ctx context.Context, workerUUID uuid.UUID, systemID int64) error {
+	logger.Info("Init SaveWorker")
 
 	tx, err := sr.db.Begin()
 	if err != nil {
 		return err
 	}
 
-	schemesID, err := InsertDataIntoSchemesTable(tx, schemes)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	controlsID, err := InsertDataIntoControlsTable(tx, controls)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	_, err = InsertDataIntoSystemsTable(tx, systems, schemesID, controlsID)
+	err = InsertDataIntoWorkersTable(tx, workerUUID, systemID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -116,4 +119,40 @@ func (sr systemRepository) SaveSystem(ctx context.Context, systemDomain models.S
 	}
 
 	return nil
+}
+
+// SaveSystem is a function that will save a system in the database.
+func (sr systemRepository) SaveSystem(ctx context.Context, systemDomain models.SystemDomainInterface) (int64, error) {
+	logger.Info("Init SaveSystem")
+
+	systems, controls, schemes := converter.ConvertDomainToEntity(systemDomain)
+
+	tx, err := sr.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	schemeID, err := InsertDataIntoSchemesTable(tx, schemes)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	controlID, err := InsertDataIntoControlsTable(tx, controls)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	systemID, err := InsertDataIntoSystemsTable(tx, systems, schemeID, controlID)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return systemID, nil
 }

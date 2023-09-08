@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/src/models"
 )
 
@@ -18,5 +19,6 @@ func NewSystemRepository(db *sql.DB) systemRepository {
 }
 
 type SystemRepository interface {
-	SaveSystem(ctx context.Context, systemDomain models.SystemDomainInterface) error
+	SaveSystem(ctx context.Context, systemDomain models.SystemDomainInterface) (int64, error)
+	SaveWorker(ctx context.Context, workerUUID uuid.UUID, systemID int64) error
 }

@@ -40,7 +40,7 @@ CREATE TABLE systems (
 );
 
 CREATE TABLE workers (
-  worker_uuid VARCHAR(25) PRIMARY KEY,
+  worker_uuid VARCHAR(36) PRIMARY KEY,
   system_id INT,
   FOREIGN KEY (system_id) REFERENCES systems(system_id)
 );
