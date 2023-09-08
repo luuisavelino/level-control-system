@@ -13,8 +13,9 @@ import (
 	"github.com/luuisavelino/level-control-system/pkg/messaging"
 	"github.com/luuisavelino/level-control-system/src/controllers"
 	"github.com/luuisavelino/level-control-system/src/controllers/routes"
+	"github.com/luuisavelino/level-control-system/src/models/messaging_action"
+	"github.com/luuisavelino/level-control-system/src/models/repository"
 	"github.com/luuisavelino/level-control-system/src/models/service"
-	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
 )
 
 func main() {
@@ -37,6 +38,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	systemRepository := repository.NewSystemRepository(mysqlConn)
+
 	messagingConfig := messaging.MessagingConfig{
 		Host:     os.Getenv("MQTT_HOST"),
 		Port:     os.Getenv("MQTT_PORT"),
@@ -50,12 +53,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mqttActions := mqtt_actions.NewMqttActions(mqttClient)
+	mqttActions := messaging_action.NewMqttActions(mqttClient)
 
 	manager := orquestrator.NewBasicManager(mqttActions)
 	manager.StartMonitoringAndRestart(time.Second * 10)
 
-	service := service.NewSystemServiceInterface(mysqlConn, manager)
+	service := service.NewSystemServiceInterface(systemRepository, manager)
 	systemController := controllers.NewSystemControllerInterface(service)
 
 	// TODO: change to New()

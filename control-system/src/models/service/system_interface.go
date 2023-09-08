@@ -4,21 +4,21 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
 	"github.com/luuisavelino/level-control-system/src/models"
+	"github.com/luuisavelino/level-control-system/src/models/repository"
 )
 
-func NewSystemServiceInterface(conn *gorm.DB, manager orquestrator.Manager) SystemServiceInterface {
+func NewSystemServiceInterface(systemRepository repository.SystemRepository, manager orquestrator.Manager) SystemServiceInterface {
 	return &systemServiceInterface{
-		conn:    conn,
-		manager: manager,
+		systemRepository: systemRepository,
+		manager:          manager,
 	}
 }
 
 type systemServiceInterface struct {
-	conn    *gorm.DB
-	manager orquestrator.Manager
+	systemRepository repository.SystemRepository
+	manager          orquestrator.Manager
 }
 
 type SystemServiceInterface interface {

@@ -10,16 +10,16 @@ import (
 	"github.com/luuisavelino/level-control-system/internal/algorithm"
 	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
-	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
+	"github.com/luuisavelino/level-control-system/src/models/messaging_action"
 	"go.uber.org/zap"
 )
 
 type advancedWorker struct {
-	uuid        uuid.UUID
-	data        models.SystemDomainInterface
-	ctx         context.Context
-	cancel      context.CancelFunc
-	mqttActions mqtt_actions.MqttActions
+	uuid      uuid.UUID
+	data      models.SystemDomainInterface
+	ctx       context.Context
+	cancel    context.CancelFunc
+	messaging messaging_action.Messaging
 }
 
 func (aw *advancedWorker) GetUUID() uuid.UUID {
@@ -34,7 +34,7 @@ func (aw *advancedWorker) start() {
 	control := algorithm.NewAlgorithm(aw.data.GetControlType(), aw.data.GetSetpoint(), aw.data.GetGains())
 
 	messageChannel := make(chan string)
-	aw.mqttActions.Subscribe(aw.data.GetPath(), 1, messageChannel)
+	aw.messaging.Subscribe(aw.data.GetPath(), 1, messageChannel)
 
 	go func() {
 		for {
@@ -51,7 +51,7 @@ func (aw *advancedWorker) start() {
 					return
 				}
 				actionControl := control.Compute(currentLevel)
-				aw.mqttActions.Publish(fmt.Sprintf("%s/action", aw.data.GetPath()), 1, false, actionControl)
+				aw.messaging.Publish(fmt.Sprintf("%s/action", aw.data.GetPath()), 1, false, actionControl)
 
 			default:
 				time.Sleep(time.Millisecond * 10)
@@ -65,7 +65,7 @@ func (aw *advancedWorker) stop() error {
 		zap.String("journey", "Worker"),
 	)
 
-	err := aw.mqttActions.Unsubscribe(aw.data.GetPath())
+	err := aw.messaging.Unsubscribe(aw.data.GetPath())
 	if err != nil {
 		logger.Error("Error on unsubscribe topic",
 			err,

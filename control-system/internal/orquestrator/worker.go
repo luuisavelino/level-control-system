@@ -9,7 +9,7 @@ import (
 	"github.com/luuisavelino/level-control-system/internal/algorithm"
 	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
-	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
+	"github.com/luuisavelino/level-control-system/src/models/messaging_action"
 	"go.uber.org/zap"
 )
 
@@ -20,10 +20,10 @@ type worker interface {
 }
 
 type basicWorker struct {
-	uuid        uuid.UUID
-	data        models.SystemDomainInterface
-	stopChan    chan struct{}
-	mqttActions mqtt_actions.MqttActions
+	uuid      uuid.UUID
+	data      models.SystemDomainInterface
+	stopChan  chan struct{}
+	messaging messaging_action.Messaging
 }
 
 func (bw *basicWorker) GetUUID() uuid.UUID {
@@ -38,7 +38,7 @@ func (bw *basicWorker) start() {
 	control := algorithm.NewAlgorithm(bw.data.GetControlType(), bw.data.GetSetpoint(), bw.data.GetGains())
 
 	messageChannel := make(chan string)
-	bw.mqttActions.Subscribe(bw.data.GetPath(), 1, messageChannel)
+	bw.messaging.Subscribe(bw.data.GetPath(), 1, messageChannel)
 
 	go func() {
 		for {
@@ -55,7 +55,7 @@ func (bw *basicWorker) start() {
 					return
 				}
 				actionControl := control.Compute(currentLevel)
-				bw.mqttActions.Publish(fmt.Sprintf("%s/action", bw.data.GetPath()), 1, false, actionControl)
+				bw.messaging.Publish(fmt.Sprintf("%s/action", bw.data.GetPath()), 1, false, actionControl)
 
 			default:
 				time.Sleep(time.Millisecond * 10)
@@ -64,13 +64,12 @@ func (bw *basicWorker) start() {
 	}()
 }
 
-
 func (bw *basicWorker) stop() error {
 	logger.Info("Worker stoped",
 		zap.String("journey", "Worker"),
 	)
 
-	err := bw.mqttActions.Unsubscribe(bw.data.GetPath())
+	err := bw.messaging.Unsubscribe(bw.data.GetPath())
 	if err != nil {
 		logger.Error("Error on unsubscribe topic",
 			err,

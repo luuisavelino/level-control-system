@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
-	mqtt_actions "github.com/luuisavelino/level-control-system/src/mqtt"
+	"github.com/luuisavelino/level-control-system/src/models/messaging_action"
 	"go.uber.org/zap"
 )
 
@@ -24,26 +24,26 @@ type Manager interface {
 }
 
 type basicManager struct {
-	workers     map[uuid.UUID]worker
-	mutex       sync.Mutex
-	mqttActions mqtt_actions.MqttActions
+	workers   map[uuid.UUID]worker
+	mutex     sync.Mutex
+	messaging messaging_action.Messaging
 }
 
 // NewBasicManager is a function that will create a new manager.
-func NewBasicManager(mqttActions mqtt_actions.MqttActions) Manager {
+func NewBasicManager(messaging messaging_action.Messaging) Manager {
 	return &basicManager{
-		workers:     make(map[uuid.UUID]worker),
-		mqttActions: mqttActions,
+		workers:   make(map[uuid.UUID]worker),
+		messaging: messaging,
 	}
 }
 
 // NewBasicWorker is a function that will create a new worker.
 func (wm *basicManager) NewBasicWorker(systemData models.SystemDomainInterface) worker {
 	return &basicWorker{
-		uuid:        uuid.New(),
-		stopChan:    make(chan struct{}),
-		data:        systemData,
-		mqttActions: wm.mqttActions,
+		uuid:      uuid.New(),
+		stopChan:  make(chan struct{}),
+		data:      systemData,
+		messaging: wm.messaging,
 	}
 }
 
@@ -52,11 +52,11 @@ func (wm *basicManager) NewAdvancedWorker(systemData models.SystemDomainInterfac
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &advancedWorker{
-		uuid:        uuid.New(),
-		ctx:         ctx,
-		cancel:      cancel,
-		data:        systemData,
-		mqttActions: wm.mqttActions,
+		uuid:      uuid.New(),
+		ctx:       ctx,
+		cancel:    cancel,
+		data:      systemData,
+		messaging: wm.messaging,
 	}
 }
 

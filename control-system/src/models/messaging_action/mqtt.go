@@ -1,22 +1,11 @@
-package mqtt_actions
+package messaging_action
 
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
-type MqttActions interface {
-	Subscribe(topic string, qos byte, messageChannel chan string) error
-	Publish(topic string, qos byte, retained bool, payload interface{}) error
-	Unsubscribe(topic string) error
-	Disconnect(quiesce uint)
-}
-
 type mqttActions struct {
 	client MQTT.Client
-}
-
-func NewMqttActions(client MQTT.Client) mqttActions {
-	return mqttActions{client}
 }
 
 func (mq mqttActions) Subscribe(topic string, qos byte, messageChannel chan string) error {

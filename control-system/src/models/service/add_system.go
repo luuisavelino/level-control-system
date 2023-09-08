@@ -13,6 +13,15 @@ func (ss *systemServiceInterface) AddSystem(ctx context.Context, systemDomain mo
 		zap.String("journey", "AddSystem"),
 	)
 
+	err := ss.systemRepository.SaveSystem(ctx, systemDomain)
+	if err != nil {
+		logger.Error("Init AddSystem service",
+			err,
+			zap.String("journey", "AddSystem"),
+		)
+		return nil, err
+	}
+
 	system := ss.manager.NewAdvancedWorker(systemDomain)
 	ss.manager.Add(system)
 
