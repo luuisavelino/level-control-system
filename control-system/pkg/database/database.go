@@ -1,11 +1,11 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
 )
 
 type DBConfig struct {
@@ -13,12 +13,13 @@ type DBConfig struct {
 	Dbname             string
 	User               string
 	Password           string
+	Port               int
 	MaxIdleConns       int
 	ConnMaxLifetimeSec int
 }
 
 type Database interface {
-	NewConnection() (*gorm.DB, error)
+	NewConnection() (*sql.DB, error)
 }
 
 func NewDatabase(databse string, dbConfig DBConfig) Database {
@@ -34,7 +35,7 @@ type mySQLDatabase struct {
 	config DBConfig
 }
 
-func (my mySQLDatabase) NewConnection() (*gorm.DB, error) {
+func (my mySQLDatabase) NewConnection() (*sql.DB, error) {
 	fmt.Println(my.config)
 	cfg := mysql.Config{
 		Addr:                 my.config.Host,
@@ -50,13 +51,14 @@ func (my mySQLDatabase) NewConnection() (*gorm.DB, error) {
 		},
 	}
 
-	db, err := gorm.Open("mysql", cfg.FormatDSN())
+	dsn := cfg.FormatDSN()
+
+	fmt.Println(dsn)
+
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
 	}
-
-	db.DB().SetMaxIdleConns(my.config.MaxIdleConns)
-	db.DB().SetConnMaxLifetime(time.Second * time.Duration(my.config.ConnMaxLifetimeSec))
 
 	return db, nil
 }
