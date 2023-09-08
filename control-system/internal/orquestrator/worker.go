@@ -1,6 +1,7 @@
 package orquestrator
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -17,34 +18,44 @@ type worker interface {
 	start()
 	stop() error
 	GetUUID() uuid.UUID
+	GetCtx() context.Context
 }
 
-type basicWorker struct {
-	uuid      uuid.UUID
-	data      models.SystemDomainInterface
-	stopChan  chan struct{}
+type action struct {
+	ctx       context.Context
+	cancel    context.CancelFunc
 	messaging messaging_action.Messaging
 }
 
-func (bw *basicWorker) GetUUID() uuid.UUID {
-	return bw.uuid
+type advancedWorker struct {
+	uuid   uuid.UUID
+	data   models.SystemDomainInterface
+	action action
 }
 
-func (bw *basicWorker) start() {
+func (aw *advancedWorker) GetUUID() uuid.UUID {
+	return aw.uuid
+}
+
+func (aw *advancedWorker) GetCtx() context.Context {
+	return aw.action.ctx
+}
+
+func (aw *advancedWorker) start() {
 	logger.Info("Worker started",
 		zap.String("journey", "Worker"),
 	)
 
-	control := algorithm.NewAlgorithm(bw.data.GetControlType(), bw.data.GetSetpoint(), bw.data.GetGains())
+	control := algorithm.NewAlgorithm(aw.data.GetControlType(), aw.data.GetSetpoint(), aw.data.GetGains())
 
 	messageChannel := make(chan string)
-	bw.messaging.Subscribe(bw.data.GetPath(), 1, messageChannel)
+	aw.action.messaging.Subscribe(aw.data.GetPath(), 1, messageChannel)
 
 	go func() {
 		for {
 			select {
-			case <-bw.stopChan:
-				logger.Info(fmt.Sprintf("Worker %s has been stopped", bw.uuid.String()),
+			case <-aw.action.ctx.Done():
+				logger.Info(fmt.Sprintf("Worker %s has been stopped", aw.uuid.String()),
 					zap.String("journey", "Worker"),
 				)
 				return
@@ -55,7 +66,7 @@ func (bw *basicWorker) start() {
 					return
 				}
 				actionControl := control.Compute(currentLevel)
-				bw.messaging.Publish(fmt.Sprintf("%s/action", bw.data.GetPath()), 1, false, actionControl)
+				aw.action.messaging.Publish(fmt.Sprintf("%s/action", aw.data.GetPath()), 1, false, actionControl)
 
 			default:
 				time.Sleep(time.Millisecond * 10)
@@ -64,21 +75,21 @@ func (bw *basicWorker) start() {
 	}()
 }
 
-func (bw *basicWorker) stop() error {
+func (aw *advancedWorker) stop() error {
 	logger.Info("Worker stoped",
 		zap.String("journey", "Worker"),
 	)
 
-	err := bw.messaging.Unsubscribe(bw.data.GetPath())
+	err := aw.action.messaging.Unsubscribe(aw.data.GetPath())
 	if err != nil {
 		logger.Error("Error on unsubscribe topic",
 			err,
 			zap.String("journey", "Worker"),
 		)
-
 		return err
 	}
 
-	close(bw.stopChan)
+	aw.action.cancel()
+
 	return nil
 }
