@@ -22,13 +22,17 @@ func (sr systemRepository) SaveSystem(ctx context.Context, systemDomain models.S
 
 	tx := sr.conn.Begin()
 
-	if err := tx.Create(&schemes).Error; err != nil {
+	if err := tx.Table(SchemesTableName).Create(&schemes).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	// Insert records into the ControlsEntity table
-	if err := tx.Create(&controls).Error; err != nil {
+	if err := tx.Table(ControlsTableName).Create(&controls).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -36,13 +40,17 @@ func (sr systemRepository) SaveSystem(ctx context.Context, systemDomain models.S
 	systems.SchemeID = schemes.ID
 	systems.ControlID = controls.ID
 
-	// Insert data into the SystemsEntity table
-	if err := tx.Create(&systems).Error; err != nil {
+	tx = sr.conn.Begin()
+
+	if err := tx.Table(SystemsTableName).Create(&systems).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
 
 	return nil
 }
