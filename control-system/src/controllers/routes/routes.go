@@ -8,7 +8,7 @@ import (
 func InitRoutes(r *gin.RouterGroup, controller controllers.SystemControllerInterface) {
 	v1 := r.Group("/api/v1")
 	{
-		v1.POST("/systems", controller.AddSystem)
+		v1.POST("/systems/:uuid", controller.AddSystem)
 		v1.DELETE("/systems/:uuid", controller.RemoveSystem)
 		v1.PUT("/systems/:uuid", controller.UpdateSystem)
 	}

@@ -11,22 +11,22 @@ func ConvertEntityToDomain(
 	schemes entity.SchemesEntity,
 ) models.SystemDomainInterface {
 	gains := make(map[string]float64)
-	if controls.Kp != 0 {
-		gains["kp"] = controls.Kp
+	if controls.Kp.Float64 != 0 {
+		gains["kp"] = controls.Kp.Float64
 	}
-	if controls.Ki != 0 {
-		gains["ki"] = controls.Ki
+	if controls.Ki.Float64 != 0 {
+		gains["ki"] = controls.Ki.Float64
 	}
-	if controls.Kd != 0 {
-		gains["kd"] = controls.Kd
+	if controls.Kd.Float64 != 0 {
+		gains["kd"] = controls.Kd.Float64
 	}
 
 	return models.NewSystemDomain(
-		systems.Path,
-		schemes.Setpoint,
-		schemes.MinLevel,
-		schemes.MaxLevel,
-		controls.Type,
+		systems.Path.String,
+		schemes.Setpoint.Float64,
+		schemes.MinLevel.Float64,
+		schemes.MaxLevel.Float64,
+		controls.Type.String,
 		gains,
 	)
 }
