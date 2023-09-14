@@ -1,18 +1,16 @@
 version: '3'
 services:
-  mysql-level-control-system:
-    image: mysql:5.7
-    container_name: mysql-container
-    restart: always
+  postgres-level-control-system:
+    image: postgres:13
+    container_name: postgres-container
     environment:
-      MYSQL_USER: 'admin'
-      MYSQL_PASSWORD: 'pass'
-      MYSQL_ROOT_PASSWORD: 'pass'
+      POSTGRES_DB: system-control-level
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     ports:
-      - '3306:3306'
+      - "5432:5432"
     volumes:
-      - "./database/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql"
-      - "mysql-level-control-system:/var/lib/mysql"
+      - postgres-level-control-system:/var/lib/postgresql/data
 
   mosquitto-level-control-system:
     build:
@@ -28,4 +26,4 @@ services:
 
 volumes:
   mosquitto-level-control-system:
-  mysql-level-control-system:
+  postgres-level-control-system:
