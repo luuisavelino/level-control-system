@@ -29,7 +29,6 @@ model Role {
 
 model User {
   uuid             String   @id @default(uuid()) @db.Uuid
-  username         String   @unique
   email            String   @unique
   password         String
   firstName        String   @map("first_name")
@@ -37,14 +36,13 @@ model User {
   city             String
   state            String
   country          String
-  zipCode          String   @map("zip_code")
   phoneNumber      Int      @map("phone_number")
   phoneRegionCode  Int      @map("phone_region_code")
   phoneCountryCode Int      @map("phone_country_code")
   roleId           Int      @map("role_id")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
-  deletedAt        DateTime @map("deleted_at")
+  deletedAt        DateTime? @map("deleted_at")
 
   role Role @relation(fields: [roleId], references: [id], onDelete: SetDefault)
 
@@ -70,7 +68,7 @@ model System {
   configurationUuid String?  @map("configuration_uuid") @db.Uuid
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
-  deletedAt         DateTime @map("deleted_at")
+  deletedAt         DateTime? @map("deleted_at")
   Workers           Worker[]
 
   Control       Control        @relation(fields: [controlUuid], references: [uuid], onDelete: SetDefault)
@@ -98,7 +96,7 @@ model Control {
   kd          Float
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
-  deletedAt   DateTime    @map("deleted_at")
+  deletedAt   DateTime?    @map("deleted_at")
   Systems     System[]
 
   @@map("controls")
@@ -113,7 +111,7 @@ model Scheme {
   maxLevel    Float    @map("max_level")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-  deletedAt   DateTime @map("deleted_at")
+  deletedAt   DateTime? @map("deleted_at")
   Systems     System[]
 
   @@map("schemes")
@@ -126,7 +124,7 @@ model Configuration {
   notificationUuid String?  @map("notification_uuid") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
-  deletedAt        DateTime @map("deleted_at")
+  deletedAt        DateTime? @map("deleted_at")
   Systems          System[]
 
   Schedule     Schedule?     @relation(fields: [scheduleUuid], references: [uuid], onDelete: SetNull)
@@ -138,11 +136,11 @@ model Configuration {
 model Schedule {
   uuid           String          @id @default(uuid()) @db.Uuid
   name           String
-  startTime      DateTime?        @map("start_time")
-  endTime        DateTime?        @map("end_time")
+  startTime      DateTime?       @map("start_time")
+  endTime        DateTime?       @map("end_time")
   createdAt      DateTime        @default(now()) @map("created_at")
   updatedAt      DateTime        @updatedAt @map("updated_at")
-  deletedAt      DateTime        @map("deleted_at")
+  deletedAt      DateTime?        @map("deleted_at")
   Configurations Configuration[]
 
   @@map("schedules")
@@ -164,7 +162,7 @@ model Notification {
   type           String
   createdAt      DateTime          @default(now()) @map("created_at")
   updatedAt      DateTime          @updatedAt @map("updated_at")
-  deletedAt      DateTime          @map("deleted_at")
+  deletedAt      DateTime?          @map("deleted_at")
   Configurations Configuration[]
 
   @@map("notifications")

@@ -18,7 +18,6 @@ CREATE TABLE "roles" (
 -- CreateTable
 CREATE TABLE "users" (
     "uuid" UUID NOT NULL,
-    "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "first_name" TEXT NOT NULL,
@@ -26,14 +25,13 @@ CREATE TABLE "users" (
     "city" TEXT NOT NULL,
     "state" TEXT NOT NULL,
     "country" TEXT NOT NULL,
-    "zip_code" TEXT NOT NULL,
     "phone_number" INTEGER NOT NULL,
     "phone_region_code" INTEGER NOT NULL,
     "phone_country_code" INTEGER NOT NULL,
     "role_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("uuid")
 );
@@ -57,7 +55,7 @@ CREATE TABLE "systems" (
     "configuration_uuid" UUID,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "systems_pkey" PRIMARY KEY ("uuid")
 );
@@ -73,7 +71,7 @@ CREATE TABLE "controls" (
     "kd" DOUBLE PRECISION NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "controls_pkey" PRIMARY KEY ("uuid")
 );
@@ -88,7 +86,7 @@ CREATE TABLE "schemes" (
     "max_level" DOUBLE PRECISION NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "schemes_pkey" PRIMARY KEY ("uuid")
 );
@@ -101,7 +99,7 @@ CREATE TABLE "configurations" (
     "notification_uuid" UUID,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "configurations_pkey" PRIMARY KEY ("uuid")
 );
@@ -114,7 +112,7 @@ CREATE TABLE "schedules" (
     "end_time" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "schedules_pkey" PRIMARY KEY ("uuid")
 );
@@ -128,16 +126,13 @@ CREATE TABLE "notifications" (
     "type" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "notifications_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
