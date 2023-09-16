@@ -14,4 +14,16 @@ export class UsersRepository {
   findUnique(findUniqueDto: Prisma.UserFindUniqueArgs) {
     return this.prismaService.user.findUnique(findUniqueDto);
   }
+
+  findAll(findManyDto: Prisma.UserFindManyArgs) {
+    return this.prismaService.user.findMany(findManyDto);
+  }
+
+  delete(deleteDto: Prisma.UserDeleteArgs) {
+    return this.prismaService.user.delete(deleteDto);
+  }
+
+  update(updateDto: Prisma.UserUpdateArgs) {
+    return this.prismaService.user.update(updateDto);
+  }
 }
