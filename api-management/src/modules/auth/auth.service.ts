@@ -13,8 +13,8 @@ import { UsersRepository } from 'src/shared/database/repositories/users.reposito
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersRepo: UsersRepository,
     private readonly jwtService: JwtService,
+    private readonly usersRepo: UsersRepository,
   ) {}
 
   async signin(signinDto: SigninDto) {
@@ -72,7 +72,7 @@ export class AuthService {
   }
 
   private generateAccessToken(userUuid: string, roleId: number) {
-    const payload = { sub: userUuid, role: roleId };
+    const payload = { sub: userUuid, roleId: roleId };
     return this.jwtService.signAsync(payload);
   }
 }
