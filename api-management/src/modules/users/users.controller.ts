@@ -7,8 +7,7 @@ export class UsersController {
 
   @Get('me')
   me(@Req() request: any) {
-    console.log(request.userUuid);
-    console.log(request.roleId);
-    return this.usersService.getUserByUuid('userUuuid');
+    const { userUuid } = request;
+    return this.usersService.getUserByUuid(userUuid);
   }
 }
