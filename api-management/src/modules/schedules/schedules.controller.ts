@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  HttpStatus,
+  HttpCode,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { SchedulesService } from './schedules.service';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
+import {
+  ADMIN,
+  ENGINEER,
+  Roles,
+  USER,
+} from 'src/shared/decorators/roles.decorator';
 
 @Controller('schedules')
 export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
-  @Post()
-  create(@Body() createScheduleDto: CreateScheduleDto) {
-    return this.schedulesService.create(createScheduleDto);
-  }
-
   @Get()
+  @Roles(ADMIN, ENGINEER, USER)
   findAll() {
     return this.schedulesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.schedulesService.findOne(+id);
+  @Get(':uuid')
+  @Roles(ADMIN, ENGINEER, USER)
+  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.schedulesService.findOne(uuid);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
-    return this.schedulesService.update(+id, updateScheduleDto);
+  @Post()
+  @Roles(ADMIN, ENGINEER)
+  create(@Body() createScheduleDto: CreateScheduleDto) {
+    return this.schedulesService.create(createScheduleDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.schedulesService.remove(+id);
+  @Put(':uuid')
+  @Roles(ADMIN, ENGINEER)
+  update(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() updateScheduleDto: UpdateScheduleDto,
+  ) {
+    return this.schedulesService.update(uuid, updateScheduleDto);
+  }
+
+  @Delete(':uuid')
+  @Roles(ADMIN, ENGINEER)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.schedulesService.remove(uuid);
   }
 }

@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
 import { CreateControlDto } from './dto/create-control.dto';
 import { UpdateControlDto } from './dto/update-control.dto';
+import { ControlsRepository } from 'src/shared/database/repositories/controls.repositories';
 
 @Injectable()
 export class ControlsService {
-  create(createControlDto: CreateControlDto) {
-    return 'This action adds a new control';
-  }
+  constructor(private readonly controlRepo: ControlsRepository) {}
 
   findAll() {
-    return `This action returns all controls`;
+    return this.controlRepo.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} control`;
+  findOne(uuid: string) {
+    return this.controlRepo.findUnique({
+      where: { uuid },
+    });
   }
 
-  update(id: number, updateControlDto: UpdateControlDto) {
-    return `This action updates a #${id} control`;
+  create(createControlDto: CreateControlDto) {
+    return this.controlRepo.create({
+      data: createControlDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} control`;
+  update(uuid: string, updateControlDto: UpdateControlDto) {
+    const { name, description, type, kp, ki, kd } = updateControlDto;
+
+    return this.controlRepo.update({
+      where: { uuid },
+      data: {
+        name,
+        description,
+        type,
+        kp,
+        ki,
+        kd,
+      },
+    });
+  }
+
+  async remove(uuid: string) {
+    await this.controlRepo.delete({
+      where: { uuid },
+    });
+
+    return null;
   }
 }

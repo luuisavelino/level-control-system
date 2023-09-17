@@ -1,26 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSchemeDto } from './dto/create-scheme.dto';
 import { UpdateSchemeDto } from './dto/update-scheme.dto';
+import { SchemesRepository } from 'src/shared/database/repositories/schemes.repositories';
 
 @Injectable()
 export class SchemesService {
-  create(createSchemeDto: CreateSchemeDto) {
-    return 'This action adds a new scheme';
-  }
+  constructor(private readonly schemeRepo: SchemesRepository) {}
 
   findAll() {
-    return `This action returns all schemes`;
+    return this.schemeRepo.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} scheme`;
+  findOne(uuid: string) {
+    return this.schemeRepo.findUnique({
+      where: { uuid },
+    });
   }
 
-  update(id: number, updateSchemeDto: UpdateSchemeDto) {
-    return `This action updates a #${id} scheme`;
+  create(createSchemeDto: CreateSchemeDto) {
+    return this.schemeRepo.create({
+      data: createSchemeDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} scheme`;
+  update(uuid: string, updateSchemeDto: UpdateSchemeDto) {
+    const { name, description, setpoint, minLevel, maxLevel } = updateSchemeDto;
+
+    return this.schemeRepo.update({
+      where: { uuid },
+      data: {
+        name,
+        description,
+        setpoint,
+        minLevel,
+        maxLevel,
+      },
+    });
+  }
+
+  async remove(uuid: string) {
+    await this.schemeRepo.delete({
+      where: { uuid },
+    });
+
+    return null;
   }
 }

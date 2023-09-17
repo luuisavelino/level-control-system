@@ -3,43 +3,58 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
+  HttpStatus,
+  HttpCode,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ConfigurationsService } from './configurations.service';
 import { CreateConfigurationDto } from './dto/create-configuration.dto';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
+import {
+  ADMIN,
+  ENGINEER,
+  Roles,
+  USER,
+} from 'src/shared/decorators/roles.decorator';
 
 @Controller('configurations')
 export class ConfigurationsController {
   constructor(private readonly configurationsService: ConfigurationsService) {}
 
-  @Post()
-  create(@Body() createConfigurationDto: CreateConfigurationDto) {
-    return this.configurationsService.create(createConfigurationDto);
-  }
-
   @Get()
+  @Roles(ADMIN, ENGINEER, USER)
   findAll() {
     return this.configurationsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.configurationsService.findOne(+id);
+  @Get(':uuid')
+  @Roles(ADMIN, ENGINEER, USER)
+  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.configurationsService.findOne(uuid);
   }
 
-  @Patch(':id')
+  @Post()
+  @Roles(ADMIN, ENGINEER)
+  create(@Body() createConfigurationDto: CreateConfigurationDto) {
+    return this.configurationsService.create(createConfigurationDto);
+  }
+
+  @Put(':uuid')
+  @Roles(ADMIN, ENGINEER)
   update(
-    @Param('id') id: string,
+    @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() updateConfigurationDto: UpdateConfigurationDto,
   ) {
-    return this.configurationsService.update(+id, updateConfigurationDto);
+    return this.configurationsService.update(uuid, updateConfigurationDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.configurationsService.remove(+id);
+  @Delete(':uuid')
+  @Roles(ADMIN, ENGINEER)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.configurationsService.remove(uuid);
   }
 }

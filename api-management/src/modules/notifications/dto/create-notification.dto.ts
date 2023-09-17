@@ -10,9 +10,6 @@ export class CreateNotificationDto {
   @IsNotEmpty()
   enabled: boolean;
 
-  // TODO:
-  // level: string;
-
   @IsString()
   @IsNotEmpty()
   @IsEnum(NotificationLevel)

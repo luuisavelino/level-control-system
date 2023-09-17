@@ -1,26 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSystemDto } from './dto/create-system.dto';
 import { UpdateSystemDto } from './dto/update-system.dto';
+import { SystemsRepository } from 'src/shared/database/repositories/systems.repositories';
 
 @Injectable()
 export class SystemsService {
-  create(createSystemDto: CreateSystemDto) {
-    return 'This action adds a new system';
-  }
+  constructor(private readonly systemRepo: SystemsRepository) {}
 
   findAll() {
-    return `This action returns all systems`;
+    return this.systemRepo.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} system`;
+  findOne(uuid: string) {
+    return this.systemRepo.findUnique({
+      where: { uuid },
+    });
   }
 
-  update(id: number, updateSystemDto: UpdateSystemDto) {
-    return `This action updates a #${id} system`;
+  create(createSystemDto: CreateSystemDto) {
+    return this.systemRepo.create({
+      data: createSystemDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} system`;
+  update(uuid: string, updateSystemDto: UpdateSystemDto) {
+    const {
+      path,
+      name,
+      description,
+      enabled,
+      controlUuid,
+      schemeUuid,
+      configurationUuid,
+    } = updateSystemDto;
+
+    return this.systemRepo.update({
+      where: { uuid },
+      data: {
+        path,
+        name,
+        description,
+        enabled,
+        controlUuid,
+        schemeUuid,
+        configurationUuid,
+      },
+    });
+  }
+
+  async remove(uuid: string) {
+    await this.systemRepo.delete({
+      where: { uuid },
+    });
+
+    return null;
   }
 }

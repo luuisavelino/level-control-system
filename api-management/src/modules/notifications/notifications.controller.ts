@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import {
+  ADMIN,
+  ENGINEER,
+  Roles,
+  USER,
+} from 'src/shared/decorators/roles.decorator';
 
 @Controller('notifications')
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  @Post()
-  create(@Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.create(createNotificationDto);
-  }
-
   @Get()
+  @Roles(ADMIN, ENGINEER, USER)
   findAll() {
     return this.notificationsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(+id);
+  @Get(':uuid')
+  @Roles(ADMIN, ENGINEER, USER)
+  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.notificationsService.findOne(uuid);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
-    return this.notificationsService.update(+id, updateNotificationDto);
+  @Post()
+  @Roles(ADMIN, ENGINEER)
+  create(@Body() createNotificationDto: CreateNotificationDto) {
+    return this.notificationsService.create(createNotificationDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notificationsService.remove(+id);
+  @Put(':uuid')
+  @Roles(ADMIN, ENGINEER)
+  update(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() updateNotificationDto: UpdateNotificationDto,
+  ) {
+    return this.notificationsService.update(uuid, updateNotificationDto);
+  }
+
+  @Delete(':uuid')
+  @Roles(ADMIN, ENGINEER)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.notificationsService.remove(uuid);
   }
 }

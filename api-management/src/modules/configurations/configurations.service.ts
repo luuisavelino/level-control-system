@@ -1,26 +1,46 @@
 import { Injectable } from '@nestjs/common';
 import { CreateConfigurationDto } from './dto/create-configuration.dto';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
+import { ConfigurationsRepository } from 'src/shared/database/repositories/configurations.repositories';
 
 @Injectable()
 export class ConfigurationsService {
-  create(createConfigurationDto: CreateConfigurationDto) {
-    return 'This action adds a new configuration';
-  }
+  constructor(private readonly configRepo: ConfigurationsRepository) {}
 
   findAll() {
-    return `This action returns all configurations`;
+    return this.configRepo.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} configuration`;
+  findOne(uuid: string) {
+    return this.configRepo.findUnique({
+      where: { uuid },
+    });
   }
 
-  update(id: number, updateConfigurationDto: UpdateConfigurationDto) {
-    return `This action updates a #${id} configuration`;
+  create(createConfigurationDto: CreateConfigurationDto) {
+    return this.configRepo.create({
+      data: createConfigurationDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} configuration`;
+  update(uuid: string, updateConfigurationDto: UpdateConfigurationDto) {
+    const { name, scheduleUuid, notificationUuid } = updateConfigurationDto;
+
+    return this.configRepo.update({
+      where: { uuid },
+      data: {
+        name,
+        scheduleUuid,
+        notificationUuid,
+      },
+    });
+  }
+
+  async remove(uuid: string) {
+    await this.configRepo.delete({
+      where: { uuid },
+    });
+
+    return null;
   }
 }

@@ -3,40 +3,56 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { SystemsService } from './systems.service';
 import { CreateSystemDto } from './dto/create-system.dto';
 import { UpdateSystemDto } from './dto/update-system.dto';
-
+import {
+  ADMIN,
+  ENGINEER,
+  Roles,
+  USER,
+} from 'src/shared/decorators/roles.decorator';
 @Controller('systems')
 export class SystemsController {
   constructor(private readonly systemsService: SystemsService) {}
 
-  @Post()
-  create(@Body() createSystemDto: CreateSystemDto) {
-    return this.systemsService.create(createSystemDto);
-  }
-
   @Get()
+  @Roles(ADMIN, ENGINEER, USER)
   findAll() {
     return this.systemsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.systemsService.findOne(+id);
+  @Get(':uuid')
+  @Roles(ADMIN, ENGINEER, USER)
+  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.systemsService.findOne(uuid);
+  }
+  @Post()
+  @Roles(ADMIN, ENGINEER)
+  create(@Body() createSystemDto: CreateSystemDto) {
+    return this.systemsService.create(createSystemDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSystemDto: UpdateSystemDto) {
-    return this.systemsService.update(+id, updateSystemDto);
+  @Put(':uuid')
+  @Roles(ADMIN, ENGINEER)
+  update(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() updateSystemDto: UpdateSystemDto,
+  ) {
+    return this.systemsService.update(uuid, updateSystemDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.systemsService.remove(+id);
+  @Delete(':uuid')
+  @Roles(ADMIN, ENGINEER)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    return this.systemsService.remove(uuid);
   }
 }

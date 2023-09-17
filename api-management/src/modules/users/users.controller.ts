@@ -1,4 +1,13 @@
-import { Controller, Param, Body, Get, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Param,
+  Body,
+  Get,
+  Delete,
+  Put,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ActiveUserInfo } from 'src/shared/decorators/active-user-info.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -42,6 +51,7 @@ export class UsersController {
 
   @Delete(':uuid')
   @Roles(ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
   deleteUserByUuid(@Param('uuid') uuid: string) {
     return this.usersService.deleteUserByUuid(uuid);
   }
