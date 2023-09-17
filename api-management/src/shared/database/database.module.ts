@@ -5,7 +5,7 @@ import { SystemsRepository } from './repositories/systems.repositories';
 import { SchemesRepository } from './repositories/schemes.repositories';
 import { ControlsRepository } from './repositories/controls.repositories';
 import { ConfigurationsRepository } from './repositories/configurations.repositories';
-import { SchedulesRepository } from './repositories/schedule.repositories';
+import { SchedulesRepository } from './repositories/schedules.repositories';
 import { NotificationsRepository } from './repositories/notifications.repositories';
 
 @Global()
