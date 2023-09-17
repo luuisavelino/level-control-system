@@ -92,9 +92,9 @@ model Control {
   name        String
   description String
   type        ControlType
-  kp          Float
-  ki          Float
-  kd          Float
+  kp          Float?
+  ki          Float?
+  kd          Float?
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
   deletedAt   DateTime?   @map("deleted_at")
