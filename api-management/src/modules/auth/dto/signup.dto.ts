@@ -27,7 +27,7 @@ export class SignupDto {
 
   @IsString()
   @IsNotEmpty()
-  city: string;
+  country: string;
 
   @IsString()
   @IsNotEmpty()
@@ -35,11 +35,11 @@ export class SignupDto {
 
   @IsString()
   @IsNotEmpty()
-  country: string;
+  city: string;
 
   @IsInt()
   @IsNotEmpty()
-  phoneNumber: number;
+  phoneCountryCode: number;
 
   @IsInt()
   @IsNotEmpty()
@@ -47,5 +47,5 @@ export class SignupDto {
 
   @IsInt()
   @IsNotEmpty()
-  phoneCountryCode: number;
+  phoneNumber: number;
 }

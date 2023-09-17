@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ControlType } from '../entities/ControlType';
 
 export class CreateControlDto {
   @IsString()
@@ -9,8 +10,10 @@ export class CreateControlDto {
   @IsNotEmpty()
   description: string;
 
-  // TODO:
-  // type: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(ControlType)
+  type: ControlType;
 
   @IsNumber()
   kp: number;
