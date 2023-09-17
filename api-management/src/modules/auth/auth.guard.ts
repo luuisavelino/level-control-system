@@ -8,7 +8,7 @@ import { Request } from 'express';
 import { env } from 'src/shared/config/env';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from 'src/shared/decorators/IsPublic';
+import { IS_PUBLIC_KEY } from 'src/shared/decorators/is-public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate {
       });
 
       request['userUuid'] = payload.sub;
-      request['roleId'] = payload.roleId;
+      request['role'] = payload.role;
     } catch {
       throw new UnauthorizedException();
     }

@@ -10,19 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum RoleName {
+enum Roles {
   USER
   ENGINEER
   ADMIN
-
-  @@map("role_name")
-}
-
-model Role {
-  id   Int      @id @default(autoincrement())
-  name RoleName @unique
-
-  Users User[]
 
   @@map("roles")
 }
@@ -39,12 +30,10 @@ model User {
   phoneNumber      Int       @map("phone_number")
   phoneRegionCode  Int       @map("phone_region_code")
   phoneCountryCode Int       @map("phone_country_code")
-  roleId           Int       @default(1) @map("role_id")
+  role             Roles     @default(USER)
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
   deletedAt        DateTime? @map("deleted_at")
-
-  role Role @relation(fields: [roleId], references: [id], onDelete: SetDefault)
 
   @@map("users")
 }

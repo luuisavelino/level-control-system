@@ -1,34 +1,39 @@
-import { Controller, Param, Body, Get, Delete, Patch } from '@nestjs/common';
+import { Controller, Param, Body, Get, Delete, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ActiveUserInfo } from 'src/shared/decorators/ActiveUserInfo';
+import { ActiveUserInfo } from 'src/shared/decorators/active-user-info.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  ADMIN,
+  ENGINEER,
+  Roles,
+  USER,
+} from 'src/shared/decorators/roles.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('')
-  getUsers(@ActiveUserInfo() userInfo: { userUuid: string; roleId: string }) {
-    console.log(userInfo);
+  @Roles(ADMIN)
+  getUsers() {
     return this.usersService.getUsers();
   }
 
   @Get('me')
-  me(@ActiveUserInfo() userInfo: { userUuid: string; roleId: string }) {
+  @Roles(ADMIN, ENGINEER, USER)
+  me(@ActiveUserInfo() userInfo: { userUuid: string; role: string }) {
     return this.usersService.me(userInfo.userUuid);
   }
 
   @Get(':uuid')
-  getUserByUuid(
-    @ActiveUserInfo() userInfo: { userUuid: string; roleId: string },
-    @Param('uuid') uuid: string,
-  ) {
+  @Roles(ADMIN)
+  getUserByUuid(@Param('uuid') uuid: string) {
     return this.usersService.getUserByUuid(uuid);
   }
 
-  @Patch(':uuid')
+  @Put(':uuid')
+  @Roles(ADMIN)
   editUserByUuid(
-    @ActiveUserInfo() userInfo: { userUuid: string; roleId: string },
     @Param('uuid') uuid: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
@@ -36,10 +41,8 @@ export class UsersController {
   }
 
   @Delete(':uuid')
-  deleteUserByUuid(
-    @ActiveUserInfo() userInfo: { userUuid: string; roleId: string },
-    @Param('uuid') uuid: string,
-  ) {
+  @Roles(ADMIN)
+  deleteUserByUuid(@Param('uuid') uuid: string) {
     return this.usersService.deleteUserByUuid(uuid);
   }
 }

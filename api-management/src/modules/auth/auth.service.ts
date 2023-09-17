@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
 import { UsersRepository } from 'src/shared/database/repositories/users.repositories';
+import { USER } from 'src/shared/decorators/roles.decorator';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const accessToken = await this.generateAccessToken(user.uuid, user.roleId);
+    const accessToken = await this.generateAccessToken(user.uuid, user.role);
 
     return { accessToken };
   }
@@ -62,17 +63,17 @@ export class AuthService {
         phoneNumber: signupDto.phoneNumber,
         phoneRegionCode: signupDto.phoneRegionCode,
         phoneCountryCode: signupDto.phoneCountryCode,
-        roleId: 1,
+        role: USER,
       },
     });
 
-    const accessToken = await this.generateAccessToken(user.uuid, user.roleId);
+    const accessToken = await this.generateAccessToken(user.uuid, user.role);
 
     return { accessToken };
   }
 
-  private generateAccessToken(userUuid: string, roleId: number) {
-    const payload = { sub: userUuid, roleId: roleId };
+  private generateAccessToken(userUuid: string, role: string) {
+    const payload = { sub: userUuid, role: role };
     return this.jwtService.signAsync(payload);
   }
 }

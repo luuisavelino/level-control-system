@@ -1,19 +1,11 @@
 -- CreateEnum
-CREATE TYPE "role_name" AS ENUM ('USER', 'ENGINEER', 'ADMIN');
+CREATE TYPE "roles" AS ENUM ('USER', 'ENGINEER', 'ADMIN');
 
 -- CreateEnum
 CREATE TYPE "control_type" AS ENUM ('PI', 'PD', 'PID');
 
 -- CreateEnum
 CREATE TYPE "notification_level" AS ENUM ('INFO', 'WARNING', 'CRITICAL');
-
--- CreateTable
-CREATE TABLE "roles" (
-    "id" SERIAL NOT NULL,
-    "name" "role_name" NOT NULL,
-
-    CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
-);
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -28,7 +20,7 @@ CREATE TABLE "users" (
     "phone_number" INTEGER NOT NULL,
     "phone_region_code" INTEGER NOT NULL,
     "phone_country_code" INTEGER NOT NULL,
-    "role_id" INTEGER NOT NULL,
+    "role" "roles" NOT NULL DEFAULT 'USER',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -48,6 +40,7 @@ CREATE TABLE "workers" (
 CREATE TABLE "systems" (
     "uuid" UUID NOT NULL,
     "path" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "enabled" BOOLEAN NOT NULL DEFAULT false,
     "control_uuid" UUID NOT NULL,
@@ -66,9 +59,9 @@ CREATE TABLE "controls" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "type" "control_type" NOT NULL,
-    "kp" DOUBLE PRECISION NOT NULL,
-    "ki" DOUBLE PRECISION NOT NULL,
-    "kd" DOUBLE PRECISION NOT NULL,
+    "kp" DOUBLE PRECISION,
+    "ki" DOUBLE PRECISION,
+    "kd" DOUBLE PRECISION,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -132,16 +125,10 @@ CREATE TABLE "notifications" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "systems_path_key" ON "systems"("path");
-
--- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "workers" ADD CONSTRAINT "workers_system_uuid_fkey" FOREIGN KEY ("system_uuid") REFERENCES "systems"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
