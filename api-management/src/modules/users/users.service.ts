@@ -23,7 +23,7 @@ export class UsersService {
   }
 
   async getUsers() {
-    const users = await this.usersRepo.findAll({
+    const users = await this.usersRepo.findMany({
       select: {
         firstName: true,
         lastName: true,
