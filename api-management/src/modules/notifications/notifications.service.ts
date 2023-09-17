@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { NotificationsRepository } from 'src/shared/database/repositories/notifications.repositories';
@@ -11,10 +11,16 @@ export class NotificationsService {
     return this.notificationRepo.findMany({});
   }
 
-  findOne(uuid: string) {
-    return this.notificationRepo.findUnique({
+  async findOne(uuid: string) {
+    const notification = await this.notificationRepo.findUnique({
       where: { uuid },
     });
+
+    if (!notification) {
+      throw new NotFoundException();
+    }
+
+    return notification;
   }
 
   create(createNotificationDto: CreateNotificationDto) {

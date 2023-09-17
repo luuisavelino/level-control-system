@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { SchedulesRepository } from 'src/shared/database/repositories/schedules.repositories';
@@ -11,10 +11,16 @@ export class SchedulesService {
     return this.scheduleRepo.findMany({});
   }
 
-  findOne(uuid: string) {
-    return this.scheduleRepo.findUnique({
+  async findOne(uuid: string) {
+    const schedule = await this.scheduleRepo.findUnique({
       where: { uuid },
     });
+
+    if (!schedule) {
+      throw new NotFoundException();
+    }
+
+    return schedule;
   }
 
   create(createScheduleDto: CreateScheduleDto) {

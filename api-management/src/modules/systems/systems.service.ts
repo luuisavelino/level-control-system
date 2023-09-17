@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSystemDto } from './dto/create-system.dto';
 import { UpdateSystemDto } from './dto/update-system.dto';
 import { SystemsRepository } from 'src/shared/database/repositories/systems.repositories';
@@ -11,13 +11,23 @@ export class SystemsService {
     return this.systemRepo.findMany({});
   }
 
-  findOne(uuid: string) {
-    return this.systemRepo.findUnique({
+  async findOne(uuid: string) {
+    const system = await this.systemRepo.findUnique({
       where: { uuid },
     });
+
+    if (!system) {
+      throw new NotFoundException();
+    }
+
+    return system;
   }
 
   create(createSystemDto: CreateSystemDto) {
+    // TODO:
+    // Check if the controlUuid, schemeUuid and configurationUuid exists
+    // in the database
+
     return this.systemRepo.create({
       data: createSystemDto,
     });

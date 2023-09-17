@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateControlDto } from './dto/create-control.dto';
 import { UpdateControlDto } from './dto/update-control.dto';
 import { ControlsRepository } from 'src/shared/database/repositories/controls.repositories';
@@ -11,10 +11,16 @@ export class ControlsService {
     return this.controlRepo.findMany({});
   }
 
-  findOne(uuid: string) {
-    return this.controlRepo.findUnique({
+  async findOne(uuid: string) {
+    const control = await this.controlRepo.findUnique({
       where: { uuid },
     });
+
+    if (!control) {
+      throw new NotFoundException();
+    }
+
+    return control;
   }
 
   create(createControlDto: CreateControlDto) {

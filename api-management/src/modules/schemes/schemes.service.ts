@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSchemeDto } from './dto/create-scheme.dto';
 import { UpdateSchemeDto } from './dto/update-scheme.dto';
 import { SchemesRepository } from 'src/shared/database/repositories/schemes.repositories';
@@ -11,10 +11,16 @@ export class SchemesService {
     return this.schemeRepo.findMany({});
   }
 
-  findOne(uuid: string) {
-    return this.schemeRepo.findUnique({
+  async findOne(uuid: string) {
+    const scheme = await this.schemeRepo.findUnique({
       where: { uuid },
     });
+
+    if (!scheme) {
+      throw new NotFoundException();
+    }
+
+    return scheme;
   }
 
   create(createSchemeDto: CreateSchemeDto) {

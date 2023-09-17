@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateConfigurationDto } from './dto/create-configuration.dto';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
 import { ConfigurationsRepository } from 'src/shared/database/repositories/configurations.repositories';
@@ -11,10 +11,16 @@ export class ConfigurationsService {
     return this.configRepo.findMany({});
   }
 
-  findOne(uuid: string) {
-    return this.configRepo.findUnique({
+  async findOne(uuid: string) {
+    const configuration = await this.configRepo.findUnique({
       where: { uuid },
     });
+
+    if (!configuration) {
+      throw new NotFoundException();
+    }
+
+    return configuration;
   }
 
   create(createConfigurationDto: CreateConfigurationDto) {
