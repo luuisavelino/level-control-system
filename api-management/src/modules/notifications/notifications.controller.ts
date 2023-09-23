@@ -10,7 +10,7 @@ import {
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
-import { NotificationsService } from './notifications.service';
+import { NotificationsService } from './services/notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import {
@@ -30,10 +30,10 @@ export class NotificationsController {
     return this.notificationsService.findAll();
   }
 
-  @Get(':uuid')
+  @Get(':notificationUuid')
   @Roles(ADMIN, ENGINEER, USER)
-  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.notificationsService.findOne(uuid);
+  findOne(@Param('notificationUuid', ParseUUIDPipe) notificationUuid: string) {
+    return this.notificationsService.findOne(notificationUuid);
   }
 
   @Post()
@@ -42,19 +42,22 @@ export class NotificationsController {
     return this.notificationsService.create(createNotificationDto);
   }
 
-  @Put(':uuid')
+  @Put(':notificationUuid')
   @Roles(ADMIN, ENGINEER)
   update(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('notificationUuid', ParseUUIDPipe) notificationUuid: string,
     @Body() updateNotificationDto: UpdateNotificationDto,
   ) {
-    return this.notificationsService.update(uuid, updateNotificationDto);
+    return this.notificationsService.update(
+      notificationUuid,
+      updateNotificationDto,
+    );
   }
 
-  @Delete(':uuid')
+  @Delete(':notificationUuid')
   @Roles(ADMIN, ENGINEER)
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.notificationsService.remove(uuid);
+  remove(@Param('notificationUuid', ParseUUIDPipe) notificationUuid: string) {
+    return this.notificationsService.remove(notificationUuid);
   }
 }

@@ -1,19 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateSchemeDto } from './dto/create-scheme.dto';
-import { UpdateSchemeDto } from './dto/update-scheme.dto';
+import { CreateSchemeDto } from '../dto/create-scheme.dto';
+import { UpdateSchemeDto } from '../dto/update-scheme.dto';
 import { SchemesRepository } from 'src/shared/database/repositories/schemes.repositories';
+import { ValidateSchemeService } from './validate-scheme.service';
 
 @Injectable()
 export class SchemesService {
-  constructor(private readonly schemeRepo: SchemesRepository) {}
+  constructor(
+    private readonly schemeRepo: SchemesRepository,
+    private readonly validateSchemeService: ValidateSchemeService,
+  ) {}
 
   findAll() {
     return this.schemeRepo.findMany({});
   }
 
-  async findOne(uuid: string) {
+  async findOne(schemeUuid: string) {
     const scheme = await this.schemeRepo.findUnique({
-      where: { uuid },
+      where: { uuid: schemeUuid },
     });
 
     if (!scheme) {
@@ -29,11 +33,13 @@ export class SchemesService {
     });
   }
 
-  update(uuid: string, updateSchemeDto: UpdateSchemeDto) {
+  async update(schemeUuid: string, updateSchemeDto: UpdateSchemeDto) {
+    await this.validateSchemeService.validate(schemeUuid);
+
     const { name, description, setpoint, minLevel, maxLevel } = updateSchemeDto;
 
     return this.schemeRepo.update({
-      where: { uuid },
+      where: { uuid: schemeUuid },
       data: {
         name,
         description,
@@ -44,9 +50,11 @@ export class SchemesService {
     });
   }
 
-  async remove(uuid: string) {
+  async remove(schemeUuid: string) {
+    await this.validateSchemeService.validate(schemeUuid);
+
     await this.schemeRepo.delete({
-      where: { uuid },
+      where: { uuid: schemeUuid },
     });
 
     return null;

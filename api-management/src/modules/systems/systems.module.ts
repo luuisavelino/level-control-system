@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SystemsService } from './systems.service';
 import { SystemsController } from './systems.controller';
+import { SystemsService } from './services/systems.service';
+import { ValidateSystemService } from './services/validate-systems.service';
 
 @Module({
   controllers: [SystemsController],
-  providers: [SystemsService],
+  providers: [SystemsService, ValidateSystemService],
+  exports: [ValidateSystemService],
 })
 export class SystemsModule {}

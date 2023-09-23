@@ -10,7 +10,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { SystemsService } from './systems.service';
+import { SystemsService } from './services/systems.service';
 import { CreateSystemDto } from './dto/create-system.dto';
 import { UpdateSystemDto } from './dto/update-system.dto';
 import {
@@ -29,10 +29,10 @@ export class SystemsController {
     return this.systemsService.findAll();
   }
 
-  @Get(':uuid')
+  @Get(':systemUuid')
   @Roles(ADMIN, ENGINEER, USER)
-  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.systemsService.findOne(uuid);
+  findOne(@Param('systemUuid', ParseUUIDPipe) systemUuid: string) {
+    return this.systemsService.findOne(systemUuid);
   }
   @Post()
   @Roles(ADMIN, ENGINEER)
@@ -40,19 +40,19 @@ export class SystemsController {
     return this.systemsService.create(createSystemDto);
   }
 
-  @Put(':uuid')
+  @Put(':systemUuid')
   @Roles(ADMIN, ENGINEER)
   update(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('systemUuid', ParseUUIDPipe) systemUuid: string,
     @Body() updateSystemDto: UpdateSystemDto,
   ) {
-    return this.systemsService.update(uuid, updateSystemDto);
+    return this.systemsService.update(systemUuid, updateSystemDto);
   }
 
-  @Delete(':uuid')
+  @Delete(':systemUuid')
   @Roles(ADMIN, ENGINEER)
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.systemsService.remove(uuid);
+  remove(@Param('systemUuid', ParseUUIDPipe) systemUuid: string) {
+    return this.systemsService.remove(systemUuid);
   }
 }

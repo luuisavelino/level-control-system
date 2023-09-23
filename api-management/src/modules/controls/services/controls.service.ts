@@ -1,19 +1,25 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateControlDto } from './dto/create-control.dto';
-import { UpdateControlDto } from './dto/update-control.dto';
+import { CreateControlDto } from '../dto/create-control.dto';
+import { UpdateControlDto } from '../dto/update-control.dto';
 import { ControlsRepository } from 'src/shared/database/repositories/controls.repositories';
+import { ValidateControlService } from './validate-control.service';
 
 @Injectable()
 export class ControlsService {
-  constructor(private readonly controlRepo: ControlsRepository) {}
+  constructor(
+    private readonly controlRepo: ControlsRepository,
+    private readonly validateControlService: ValidateControlService,
+  ) {}
 
   findAll() {
     return this.controlRepo.findMany({});
   }
 
-  async findOne(uuid: string) {
+  async findOne(controlUuid: string) {
+    await this.validateControlService.validate(controlUuid);
+
     const control = await this.controlRepo.findUnique({
-      where: { uuid },
+      where: { uuid: controlUuid },
     });
 
     if (!control) {
@@ -29,11 +35,13 @@ export class ControlsService {
     });
   }
 
-  update(uuid: string, updateControlDto: UpdateControlDto) {
+  async update(controlUuid: string, updateControlDto: UpdateControlDto) {
+    await this.validateControlService.validate(controlUuid);
+
     const { name, description, type, kp, ki, kd } = updateControlDto;
 
     return this.controlRepo.update({
-      where: { uuid },
+      where: { uuid: controlUuid },
       data: {
         name,
         description,
@@ -45,9 +53,11 @@ export class ControlsService {
     });
   }
 
-  async remove(uuid: string) {
+  async remove(controlUuid: string) {
+    await this.validateControlService.validate(controlUuid);
+
     await this.controlRepo.delete({
-      where: { uuid },
+      where: { uuid: controlUuid },
     });
 
     return null;

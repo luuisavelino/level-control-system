@@ -10,7 +10,7 @@ import {
   HttpCode,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { SchedulesService } from './schedules.service';
+import { SchedulesService } from './services/schedules.service';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import {
@@ -30,10 +30,10 @@ export class SchedulesController {
     return this.schedulesService.findAll();
   }
 
-  @Get(':uuid')
+  @Get(':scheduleUuid')
   @Roles(ADMIN, ENGINEER, USER)
-  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.schedulesService.findOne(uuid);
+  findOne(@Param('scheduleUuid', ParseUUIDPipe) scheduleUuid: string) {
+    return this.schedulesService.findOne(scheduleUuid);
   }
 
   @Post()
@@ -42,19 +42,19 @@ export class SchedulesController {
     return this.schedulesService.create(createScheduleDto);
   }
 
-  @Put(':uuid')
+  @Put(':scheduleUuid')
   @Roles(ADMIN, ENGINEER)
   update(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('scheduleUuid', ParseUUIDPipe) scheduleUuid: string,
     @Body() updateScheduleDto: UpdateScheduleDto,
   ) {
-    return this.schedulesService.update(uuid, updateScheduleDto);
+    return this.schedulesService.update(scheduleUuid, updateScheduleDto);
   }
 
-  @Delete(':uuid')
+  @Delete(':scheduleUuid')
   @Roles(ADMIN, ENGINEER)
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.schedulesService.remove(uuid);
+  remove(@Param('scheduleUuid', ParseUUIDPipe) scheduleUuid: string) {
+    return this.schedulesService.remove(scheduleUuid);
   }
 }

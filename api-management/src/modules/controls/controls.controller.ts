@@ -10,7 +10,7 @@ import {
   HttpCode,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ControlsService } from './controls.service';
+import { ControlsService } from './services/controls.service';
 import { CreateControlDto } from './dto/create-control.dto';
 import { UpdateControlDto } from './dto/update-control.dto';
 import {
@@ -30,10 +30,10 @@ export class ControlsController {
     return this.controlsService.findAll();
   }
 
-  @Get(':uuid')
+  @Get(':controlUuid')
   @Roles(ADMIN, ENGINEER, USER)
-  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.controlsService.findOne(uuid);
+  findOne(@Param('controlUuid', ParseUUIDPipe) controlUuid: string) {
+    return this.controlsService.findOne(controlUuid);
   }
 
   @Post()
@@ -42,19 +42,19 @@ export class ControlsController {
     return this.controlsService.create(createControlDto);
   }
 
-  @Put(':uuid')
+  @Put(':controlUuid')
   @Roles(ADMIN, ENGINEER)
   update(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('controlUuid', ParseUUIDPipe) controlUuid: string,
     @Body() updateControlDto: UpdateControlDto,
   ) {
-    return this.controlsService.update(uuid, updateControlDto);
+    return this.controlsService.update(controlUuid, updateControlDto);
   }
 
-  @Delete(':uuid')
+  @Delete(':controlUuid')
   @Roles(ADMIN, ENGINEER)
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.controlsService.remove(uuid);
+  remove(@Param('controlUuid', ParseUUIDPipe) controlUuid: string) {
+    return this.controlsService.remove(controlUuid);
   }
 }

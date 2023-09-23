@@ -10,7 +10,7 @@ import {
   HttpCode,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { SchemesService } from './schemes.service';
+import { SchemesService } from './services/schemes.service';
 import { CreateSchemeDto } from './dto/create-scheme.dto';
 import { UpdateSchemeDto } from './dto/update-scheme.dto';
 import {
@@ -30,10 +30,10 @@ export class SchemesController {
     return this.schemesService.findAll();
   }
 
-  @Get(':uuid')
+  @Get(':schmeUuid')
   @Roles(ADMIN, ENGINEER, USER)
-  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.schemesService.findOne(uuid);
+  findOne(@Param('schmeUuid', ParseUUIDPipe) schmeUuid: string) {
+    return this.schemesService.findOne(schmeUuid);
   }
 
   @Post()
@@ -42,19 +42,19 @@ export class SchemesController {
     return this.schemesService.create(createSchemeDto);
   }
 
-  @Put(':uuid')
+  @Put(':schmeUuid')
   @Roles(ADMIN, ENGINEER)
   update(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('schmeUuid', ParseUUIDPipe) schmeUuid: string,
     @Body() updateSchemeDto: UpdateSchemeDto,
   ) {
-    return this.schemesService.update(uuid, updateSchemeDto);
+    return this.schemesService.update(schmeUuid, updateSchemeDto);
   }
 
-  @Delete(':uuid')
+  @Delete(':schmeUuid')
   @Roles(ADMIN, ENGINEER)
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.schemesService.remove(uuid);
+  remove(@Param('schmeUuid', ParseUUIDPipe) schmeUuid: string) {
+    return this.schemesService.remove(schmeUuid);
   }
 }

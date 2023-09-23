@@ -10,7 +10,7 @@ import {
   HttpCode,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ConfigurationsService } from './configurations.service';
+import { ConfigurationsService } from './services/configurations.service';
 import { CreateConfigurationDto } from './dto/create-configuration.dto';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
 import {
@@ -30,10 +30,12 @@ export class ConfigurationsController {
     return this.configurationsService.findAll();
   }
 
-  @Get(':uuid')
+  @Get(':configurationUuid')
   @Roles(ADMIN, ENGINEER, USER)
-  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.configurationsService.findOne(uuid);
+  findOne(
+    @Param('configurationUuid', ParseUUIDPipe) configurationUuid: string,
+  ) {
+    return this.configurationsService.findOne(configurationUuid);
   }
 
   @Post()
@@ -42,19 +44,22 @@ export class ConfigurationsController {
     return this.configurationsService.create(createConfigurationDto);
   }
 
-  @Put(':uuid')
+  @Put(':configurationUuid')
   @Roles(ADMIN, ENGINEER)
   update(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('configurationUuid', ParseUUIDPipe) configurationUuid: string,
     @Body() updateConfigurationDto: UpdateConfigurationDto,
   ) {
-    return this.configurationsService.update(uuid, updateConfigurationDto);
+    return this.configurationsService.update(
+      configurationUuid,
+      updateConfigurationDto,
+    );
   }
 
-  @Delete(':uuid')
+  @Delete(':configurationUuid')
   @Roles(ADMIN, ENGINEER)
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.configurationsService.remove(uuid);
+  remove(@Param('configurationUuid', ParseUUIDPipe) configurationUuid: string) {
+    return this.configurationsService.remove(configurationUuid);
   }
 }
