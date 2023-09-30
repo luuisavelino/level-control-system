@@ -1,10 +1,10 @@
-package algorithm
+package control
 
-type Algorithm interface {
+type Control interface {
 	Compute(currentLevel float64) float64
 }
 
-func NewAlgorithm(controleType string, setpoint float64, gains map[string]float64) Algorithm {
+func NewControl(controleType string, setpoint float64, gains map[string]float64) Control {
 	switch controleType {
 	case "pd":
 		return pd{

@@ -2,17 +2,17 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/src/models"
+	"gorm.io/gorm"
 )
 
 type systemRepository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewSystemRepository(db *sql.DB) systemRepository {
+func NewSystemRepository(db *gorm.DB) systemRepository {
 	return systemRepository{
 		db: db,
 	}

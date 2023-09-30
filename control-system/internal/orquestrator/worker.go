@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/luuisavelino/level-control-system/internal/algorithm"
+	"github.com/luuisavelino/level-control-system/internal/control"
 	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
 	"github.com/luuisavelino/level-control-system/src/models/messaging_action"
@@ -46,7 +46,7 @@ func (aw *advancedWorker) start() {
 		zap.String("journey", "Worker"),
 	)
 
-	control := algorithm.NewAlgorithm(aw.data.GetControlType(), aw.data.GetSetpoint(), aw.data.GetGains())
+	control := control.NewControl(aw.data.GetControlType(), aw.data.GetSetpoint(), aw.data.GetGains())
 
 	messageChannel := make(chan string)
 	aw.action.messaging.Subscribe(aw.data.GetPath(), 1, messageChannel)

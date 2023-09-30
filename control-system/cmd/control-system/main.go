@@ -25,20 +25,21 @@ func main() {
 	}
 
 	dbConfig := database.DBConfig{
-		Host:               os.Getenv("MYSQL_HOST"),
-		Dbname:             os.Getenv("MYSQL_DB_NAME"),
-		User:               os.Getenv("MYSQL_USER"),
-		Password:           os.Getenv("MYSQL_PASSWORD"),
+		Host:               os.Getenv("POSTGRES_HOST"),
+		Port:               os.Getenv("POSTGRES_PORT"),
+		Dbname:             os.Getenv("POSTGRES_DB_NAME"),
+		User:               os.Getenv("POSTGRES_USER"),
+		Password:           os.Getenv("POSTGRES_PASSWORD"),
 		MaxIdleConns:       10,
 		ConnMaxLifetimeSec: 1400,
 	}
-	db := database.NewDatabase("mysql", dbConfig)
-	mysqlConn, err := db.NewConnection()
+	db := database.NewDatabase("postgres", dbConfig)
+	postgresConn, err := db.NewConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	systemRepository := repository.NewSystemRepository(mysqlConn)
+	systemRepository := repository.NewSystemRepository(postgresConn)
 
 	messagingConfig := messaging.MessagingConfig{
 		Host:     os.Getenv("MQTT_HOST"),

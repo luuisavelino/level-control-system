@@ -1,63 +1,51 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
-	"time"
 
-	"github.com/go-sql-driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type DBConfig struct {
 	Host               string
+	Port               string
 	Dbname             string
 	User               string
 	Password           string
-	Port               int
 	MaxIdleConns       int
 	ConnMaxLifetimeSec int
 }
 
 type Database interface {
-	NewConnection() (*sql.DB, error)
+	NewConnection() (*gorm.DB, error)
 }
 
 func NewDatabase(databse string, dbConfig DBConfig) Database {
 	switch databse {
-	case "mysql":
-		return mySQLDatabase{dbConfig}
+	case "postgres":
+		return postgresDatabase{dbConfig}
 	default:
 		return nil
 	}
 }
 
-type mySQLDatabase struct {
+type postgresDatabase struct {
 	config DBConfig
 }
 
-func (my mySQLDatabase) NewConnection() (*sql.DB, error) {
-	fmt.Println(my.config)
-	cfg := mysql.Config{
-		Addr:                 my.config.Host,
-		User:                 my.config.User,
-		Passwd:               my.config.Password,
-		DBName:               my.config.Dbname,
-		Net:                  "tcp",
-		Loc:                  time.Local,
-		AllowNativePasswords: true,
-		ParseTime:            true,
-		Params: map[string]string{
-			"charset": "utf8",
-		},
-	}
+func (pg postgresDatabase) NewConnection() (*gorm.DB, error) {
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=America/Sao_Paulo",
+		pg.config.Host,
+		pg.config.Port,
+		pg.config.User,
+		pg.config.Password,
+		pg.config.Dbname,
+	)
 
-	dsn := cfg.FormatDSN()
-
-	fmt.Println(dsn)
-
-	db, err := sql.Open("mysql", dsn)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	return db, nil

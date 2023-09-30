@@ -1,4 +1,4 @@
-package algorithm
+package control
 
 type pd struct {
 	setpoint float64

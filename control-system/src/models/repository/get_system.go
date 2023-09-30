@@ -7,7 +7,7 @@ import (
 	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"github.com/luuisavelino/level-control-system/src/models"
 	"github.com/luuisavelino/level-control-system/src/models/repository/entity"
-	converter "github.com/luuisavelino/level-control-system/src/models/repository/entity/convert"
+	converter "github.com/luuisavelino/level-control-system/src/models/repository/entity/converter"
 	"go.uber.org/zap"
 )
 
@@ -24,33 +24,29 @@ func (sr systemRepository) GetSystem(ctx context.Context, uuid uuid.UUID) (model
 		zap.String("journey", "Repository"),
 	)
 
-	tx, err := sr.db.Begin()
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
+	tx := sr.db.Begin()
 
 	query := `
 		SELECT
-			si.system_path AS SystemPath,
-			c.control_type AS ControlType,
-			c.control_kp AS ControlKp,
-			c.control_ki AS ControlKi,
-			c.control_kd AS ControlKd,
-			s.scheme_setpoint AS SchemeSetpoint,
-			s.scheme_min_level AS SchemeMinLevel,
-			s.scheme_max_level AS SchemeMaxLevel
-		FROM ` + WorkersTableName + ` w
-		LEFT JOIN ` + SystemsTableName + ` si ON w.system_id = si.system_id
-		LEFT JOIN ` + SchemesTableName + ` s ON si.system_id = s.scheme_id
-		LEFT JOIN ` + ControlsTableName + ` c ON si.system_id = c.control_id
-		WHERE w.worker_uuid = ?
+			si.path AS SystemPath,
+			c.type AS ControlType,
+			c.kp AS ControlKp,
+			c.ki AS ControlKi,
+			c.kd AS ControlKd,
+			s.setpoint AS SchemeSetpoint,
+			s.min_level AS SchemeMinLevel,
+			s.max_level AS SchemeMaxLevel
+		FROM ` + SystemsTableName + ` si
+		LEFT JOIN ` + SchemesTableName + ` s ON s.uuid = si.scheme_uuid
+		LEFT JOIN ` + ControlsTableName + ` c ON c.uuid = si.control_uuid
+		WHERE si.uuid = ?;
 	`
 
 	var systems entity.SystemsEntity
 	var schemes entity.SchemesEntity
 	var controls entity.ControlsEntity
-	err = tx.QueryRow(query, uuid).Scan(
+	row := tx.Raw(query, uuid).Row()
+	err := row.Scan(
 		&systems.Path,
 		&controls.Type,
 		&controls.Kp,
@@ -60,13 +56,12 @@ func (sr systemRepository) GetSystem(ctx context.Context, uuid uuid.UUID) (model
 		&schemes.MinLevel,
 		&schemes.MaxLevel,
 	)
-
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 
-	err = tx.Commit()
+	err = tx.Commit().Error
 	if err != nil {
 		tx.Rollback()
 		return nil, err

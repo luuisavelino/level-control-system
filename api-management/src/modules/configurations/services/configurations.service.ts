@@ -10,9 +10,9 @@ import { ValidateScheduleService } from 'src/modules/schedules/services/validate
 export class ConfigurationsService {
   constructor(
     private readonly configRepo: ConfigurationsRepository,
+    private readonly validateScheduleService: ValidateScheduleService,
+    private readonly validateNotificationService: ValidateNotificationService,
     private readonly validateConfigurationService: ValidateConfigurationService,
-    private readonly validateNotification: ValidateNotificationService,
-    private readonly validateSchedule: ValidateScheduleService,
   ) {}
 
   findAll() {
@@ -88,8 +88,9 @@ export class ConfigurationsService {
     await Promise.all([
       configurationUuid &&
         this.validateConfigurationService.validate(configurationUuid),
-      notificationUuid && this.validateNotification.validate(notificationUuid),
-      scheduleUuid && this.validateSchedule.validate(scheduleUuid),
+      notificationUuid &&
+        this.validateNotificationService.validate(notificationUuid),
+      scheduleUuid && this.validateScheduleService.validate(scheduleUuid),
     ]);
   }
 }
