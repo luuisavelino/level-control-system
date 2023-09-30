@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/luuisavelino/level-control-system/src/controllers"
+	"github.com/luuisavelino/level-control-system/internal/api/controllers"
 )
 
 func InitRoutes(r *gin.RouterGroup, controller controllers.SystemControllerInterface) {

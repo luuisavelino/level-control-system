@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/internal/control"
-	"github.com/luuisavelino/level-control-system/pkg/logger"
-	"github.com/luuisavelino/level-control-system/src/models"
-	"github.com/luuisavelino/level-control-system/src/models/messaging_action"
+	"github.com/luuisavelino/level-control-system/internal/config/logger"
+	"github.com/luuisavelino/level-control-system/internal/api/models"
+	"github.com/luuisavelino/level-control-system/internal/api/models/messaging_action"
 	"go.uber.org/zap"
 )
 

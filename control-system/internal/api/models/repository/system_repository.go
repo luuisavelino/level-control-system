@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/luuisavelino/level-control-system/src/models"
+	"github.com/luuisavelino/level-control-system/internal/api/models"
 	"gorm.io/gorm"
 )
 

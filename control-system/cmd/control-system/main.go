@@ -8,14 +8,14 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/luuisavelino/level-control-system/internal/api/controllers"
+	"github.com/luuisavelino/level-control-system/internal/api/controllers/routes"
+	"github.com/luuisavelino/level-control-system/internal/api/models/messaging_action"
+	"github.com/luuisavelino/level-control-system/internal/api/models/repository"
+	"github.com/luuisavelino/level-control-system/internal/api/models/service"
+	"github.com/luuisavelino/level-control-system/internal/config/database"
+	"github.com/luuisavelino/level-control-system/internal/config/messaging"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
-	"github.com/luuisavelino/level-control-system/pkg/database"
-	"github.com/luuisavelino/level-control-system/pkg/messaging"
-	"github.com/luuisavelino/level-control-system/src/controllers"
-	"github.com/luuisavelino/level-control-system/src/controllers/routes"
-	"github.com/luuisavelino/level-control-system/src/models/messaging_action"
-	"github.com/luuisavelino/level-control-system/src/models/repository"
-	"github.com/luuisavelino/level-control-system/src/models/service"
 )
 
 func main() {

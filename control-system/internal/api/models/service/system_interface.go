@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
-	"github.com/luuisavelino/level-control-system/src/models/repository"
+	"github.com/luuisavelino/level-control-system/internal/api/models/repository"
 )
 
 func NewSystemServiceInterface(systemRepository repository.SystemRepository, manager orquestrator.Manager) SystemServiceInterface {

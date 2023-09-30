@@ -1,8 +1,8 @@
 package converter
 
 import (
-	"github.com/luuisavelino/level-control-system/src/models"
-	"github.com/luuisavelino/level-control-system/src/models/repository/entity"
+	"github.com/luuisavelino/level-control-system/internal/api/models"
+	"github.com/luuisavelino/level-control-system/internal/api/models/repository/entity"
 )
 
 func ConvertEntityToDomain(
