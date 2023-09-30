@@ -1,3 +1,2 @@
-- Middleware de Autorização e autenticação
 - Sistema mais robusto de tratamento de erro
 - Testes, principalmente para o Orquestrador

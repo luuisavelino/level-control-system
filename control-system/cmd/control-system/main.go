@@ -9,10 +9,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/luuisavelino/level-control-system/internal/api/controllers"
-	"github.com/luuisavelino/level-control-system/internal/api/controllers/routes"
+	"github.com/luuisavelino/level-control-system/internal/api/middleware"
 	"github.com/luuisavelino/level-control-system/internal/api/models/messaging_action"
 	"github.com/luuisavelino/level-control-system/internal/api/models/repository"
 	"github.com/luuisavelino/level-control-system/internal/api/models/service"
+	"github.com/luuisavelino/level-control-system/internal/api/routes"
 	"github.com/luuisavelino/level-control-system/internal/config/database"
 	"github.com/luuisavelino/level-control-system/internal/config/messaging"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
@@ -62,8 +63,10 @@ func main() {
 	service := service.NewSystemServiceInterface(systemRepository, manager)
 	systemController := controllers.NewSystemControllerInterface(service)
 
-	// TODO: change to New()
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(middleware.LoggerMiddleware())
+	router.Use(middleware.AuthMiddleware())
 
 	routes.InitRoutes(&router.RouterGroup, systemController)
 

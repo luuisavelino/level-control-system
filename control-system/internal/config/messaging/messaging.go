@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/luuisavelino/level-control-system/internal/config/logger"
+	"go.uber.org/zap"
 )
 
 type MessagingConfig struct {
@@ -42,6 +44,10 @@ func (mq mqttMessaging) NewConnection() (MQTT.Client, error) {
 	client := MQTT.NewClient(opts)
 
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		logger.Error("Error to connect to database",
+			token.Error(),
+			zap.String("journey", "Manager"),
+		)
 		return nil, token.Error()
 	}
 

@@ -3,6 +3,8 @@ package database
 import (
 	"fmt"
 
+	"github.com/luuisavelino/level-control-system/internal/config/logger"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -45,7 +47,11 @@ func (pg postgresDatabase) NewConnection() (*gorm.DB, error) {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		logger.Error("Error to connect to database",
+			err,
+			zap.String("journey", "Manager"),
+		)
+		return nil, err
 	}
 
 	return db, nil
