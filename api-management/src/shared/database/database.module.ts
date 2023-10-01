@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import { PrismaService } from './services/prisma.service';
+import { InfluxDbService } from './services/influxdb.service';
 import { UsersRepository } from './repositories/users.repositories';
 import { SystemsRepository } from './repositories/systems.repositories';
 import { SchemesRepository } from './repositories/schemes.repositories';
@@ -12,6 +13,7 @@ import { NotificationsRepository } from './repositories/notifications.repositori
 @Module({
   providers: [
     PrismaService,
+    InfluxDbService,
     UsersRepository,
     SystemsRepository,
     SchemesRepository,

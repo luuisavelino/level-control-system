@@ -11,6 +11,7 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
 import { SchemesModule } from './modules/schemes/schemes.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { RolesGuard } from './modules/auth/roles.guard';
+import { SystemsLevelModule } from './modules/systems-level/systems-level.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { RolesGuard } from './modules/auth/roles.guard';
     NotificationsModule,
     SchedulesModule,
     SchemesModule,
+    SystemsLevelModule,
   ],
   controllers: [],
   providers: [
