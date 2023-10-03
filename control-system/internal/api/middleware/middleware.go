@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/luuisavelino/level-control-system/internal/config/logger"
+	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"go.uber.org/zap"
 )
 

@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/luuisavelino/level-control-system/internal/config/logger"
 	"github.com/luuisavelino/level-control-system/internal/api/models"
-	"github.com/luuisavelino/level-control-system/internal/api/models/messaging_action"
+	"github.com/luuisavelino/level-control-system/pkg/logger"
+	"github.com/luuisavelino/level-control-system/pkg/messaging"
 	"go.uber.org/zap"
 )
 
@@ -25,11 +25,11 @@ type Manager interface {
 type basicManager struct {
 	workers   map[uuid.UUID]worker
 	mutex     sync.Mutex
-	messaging messaging_action.Messaging
+	messaging messaging.Messaging
 }
 
 // NewBasicManager is a function that will create a new manager.
-func NewBasicManager(messaging messaging_action.Messaging) Manager {
+func NewBasicManager(messaging messaging.Messaging) Manager {
 	return &basicManager{
 		workers:   make(map[uuid.UUID]worker),
 		messaging: messaging,

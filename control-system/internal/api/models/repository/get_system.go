@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/luuisavelino/level-control-system/internal/config/logger"
 	"github.com/luuisavelino/level-control-system/internal/api/models"
 	"github.com/luuisavelino/level-control-system/internal/api/models/repository/entity"
 	converter "github.com/luuisavelino/level-control-system/internal/api/models/repository/entity/converter"
+	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"go.uber.org/zap"
 )
 

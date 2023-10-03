@@ -10,13 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luuisavelino/level-control-system/internal/api/controllers"
 	"github.com/luuisavelino/level-control-system/internal/api/middleware"
-	"github.com/luuisavelino/level-control-system/internal/api/models/messaging_action"
 	"github.com/luuisavelino/level-control-system/internal/api/models/repository"
 	"github.com/luuisavelino/level-control-system/internal/api/models/service"
 	"github.com/luuisavelino/level-control-system/internal/api/routes"
-	"github.com/luuisavelino/level-control-system/internal/config/database"
-	"github.com/luuisavelino/level-control-system/internal/config/messaging"
 	"github.com/luuisavelino/level-control-system/internal/orquestrator"
+	"github.com/luuisavelino/level-control-system/pkg/database"
+	"github.com/luuisavelino/level-control-system/pkg/messaging"
 )
 
 func main() {
@@ -49,15 +48,12 @@ func main() {
 		Password: os.Getenv("MQTT_PASSWORD"),
 		ClientID: os.Getenv("MQTT_CLIENT_ID"),
 	}
-	mqtt := messaging.NewMessaging("mqtt", messagingConfig)
-	mqttClient, err := mqtt.NewConnection()
+	mqtt, err := messaging.NewMessaging("mqtt", messagingConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mqttActions := messaging_action.NewMqttActions(mqttClient)
-
-	manager := orquestrator.NewBasicManager(mqttActions)
+	manager := orquestrator.NewBasicManager(mqtt)
 	manager.GoroutineGarbageCollector(time.Second * 10)
 
 	service := service.NewSystemServiceInterface(systemRepository, manager)

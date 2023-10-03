@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/luuisavelino/level-control-system/internal/control"
-	"github.com/luuisavelino/level-control-system/internal/config/logger"
 	"github.com/luuisavelino/level-control-system/internal/api/models"
-	"github.com/luuisavelino/level-control-system/internal/api/models/messaging_action"
+	"github.com/luuisavelino/level-control-system/pkg/messaging"
+	"github.com/luuisavelino/level-control-system/internal/control"
+	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"go.uber.org/zap"
 )
 
@@ -24,7 +24,7 @@ type worker interface {
 type action struct {
 	ctx       context.Context
 	cancel    context.CancelFunc
-	messaging messaging_action.Messaging
+	messaging messaging.Messaging
 }
 
 type advancedWorker struct {

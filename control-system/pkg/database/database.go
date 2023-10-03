@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/luuisavelino/level-control-system/internal/config/logger"
+	"github.com/luuisavelino/level-control-system/pkg/logger"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
