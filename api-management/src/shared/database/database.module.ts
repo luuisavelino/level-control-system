@@ -8,6 +8,7 @@ import { ControlsRepository } from './repositories/controls.repositories';
 import { ConfigurationsRepository } from './repositories/configurations.repositories';
 import { SchedulesRepository } from './repositories/schedules.repositories';
 import { NotificationsRepository } from './repositories/notifications.repositories';
+import { SystemsLevelRepository } from './repositories/systems-level.respositories';
 
 @Global()
 @Module({
@@ -21,6 +22,7 @@ import { NotificationsRepository } from './repositories/notifications.repositori
     ConfigurationsRepository,
     SchedulesRepository,
     NotificationsRepository,
+    SystemsLevelRepository,
   ],
   exports: [
     UsersRepository,
@@ -30,6 +32,7 @@ import { NotificationsRepository } from './repositories/notifications.repositori
     ConfigurationsRepository,
     SchedulesRepository,
     NotificationsRepository,
+    SystemsLevelRepository,
   ],
 })
 export class DatabaseModule {}
