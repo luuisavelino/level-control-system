@@ -1,35 +1,32 @@
-# test
+# UI-MANAGEMENT
 
-This template should help get you started developing with Vue 3 in Vite.
 
-## Recommended IDE Setup
+## Home Page
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+Initial page
 
-## Customize configuration
+### Use Cases
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+Implemantation examples, like system level control
 
-## Project Setup
+### Prices
 
-```sh
-npm install
-```
+List of plans and prices
 
-### Compile and Hot-Reload for Development
+### About
 
-```sh
-npm run dev
-```
+About company
 
-### Compile and Minify for Production
+### Login Page
 
-```sh
-npm run build
-```
+Login or Register account to access the dashboard
 
-### Lint with [ESLint](https://eslint.org/)
+---
 
-```sh
-npm run lint
-```
+## Dashboard
+
+## Users
+
+## 
+
+
