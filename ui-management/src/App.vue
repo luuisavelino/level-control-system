@@ -1,20 +1,14 @@
 <template>
-  <!-- <AppHeader /> -->
 
+  <NavBar />
   <SideBar />
-  <div :style="{ 'margin-left': sidebarWidth }">
 
-  </div>
-  <!-- <RouterView /> -->
-  
-  <!-- <AppFooter /> -->
+  <div :style="{ 'margin-left': sidebarWidth }" />
+
 </template>
 
 <script setup>
-// import { RouterView } from 'vue-router'
-// import AppHeader from '@/components/AppLayouts/AppHeader.vue'
-// import AppFooter from '@/components/AppLayouts/AppFooter.vue'
-import SideBar from '@/components/AppLayouts/SideBar/SideBar.vue'
-import { sidebarWidth } from '@/components/AppLayouts/SideBar/state'
-
+import NavBar from '@/components/Layouts/Navbar/NavBar.vue'
+import SideBar from '@/components/Layouts/Sidebar/SideBar.vue'
+import { sidebarWidth } from '@/components/Layouts/Sidebar/state'
 </script>
