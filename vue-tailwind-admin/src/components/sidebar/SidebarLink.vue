@@ -10,7 +10,7 @@ export default {
 </script>
 
 <template>
-  <router-link :to="to" class="link" :class="{ active: isActive }">
+  <router-link :to="to" class="link">
 
             <div class="w-full flex items-center text-blue-400 h-10 pl-4 hover:bg-gray-200 rounded-lg cursor-pointer">
               <i :class="icon" class="text-xl"></i>
