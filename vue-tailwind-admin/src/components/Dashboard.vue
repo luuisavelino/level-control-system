@@ -22,9 +22,9 @@
 <script>
 import { mapState } from 'vuex'
 
-import Sidebar from './Sidebar'
-import Navbar from './Navbar'
-import Footer from './Footer'
+import Sidebar from './sidebar/Sidebar'
+import Navbar from './navbar/Navbar'
+import Footer from './footer/Footer'
 
 export default {
   name: 'Dashboard',
