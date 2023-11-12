@@ -13,17 +13,17 @@
           </div>
 
           <div class="mb-4 px-4">
-            <p class="pl-4 text-sm font-semibold mb-1">System</p>
-            <SidebarLink to="/systems" icon="" label="Systems"/>
-            <SidebarLink to="/systems" icon="" label="Schemes"/>
-            <SidebarLink to="/systems" icon="" label="Controls"/>          
+            <p class="pl-4 text-sm font-semibold mb-1">SYSTEM</p>
+            <SidebarLink to="/systems/dashboard" icon="" label="Systems"/>
+            <SidebarLink to="/schemes/dashboard" icon="" label="Schemes"/>
+            <SidebarLink to="/controls/dashboard" icon="" label="Controls"/>          
           </div>
 
           <div class="mb-4 px-4">
-            <p class="pl-4 text-sm font-semibold mb-1">Configs</p>
-            <SidebarLink to="/systems" icon="" label="Configurations"/>
-            <SidebarLink to="/systems" icon="" label="Schedules"/>
-            <SidebarLink to="/systems" icon="" label="Notifications"/>
+            <p class="pl-4 text-sm font-semibold mb-1">CONFIGS</p>
+            <SidebarLink to="/configurations/dashboard" icon="" label="Configurations"/>
+            <SidebarLink to="/schedules/dashboard" icon="" label="Schedules"/>
+            <SidebarLink to="/notifications/dashboard" icon="" label="Notifications"/>
           </div>
 
     </div>

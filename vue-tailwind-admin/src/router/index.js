@@ -1,8 +1,6 @@
 import Router from 'vue-router'
 
 import Dashboard from '@/components/Dashboard'
-import DashboardHome from '@/views/DashboardHome'
-import DashboardSystems from '@/views/systems/DashboardSystems'
 
 const routes = [
   { 
@@ -58,7 +56,7 @@ const routes = [
       { 
         path: 'home', 
         name: 'DashboardHome', 
-        component: DashboardHome 
+        component: () => import('@/views/DashboardHome') 
       }
     ]
   },
@@ -75,7 +73,7 @@ const routes = [
       {
         path: 'dashboard',
         name: 'DashboardSystems',
-        component: DashboardSystems
+        component: () => import('@/views/systems/DashboardSystems')
       }
     ]
   },
@@ -92,7 +90,7 @@ const routes = [
       {
         path: 'dashboard',
         name: 'DashboardControls',
-        component: null
+        component: () => import('@/views/controls/DashboardControls')
       }
     ]
   },
@@ -109,7 +107,7 @@ const routes = [
       {
         path: 'dashboard',
         name: 'DashboardSchemes',
-        component: null
+        component: () => import('@/views/schemes/DashboardSchemes')
       }
     ]
   
@@ -127,7 +125,7 @@ const routes = [
       {
         path: 'dashboard',
         name: 'DashboardConfigurations',
-        component: null
+        component: () => import('@/views/configurations/DashboardConfigurations')
       }
     ]
   },
@@ -144,7 +142,7 @@ const routes = [
       {
         path: 'dashboard',
         name: 'DashboardNotifications',
-        component: null
+        component: () => import('@/views/notifications/DashboardNotifications')
       }
     ]
   },
@@ -161,7 +159,7 @@ const routes = [
       {
         path: 'dashboard',
         name: 'DashboardSchedules',
-        component: null
+        component: () => import('@/views/schedules/DashboardSchedules')
       }
     ]
   },

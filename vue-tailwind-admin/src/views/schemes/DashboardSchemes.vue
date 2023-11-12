@@ -75,7 +75,10 @@
           </div>
 
           <div class="flex flex-wrap -mx-3">
+
             <ItemsList :listItemsName="'Systems'" :items="systems"></ItemsList>
+
+
           </div>
 
   </div>
@@ -83,10 +86,9 @@
 
 <script>
 import ItemsList from '@/components/listItems/ListItems'
-// import DefaultModal from '@/components/modal/DefaultModal'
 
 export default {
-  name: 'DashboardSystems',
+  name: 'DashboardSchemes',
   components: {
     ItemsList,
   },
