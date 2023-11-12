@@ -1,5 +1,6 @@
 <template>
   <div id="home">
+          <DefaultModal />
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -83,12 +84,13 @@
 
 <script>
 import ItemsList from '@/components/listItems/ListItems'
-// import DefaultModal from '@/components/modal/DefaultModal'
+import DefaultModal from '@/components/modal/DefaultModal'
 
 export default {
   name: 'DashboardSystems',
   components: {
     ItemsList,
+    DefaultModal,
   },
   data() {
     return {
