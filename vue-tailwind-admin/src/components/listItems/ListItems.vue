@@ -1,10 +1,5 @@
 <template>
 
-  <div class="w-full xl px-3">
-          <div class="lg:flex justify-between items-center mb-6">
-            <p class="text-xl font-semibold mb-4">{{ listItemsName }}</p>
-            <PaginationField />
-          </div>
 
           <div class="w-full bg-white border rounded-lg p-4">
 
@@ -13,38 +8,34 @@
             </div>
 
             <div v-else>
-              <div v-for="(system, index) in items" :key="index"
+              <div v-for="(item, index) in items" :key="index"
                 class="w-full bg-gray-100 border rounded-lg flex justify-between items-center px-4 py-2 mb-4"
                 @mouseover="showOptions(index)" @mouseleave="hideOptions(index)">
                 <div>
-                  <p class="font-semibold text-xl">{{ system.name }}</p>
-                  <p>{{ system.description }}</p>
+                  <p class="font-semibold text-xl">{{ item.name }}</p>
+                  <p>{{ item.description }}</p>
                 </div>
                 
                 <div v-if="showOptionsIndex === index" class="flex space-x-2">
-                  <button @click="editSystem(index)" class="text-blue-500">Edit</button>
-                  <button @click="excludeSystem(index)" class="text-red-500">Exclude</button>
+                  <button @click="viewItem(index)" class="text-green-500">View</button>
+                  <button @click="editItem(index)" class="text-blue-500">Edit</button>
+                  <button @click="excludeItem(index)" class="text-red-500">Exclude</button>
                 </div>
                 <div v-else>
-                  <span class="text-green-500 font-semibold text-lg">{{ system.value }}</span>
+                  <span class="text-green-500 font-semibold text-lg">{{ item.value }}</span>
                 </div>
               </div>
             </div>
 
           </div>
-  </div>
+  
 
 </template>
 
 <script>
 
-import PaginationField from '@/components/pagination/PaginationField.vue';
-
 export default {
   name: 'ItemsList',
-  components: {
-    PaginationField,
-  },
   props: {
     listItemsName: {
       type: String,
@@ -68,11 +59,14 @@ export default {
     hideOptions() {
       this.showOptionsIndex = null;
     },
-    editSystem(index) {
-      console.log('Edit system at index:', index);
+    viewItem(index) {
+      console.log('View item at index:', index);
     },
-    excludeSystem(index) {
-      console.log('Exclude system at index:', index);
+    editItem(index) {
+      console.log('Edit item at index:', index);
+    },
+    excludeItem(index) {
+      console.log('Exclude item at index:', index);
     },
   },
 }

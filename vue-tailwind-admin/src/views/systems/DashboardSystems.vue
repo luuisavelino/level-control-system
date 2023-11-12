@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-          <DefaultModal />
+          <ModalCreate :modalActive="modalCreateActive" @close-modal="closeModalCreate()"/>
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -19,7 +19,7 @@
               </ol>
             </nav>
 
-            <button 
+            <button @click="showModalCreate()"
               class="bg-green-500 hover:bg-blue-600 focus:outline-none rounded-lg px-4 py-2 text-white font-semibold shadow">
               Create System
             </button>
@@ -75,27 +75,36 @@
 
           </div>
 
-          <div class="flex flex-wrap -mx-3">
-            <ItemsList :listItemsName="'Systems'" :items="systems"></ItemsList>
+          <div class="w-full xl px-3">
+            <div class="lg:flex justify-between items-center mb-6">
+              <p class="text-xl font-semibold mb-4">{{ listItemsName }}</p>
+              <PaginationField />
+            </div>
+
+            <div class="flex flex-wrap -mx-3">
+              <ItemsList :listItemsName="'Systems'" :items="systems"></ItemsList>
+            </div>
           </div>
+
 
   </div>
 </template>
 
 <script>
 import ItemsList from '@/components/listItems/ListItems'
-import DefaultModal from '@/components/modal/DefaultModal'
+import ModalCreate from '@/components/modal/ModalCreate'
 
 export default {
   name: 'DashboardSystems',
   components: {
     ItemsList,
-    DefaultModal,
+    ModalCreate,
   },
   data() {
     return {
       systems: [],
       showOptionsIndex: null,
+      modalCreateActive: false,
     }
   },
   beforeMount() {
@@ -116,6 +125,12 @@ export default {
     },
   },
   methods: {
+    showModalCreate() {
+      this.modalCreateActive = true;
+    },
+    closeModalCreate() {
+      this.modalCreateActive = false;
+    },
     getSystems() {
       this.systems = [{
         name: 'System 1',
