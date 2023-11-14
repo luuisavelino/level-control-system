@@ -1,6 +1,16 @@
 <template>
   <div id="home">
-         <ModalCreate :modalActive="modalCreateActive" @close-modal="closeModalCreate()"/>
+          <ModalCreate 
+            :modalActive="modalActive"
+            :name="'Scheme'"
+            @close-modal="closeModal()">
+
+            <SchemesModalBody :data="scheme" />
+
+            <button type="submit" class="modal-button">
+              {{ actionButtonModal }}
+            </button>
+          </ModalCreate>
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -26,7 +36,9 @@
           </div>
 
           <div class="flex flex-wrap -mx-3">
-            <ItemsList :listItemsName="'Schemes'" :items="schemes"></ItemsList>
+            <ItemsList :listItemsName="'Schemes'" :items="schemes"
+              :viewItem="showModalView" :editItem="showModalEdit" :excludeItem="excludeScheme"
+            ></ItemsList>
           </div>
 
   </div>
@@ -35,50 +47,132 @@
 <script>
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
+import SchemesModalBody from './SchemesModalBody'
 
 export default {
   name: 'DashboardSchemes',
   components: {
     ItemsList,
     ModalCreate,
+    SchemesModalBody,
   },
   data() {
     return {
       schemes: [],
       showOptionsIndex: null,
-      modalCreateActive: false,
-    }
+      modalActive: false,
+      scheme: {},
+      actionButtonModal: ''
+      }
   },
   beforeMount() {
     this.getSchemes();
   },
   methods: {
     showModalCreate() {
-      this.modalCreateActive = true;
+      this.scheme = {}
+      this.actionButtonModal = 'Create New Scheme'
+      this.modalActive = true;
     },
-    closeModalCreate() {
-      this.modalCreateActive = false;
+    showModalEdit(index) {
+      this.actionButtonModal = 'Edit Scheme'
+      this.scheme = {
+        name: this.schemes[index].name,
+        description: this.schemes[index].description,
+        setpoint: this.schemes[index].setpoint,
+        minLevel: this.schemes[index].minLevel,
+        maxLevel: this.schemes[index].maxLevel,
+      }
+      this.modalActive = true;
+    },
+    closeModal() {
+      this.modalActive = false;
     },
     getSchemes() {
       this.schemes = [{
         name: 'Scheme 1',
         description: 'Schemes 1 description',
-        value: 1,
-        status: 'success',
+        setpoint: 1,
+        minLevel: 1,
+        maxLevel: 1,
       },
       {
         name: 'Scheme 2',
         description: 'Schemes 2 description',
-        value: 2,
-        status: 'warning',
+        setpoint: 2,
+        minLevel: 2,
+        maxLevel: 2,
       },
       {
         name: 'Scheme 3',
         description: 'Schemes 3 description',
-        value: 3,
-        status: 'error',
+        setpoint: 3,
+        minLevel: 3,
+        maxLevel: 3,
       }]
+    },
+    showModalView(index) {
+      console.log('showModalView', index)
+    },
+    excludeScheme(index) {
+      console.log('excludeScheme', index)
     },
   },
 }
 </script>
+
+<style>
+
+.modal-label{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: #e2e8f0;
+  font-size: font-medium;
+  margin-bottom: 0.5rem;
+}
+
+.modal-input{
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+
+  box-sizing: border-box;
+  font-size: font-medium;
+  
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  border-style: solid;
+  border-radius: 0.7rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+}
+
+.modal-button{
+  color: #fff;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.5rem 1.25rem 0.5rem 1.25rem;
+  font-weight: 500;
+  align-items: margin-left;
+  display: inline-flex;
+
+  background-color: #2b6cb0;
+  font-family: inherit;
+  cursor: pointer;
+  overflow: visible;
+  border-radius: 0.5rem;
+}
+
+</style>
