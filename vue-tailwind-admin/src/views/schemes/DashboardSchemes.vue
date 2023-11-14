@@ -2,15 +2,25 @@
   <div id="home">
           <ModalCreate 
             :modalActive="modalActive"
-            :name="'Scheme'"
+            :modalHeader="actionModal"
             @close-modal="closeModal()">
 
             <SchemesModalBody :data="scheme" />
 
-            <button type="submit" class="modal-button">
-              {{ actionButtonModal }}
-            </button>
+            <div class="flex border-t dark:border-gray-600">
+              <button type="submit" class="modal-button">
+                {{ actionModal }}
+              </button>
+            </div>
           </ModalCreate>
+
+          <ModalDelete 
+            :itemName="'Scheme'"  
+            :modalActive="modalDeleteActive" 
+            @close-modal-delete="closeModalDelete()"
+            @delete-item="deleteScheme($event)"
+          />
+
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -37,7 +47,7 @@
 
           <div class="flex flex-wrap -mx-3">
             <ItemsList :listItemsName="'Schemes'" :items="schemes"
-              :viewItem="showModalView" :editItem="showModalEdit" :excludeItem="excludeScheme"
+              :viewItem="showModalView" :editItem="showModalEdit" :excludeItem="showModalDelete"
             ></ItemsList>
           </div>
 
@@ -48,6 +58,7 @@
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
 import SchemesModalBody from './SchemesModalBody'
+import ModalDelete from '../../components/modal/ModalDelete.vue'
 
 export default {
   name: 'DashboardSchemes',
@@ -55,27 +66,40 @@ export default {
     ItemsList,
     ModalCreate,
     SchemesModalBody,
-  },
+    ModalDelete
+},
   data() {
     return {
       schemes: [],
       showOptionsIndex: null,
       modalActive: false,
+      modalDeleteActive: false,
       scheme: {},
-      actionButtonModal: ''
+      actionModal: ''
       }
   },
   beforeMount() {
     this.getSchemes();
   },
   methods: {
+    showModalDelete() {
+      this.modalDeleteActive = true;
+    },
+    closeModalDelete() {
+      this.modalDeleteActive = false;
+    },
+    deleteScheme(idx) {
+      // TODO: Implement the delete func
+      console.log('deleteScheme', idx)
+      this.modalDeleteActive = false;
+    },
     showModalCreate() {
       this.scheme = {}
-      this.actionButtonModal = 'Create New Scheme'
+      this.actionModal = 'Create New Scheme'
       this.modalActive = true;
     },
     showModalEdit(index) {
-      this.actionButtonModal = 'Edit Scheme'
+      this.actionModal = 'Edit Scheme'
       this.scheme = {
         name: this.schemes[index].name,
         description: this.schemes[index].description,
@@ -167,6 +191,7 @@ export default {
   font-weight: 500;
   align-items: margin-left;
   display: inline-flex;
+  margin-top: 1rem;
 
   background-color: #2b6cb0;
   font-family: inherit;
