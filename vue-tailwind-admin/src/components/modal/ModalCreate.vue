@@ -38,7 +38,7 @@ export default{
     modalHeader: {
       type: String,
       default: ''
-    }
+    },
   },
 }
 </script>

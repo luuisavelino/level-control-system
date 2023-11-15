@@ -2,14 +2,14 @@
   <div id="home">
           <ModalCreate 
             :modalActive="modalActive"
-            :modalHeader="actionModal"
+            :modalHeader="modalHeader"
             @close-modal="closeModal()">
 
-            <SchemesModalBody :data="scheme" />
+            <SchemesModalBody :data="scheme" :canEditModal="canEditOrCreateScheme && modalAction !== VIEW" />
 
-            <div class="flex border-t dark:border-gray-600">
+            <div class="flex border-t dark:border-gray-600" v-if="modalAction !== VIEW">
               <button type="submit" class="modal-button">
-                {{ actionModal }}
+                {{ modalAction }}
               </button>
             </div>
           </ModalCreate>
@@ -46,9 +46,10 @@
           </div>
 
           <div class="flex flex-wrap -mx-3">
-            <ItemsList :listItemsName="'Schemes'" :items="schemes"
-              :viewItem="showModalView" :editItem="showModalEdit" :excludeItem="showModalDelete"
-            ></ItemsList>
+            <ItemsList 
+              :listItemsName="'Schemes'" :items="schemes"
+              :viewItem="showModalView" :editItem="showModalEdit" 
+              :excludeItem="showModalDelete" />
           </div>
 
   </div>
@@ -75,11 +76,20 @@ export default {
       modalActive: false,
       modalDeleteActive: false,
       scheme: {},
-      actionModal: ''
+      modalAction: '',
+      canEditOrCreateScheme: true,
+      VIEW: 'View',
+      EDIT: 'Edit',
+      CREATE: 'Create'
       }
   },
   beforeMount() {
     this.getSchemes();
+  },
+  computed: {
+    modalHeader() {
+      return `${this.modalAction} Scheme ${this.scheme?.name || ''}`
+    }
   },
   methods: {
     showModalDelete() {
@@ -93,13 +103,22 @@ export default {
       console.log('deleteScheme', idx)
       this.modalDeleteActive = false;
     },
+    showModalView(index) {
+      this.modalAction = this.VIEW
+      this.populateScheme(index)
+      this.modalActive = true;
+    },
     showModalCreate() {
       this.scheme = {}
-      this.actionModal = 'Create New Scheme'
+      this.modalAction = this.CREATE
       this.modalActive = true;
     },
     showModalEdit(index) {
-      this.actionModal = 'Edit Scheme'
+      this.modalAction = this.EDIT
+      this.populateScheme(index)
+      this.modalActive = true;
+    },
+    populateScheme(index) {
       this.scheme = {
         name: this.schemes[index].name,
         description: this.schemes[index].description,
@@ -107,7 +126,6 @@ export default {
         minLevel: this.schemes[index].minLevel,
         maxLevel: this.schemes[index].maxLevel,
       }
-      this.modalActive = true;
     },
     closeModal() {
       this.modalActive = false;
@@ -122,7 +140,7 @@ export default {
       },
       {
         name: 'Scheme 2',
-        description: 'Schemes 2 description',
+        description: 'Schemes 2 description. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s',
         setpoint: 2,
         minLevel: 2,
         maxLevel: 2,
@@ -134,9 +152,6 @@ export default {
         minLevel: 3,
         maxLevel: 3,
       }]
-    },
-    showModalView(index) {
-      console.log('showModalView', index)
     },
     excludeScheme(index) {
       console.log('excludeScheme', index)
