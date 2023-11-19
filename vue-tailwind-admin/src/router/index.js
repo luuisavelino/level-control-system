@@ -195,15 +195,12 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log('to', to);
-  
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem('token');
     if (token) {
       next();
     } else {
-      // next('/login');
-      next();
+      next('/login');
     }
   } else {
     next();

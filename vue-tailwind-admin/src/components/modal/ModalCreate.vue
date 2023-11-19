@@ -18,7 +18,7 @@
                 </div>
 
                 <!-- Modal body -->
-                <form action="#" class="p-4 md:p-5">
+                <form action="" class="p-4 md:p-5">
                   <slot />
                 </form>
               </div>
