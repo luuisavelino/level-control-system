@@ -3,6 +3,7 @@ import { CreateSchemeDto } from '../dto/create-scheme.dto';
 import { UpdateSchemeDto } from '../dto/update-scheme.dto';
 import { SchemesRepository } from 'src/shared/database/repositories/schemes.repositories';
 import { ValidateSchemeService } from './validate-scheme.service';
+import createError = require('http-errors');
 
 @Injectable()
 export class SchemesService {
@@ -53,9 +54,15 @@ export class SchemesService {
   async remove(schemeUuid: string) {
     await this.validateSchemeService.validate(schemeUuid);
 
-    await this.schemeRepo.delete({
-      where: { uuid: schemeUuid },
-    });
+    try {
+      await this.schemeRepo.delete({
+        where: { uuid: schemeUuid },
+      });
+    } catch (error) {
+      if (error.code === 'P2011') {
+        throw createError(409, 'Scheme is in use');
+      }
+    }
 
     return null;
   }
