@@ -20,6 +20,16 @@
                 <!-- Modal body -->
                 <form action="" class="p-4 md:p-5">
                   <slot />
+
+                  <div class="flex border-t dark:border-gray-600" v-if="modalAction !== VIEW">
+                    <button v-if="modalAction === CREATE" type="submit" class="modal-button" @click="$emit('create-item')">
+                      {{ modalAction }}
+                    </button>
+                    <button v-if="modalAction === EDIT" type="submit" class="modal-button" @click="$emit('edit-item', itemUuid)">
+                      {{ modalAction }}
+                    </button>
+                  </div>
+
                 </form>
               </div>
             </div>
@@ -30,12 +40,27 @@
 <script>
 export default{
   name: 'ModalCreate',
+  data() {
+    return {
+      VIEW: 'View',
+      EDIT: 'Edit',
+      CREATE: 'Create'
+    }
+  },
   props: {
+    modalAction: {
+      type: String,
+      default: ''
+    },
     modalActive: {
       type: Boolean,
       default: false
     },
     modalHeader: {
+      type: String,
+      default: ''
+    },
+    itemUuid: {
       type: String,
       default: ''
     },

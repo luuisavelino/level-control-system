@@ -1,26 +1,25 @@
 <template>
   <div id="home">
           <ModalCreate 
+            :modalAction="modalAction"
             :modalActive="modalActive"
             :modalHeader="modalHeader"
-            @close-modal="closeModal()">
+            :itemUuid="schmeUuid"
+            @create-item="createSchemes"
+            @edit-item="editSchemes"
+            @close-modal="closeModal">
 
             <SchemesModalBody :data="scheme" :canEditModal="canEditOrCreateScheme && modalAction !== VIEW" />
 
-            <div class="flex border-t dark:border-gray-600" v-if="modalAction !== VIEW">
-              <button type="submit" class="modal-button">
-                {{ modalAction }}
-              </button>
-            </div>
           </ModalCreate>
 
           <ModalDelete 
             :itemName="'Scheme'"  
-            :modalActive="modalDeleteActive" 
-            @close-modal-delete="closeModalDelete()"
-            @delete-item="deleteScheme($event)"
+            :modalActive="modalDeleteActive"
+            :itemUuid="schmeUuid"
+            @close-modal-delete="closeModalDelete"
+            @delete-item="deleteScheme"
           />
-
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -39,7 +38,7 @@
               </ol>
             </nav>
 
-            <button @click="showModalCreate()"
+            <button v-if="hasPermissionToCreate" @click="showModalCreate()"
               class="bg-green-500 hover:bg-blue-600 focus:outline-none rounded-lg px-4 py-2 text-white font-semibold shadow">
               Create Scheme
             </button>
@@ -48,8 +47,8 @@
           <div class="flex flex-wrap -mx-3">
             <ItemsList 
               :listItemsName="'Schemes'" :items="schemes"
-              :viewItem="showModalView" :editItem="showModalEdit" 
-              :excludeItem="showModalDelete" />
+              :viewItem="showModalView" :editItem="hasPermissionToEdit ? showModalEdit : null" 
+              :excludeItem="hasPermissionToDelete ? showModalDelete : null" />
           </div>
 
   </div>
@@ -60,6 +59,8 @@ import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
 import SchemesModalBody from './SchemesModalBody'
 import ModalDelete from '../../components/modal/ModalDelete.vue'
+
+import axios from 'axios'
 
 export default {
   name: 'DashboardSchemes',
@@ -87,39 +88,31 @@ export default {
     this.getSchemes();
   },
   computed: {
+    schmeUuid() {
+      return this.scheme?.uuid || ''
+    },
     modalHeader() {
       return `${this.modalAction} Scheme ${this.scheme?.name || ''}`
-    }
+    },
+    hasPermissionToCreate() {
+      return true
+    },
+    hasPermissionToEdit() {
+      return true
+    },
+    hasPermissionToDelete() {
+      return true
+    },
   },
   methods: {
-    showModalDelete() {
-      this.modalDeleteActive = true;
-    },
-    closeModalDelete() {
-      this.modalDeleteActive = false;
-    },
-    deleteScheme(idx) {
-      // TODO: Implement the delete func
-      console.log('deleteScheme', idx)
-      this.modalDeleteActive = false;
-    },
     showModalView(index) {
       this.modalAction = this.VIEW
       this.populateScheme(index)
       this.modalActive = true;
     },
-    showModalCreate() {
-      this.scheme = {}
-      this.modalAction = this.CREATE
-      this.modalActive = true;
-    },
-    showModalEdit(index) {
-      this.modalAction = this.EDIT
-      this.populateScheme(index)
-      this.modalActive = true;
-    },
     populateScheme(index) {
       this.scheme = {
+        uuid: this.schemes[index].uuid,
         name: this.schemes[index].name,
         description: this.schemes[index].description,
         setpoint: this.schemes[index].setpoint,
@@ -131,30 +124,156 @@ export default {
       this.modalActive = false;
     },
     getSchemes() {
-      this.schemes = [{
-        name: 'Scheme 1',
-        description: 'Schemes 1 description',
-        setpoint: 1,
-        minLevel: 1,
-        maxLevel: 1,
-      },
-      {
-        name: 'Scheme 2',
-        description: 'Schemes 2 description. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s',
-        setpoint: 2,
-        minLevel: 2,
-        maxLevel: 2,
-      },
-      {
-        name: 'Scheme 3',
-        description: 'Schemes 3 description',
-        setpoint: 3,
-        minLevel: 3,
-        maxLevel: 3,
-      }]
+      let config = {
+        method: 'get',
+        url: 'http://localhost:3000/schemes',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem("token")
+        },
+      };
+      
+      axios.request(config)
+        .then(response => {
+          this.schemes = response.data
+        })
+        .catch(error => {
+          let errMsg = ''
+
+          if (error.response?.data?.message instanceof Array) {
+            errMsg = error?.response?.data?.message[0]
+          } else {
+            errMsg = error?.response?.data?.message
+          }
+
+          this.$vs.notify({
+            title: 'Error',
+            text: errMsg,
+            color: 'danger',
+            position: 'top-right'
+          })
+        });
     },
-    excludeScheme(index) {
-      console.log('excludeScheme', index)
+    showModalCreate() {
+      this.scheme = {}
+      this.modalAction = this.CREATE
+      this.modalActive = true;
+    },
+    createSchemes() {
+      let config = {
+        method: 'post',
+        url: 'http://localhost:3000/schemes',
+        data: {
+          name: this.scheme.name,
+          description: this.scheme.description,
+          setpoint: parseFloat(this.scheme.setpoint),
+          minLevel: parseFloat(this.scheme.minLevel),
+          maxLevel: parseFloat(this.scheme.maxLevel),
+        },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem("token")
+        },
+      };
+
+      axios.request(config)
+        .catch(error => {
+          let errMsg = ''
+
+          if (error.response?.data?.message instanceof Array) {
+            errMsg = error?.response?.data?.message[0]
+          } else {
+            errMsg = error?.response?.data?.message
+          }
+
+          this.$vs.notify({
+            title: 'Error',
+            text: errMsg,
+            color: 'danger',
+            position: 'top-right'
+          })
+        });
+    },
+    showModalEdit(index) {
+      this.modalAction = this.EDIT
+      this.populateScheme(index)
+      this.modalActive = true;
+    },
+    editSchemes(uuid) {
+      let config = {
+        method: 'put',
+        url: `http://localhost:3000/schemes/${uuid}`,
+        data: {
+          name: this.scheme.name,
+          description: this.scheme.description,
+          setpoint: parseFloat(this.scheme.setpoint),
+          minLevel: parseFloat(this.scheme.minLevel),
+          maxLevel: parseFloat(this.scheme.maxLevel),
+        },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem("token")
+        },
+      };
+
+      axios.request(config)
+        .catch(error => {
+          let errMsg = ''
+
+          if (error.response?.data?.message instanceof Array) {
+            errMsg = error?.response?.data?.message[0]
+          } else {
+            errMsg = error?.response?.data?.message
+          }
+
+          this.$vs.notify({
+            title: 'Error',
+            text: errMsg,
+            color: 'danger',
+            position: 'top-right'
+          })
+        });
+    },
+    showModalDelete(index) {
+      this.scheme = {
+        uuid: this.schemes[index].uuid,
+      }
+      this.modalDeleteActive = true;
+    },
+    closeModalDelete() {
+      this.modalDeleteActive = false;
+    },
+    deleteScheme(uuid) {
+      let config = {
+        method: 'delete',
+        url: `http://localhost:3000/schemes/${uuid}`,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem("token")
+        },
+      };
+
+      axios.request(config)
+        .catch(error => {
+          let errMsg = ''
+
+          if (error.response?.data?.message instanceof Array) {
+            errMsg = error?.response?.data?.message[0]
+          } else {
+            errMsg = error?.response?.data?.message
+          }
+
+          this.$vs.notify({
+            title: 'Error',
+            text: errMsg,
+            color: 'danger',
+            position: 'top-right'
+          })
+        })
+        .finally(() => {
+          this.modalDeleteActive = false;
+          this.getSchemes();                  
+        });
     },
   },
 }

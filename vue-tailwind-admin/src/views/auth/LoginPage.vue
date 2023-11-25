@@ -48,6 +48,7 @@ export default {
       
       axios.request(config)
         .then(response => {
+          localStorage.clear()
           localStorage.setItem("token", response.data.accessToken)
           this.$router.push({ name: 'DashboardHome' })
         })
