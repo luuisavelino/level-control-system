@@ -59,8 +59,8 @@ import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
 import SchemesModalBody from './SchemesModalBody'
 import ModalDelete from '../../components/modal/ModalDelete.vue'
-
-import axios from 'axios'
+import schemeService from '@/services/api/rest/schemes/index'
+import { notifyError } from '@/services/notify/errors'
 
 export default {
   name: 'DashboardSchemes',
@@ -124,35 +124,11 @@ export default {
       this.modalActive = false;
     },
     getSchemes() {
-      let config = {
-        method: 'get',
-        url: 'http://localhost:3000/schemes',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem("token")
-        },
-      };
-      
-      axios.request(config)
+      schemeService.getSchemes()
         .then(response => {
           this.schemes = response.data
         })
-        .catch(error => {
-          let errMsg = ''
-
-          if (error.response?.data?.message instanceof Array) {
-            errMsg = error?.response?.data?.message[0]
-          } else {
-            errMsg = error?.response?.data?.message
-          }
-
-          this.$vs.notify({
-            title: 'Error',
-            text: errMsg,
-            color: 'danger',
-            position: 'top-right'
-          })
-        });
+        .catch(error => notifyError(this.$vs, error));
     },
     showModalCreate() {
       this.scheme = {}
@@ -160,39 +136,8 @@ export default {
       this.modalActive = true;
     },
     createSchemes() {
-      let config = {
-        method: 'post',
-        url: 'http://localhost:3000/schemes',
-        data: {
-          name: this.scheme.name,
-          description: this.scheme.description,
-          setpoint: parseFloat(this.scheme.setpoint),
-          minLevel: parseFloat(this.scheme.minLevel),
-          maxLevel: parseFloat(this.scheme.maxLevel),
-        },
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem("token")
-        },
-      };
-
-      axios.request(config)
-        .catch(error => {
-          let errMsg = ''
-
-          if (error.response?.data?.message instanceof Array) {
-            errMsg = error?.response?.data?.message[0]
-          } else {
-            errMsg = error?.response?.data?.message
-          }
-
-          this.$vs.notify({
-            title: 'Error',
-            text: errMsg,
-            color: 'danger',
-            position: 'top-right'
-          })
-        });
+      schemeService.createScheme(this.scheme)
+      .catch(error => notifyError(this.$vs, error));
     },
     showModalEdit(index) {
       this.modalAction = this.EDIT
@@ -200,39 +145,9 @@ export default {
       this.modalActive = true;
     },
     editSchemes(uuid) {
-      let config = {
-        method: 'put',
-        url: `http://localhost:3000/schemes/${uuid}`,
-        data: {
-          name: this.scheme.name,
-          description: this.scheme.description,
-          setpoint: parseFloat(this.scheme.setpoint),
-          minLevel: parseFloat(this.scheme.minLevel),
-          maxLevel: parseFloat(this.scheme.maxLevel),
-        },
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem("token")
-        },
-      };
-
-      axios.request(config)
-        .catch(error => {
-          let errMsg = ''
-
-          if (error.response?.data?.message instanceof Array) {
-            errMsg = error?.response?.data?.message[0]
-          } else {
-            errMsg = error?.response?.data?.message
-          }
-
-          this.$vs.notify({
-            title: 'Error',
-            text: errMsg,
-            color: 'danger',
-            position: 'top-right'
-          })
-        });
+      console.log(this.scheme)
+      schemeService.updateScheme(this.scheme, uuid)
+        .catch(error => notifyError(this.$vs, error));
     },
     showModalDelete(index) {
       this.scheme = {
@@ -244,35 +159,11 @@ export default {
       this.modalDeleteActive = false;
     },
     deleteScheme(uuid) {
-      let config = {
-        method: 'delete',
-        url: `http://localhost:3000/schemes/${uuid}`,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem("token")
-        },
-      };
-
-      axios.request(config)
-        .catch(error => {
-          let errMsg = ''
-
-          if (error.response?.data?.message instanceof Array) {
-            errMsg = error?.response?.data?.message[0]
-          } else {
-            errMsg = error?.response?.data?.message
-          }
-
-          this.$vs.notify({
-            title: 'Error',
-            text: errMsg,
-            color: 'danger',
-            position: 'top-right'
-          })
-        })
+      schemeService.deleteScheme(uuid)
+        .catch(error => notifyError(this.$vs, error))
         .finally(() => {
           this.modalDeleteActive = false;
-          this.getSchemes();                  
+          this.getSchemes();
         });
     },
   },
