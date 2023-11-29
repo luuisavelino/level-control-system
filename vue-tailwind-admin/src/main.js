@@ -3,7 +3,7 @@ import App from './App.vue'
 import Router from 'vue-router'
 import Vuesax from 'vuesax'
 
-import router from "./router";
+import router from './router'
 import store from './store'
 
 import '@/assets/css/tailwind.css'
@@ -18,4 +18,3 @@ new Vue({
   router,
   store
 }).$mount('#app')
-

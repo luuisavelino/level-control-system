@@ -1,5 +1,6 @@
 import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { NotificationLevel } from '../entities/NotificationLevel';
+import { NotificationMethod } from '../entities/NotificationMethod';
 
 export class CreateNotificationDto {
   @IsString()
@@ -17,5 +18,6 @@ export class CreateNotificationDto {
 
   @IsString()
   @IsNotEmpty()
-  type: string;
+  @IsEnum(NotificationMethod)
+  method: NotificationMethod;
 }

@@ -39,7 +39,7 @@ export class NotificationsService {
   ) {
     await this.validateNotificationService.validate(notificationUuid);
 
-    const { name, enabled, level, type } = updateNotificationDto;
+    const { name, enabled, level, method } = updateNotificationDto;
 
     return this.notificationRepo.update({
       where: { uuid: notificationUuid },
@@ -47,7 +47,7 @@ export class NotificationsService {
         name,
         enabled,
         level,
-        type,
+        method,
       },
     });
   }

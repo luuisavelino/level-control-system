@@ -1,6 +1,25 @@
 <template>
   <div id="home">
-          <ModalCreate :modalActive="modalCreateActive" @close-modal="closeModalCreate()"/>
+          <ModalCreate 
+            :modalAction="modalAction"
+            :modalActive="modalActive"
+            :modalHeader="modalHeader"
+            :itemUuid="notificationUuid"
+            @create-item="createNotifications"
+            @edit-item="editNotifications"
+            @close-modal="closeModal">
+
+            <NotificationsModalBody :data="notification" :canEditModal="canEditOrCreateNotification && modalAction !== VIEW" />
+
+          </ModalCreate>
+
+          <ModalDelete 
+            :itemName="'Notification'"  
+            :modalActive="modalDeleteActive"
+            :itemUuid="notificationUuid"
+            @close-modal-delete="closeModalDelete"
+            @delete-item="deleteNotification"
+          />
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -19,14 +38,17 @@
               </ol>
             </nav>
 
-            <button @click="showModalCreate()"
+            <button v-if="hasPermissionToCreate" @click="showModalCreate()"
               class="bg-green-500 hover:bg-blue-600 focus:outline-none rounded-lg px-4 py-2 text-white font-semibold shadow">
               Create Notification
             </button>
           </div>
 
           <div class="flex flex-wrap -mx-3">
-            <ItemsList :listItemsName="'Notifications'" :items="notifications"></ItemsList>
+            <ItemsList 
+              :listItemsName="'Notifications'" :items="notifications"
+              :viewItem="showModalView" :editItem="hasPermissionToEdit ? showModalEdit : null" 
+              :excludeItem="hasPermissionToDelete ? showModalDelete : null" />
           </div>
 
   </div>
@@ -35,50 +57,184 @@
 <script>
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
+import NotificationsModalBody from './NotificationsModalBody'
+import ModalDelete from '../../components/modal/ModalDelete.vue'
+import notificationService from '@/services/api/rest/notifications/index'
+import { notifyError } from '@/services/notify/errors'
 
 export default {
   name: 'DashboardNotifications',
   components: {
     ItemsList,
     ModalCreate,
-  },
+    NotificationsModalBody,
+    ModalDelete
+},
   data() {
     return {
       notifications: [],
       showOptionsIndex: null,
-      modalCreateActive: false,
-    }
+      modalActive: false,
+      modalDeleteActive: false,
+      notification: {},
+      modalAction: '',
+      canEditOrCreateNotification: true,
+      VIEW: 'View',
+      EDIT: 'Edit',
+      CREATE: 'Create'
+      }
   },
   beforeMount() {
     this.getNotifications();
   },
-  methods: {
-    showModalCreate() {
-      this.modalCreateActive = true;
+  computed: {
+    notificationUuid() {
+      return this.notification?.uuid || ''
     },
-    closeModalCreate() {
-      this.modalCreateActive = false;
+    modalHeader() {
+      return `${this.modalAction} Notification ${this.notification?.name || ''}`
+    },
+    hasPermissionToCreate() {
+      return true
+    },
+    hasPermissionToEdit() {
+      return true
+    },
+    hasPermissionToDelete() {
+      return true
+    },
+  },
+  methods: {
+    showModalView(index) {
+      this.modalAction = this.VIEW
+      this.populateNotification(index)
+      this.modalActive = true;
+    },
+    populateNotification(index) {
+      this.notification = {
+        uuid: this.notifications[index].uuid,
+        name: this.notifications[index].name,
+        enabled: this.notifications[index].enabled,
+        level: this.notifications[index].level,
+        type: this.notifications[index].type,
+      }
+    },
+    closeModal() {
+      this.modalActive = false;
     },
     getNotifications() {
-      this.notifications = [{
-        name: 'Notification 1',
-        description: 'Notification 1 description',
-        value: 1,
-        status: 'success',
-      },
-      {
-        name: 'Notification 2',
-        description: 'Notification 2 description',
-        value: 2,
-        status: 'warning',
-      },
-      {
-        name: 'Notification 3',
-        description: 'Notification 3 description',
-        value: 3,
-        status: 'error',
-      }]
+      notificationService.getNotifications()
+        .then(response => {
+          this.notifications = response.data
+        })
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalCreate() {
+      this.notification = {}
+      this.modalAction = this.CREATE
+      this.modalActive = true;
+    },
+    createNotifications() {
+      notificationService.createNotification(this.notification)
+      .catch(error => notifyError(this.$vs, error));
+    },
+    showModalEdit(index) {
+      this.modalAction = this.EDIT
+      this.populateNotification(index)
+      this.modalActive = true;
+    },
+    editNotifications(uuid) {
+      console.log(this.notification)
+      notificationService.updateNotification(this.notification, uuid)
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalDelete(index) {
+      this.notification = {
+        uuid: this.notifications[index].uuid,
+      }
+      this.modalDeleteActive = true;
+    },
+    closeModalDelete() {
+      this.modalDeleteActive = false;
+    },
+    deleteNotification(uuid) {
+      notificationService.deleteNotification(uuid)
+        .catch(error => notifyError(this.$vs, error))
+        .finally(() => {
+          this.modalDeleteActive = false;
+          this.getNotifications();
+        });
     },
   },
 }
 </script>
+
+<style>
+.modal-checkbox{
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+
+}
+
+.modal-label{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: #e2e8f0;
+  font-size: font-medium;
+  margin-bottom: 0.5rem;
+  align-content: center;
+}
+
+.modal-input{
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+
+  box-sizing: border-box;
+  font-size: font-medium;
+  
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  border-style: solid;
+  border-radius: 0.7rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+}
+
+.modal-button{
+  color: #fff;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.5rem 1.25rem 0.5rem 1.25rem;
+  font-weight: 500;
+  align-items: margin-left;
+  display: inline-flex;
+  margin-top: 1rem;
+
+  background-color: #2b6cb0;
+  font-family: inherit;
+  cursor: pointer;
+  overflow: visible;
+  border-radius: 0.5rem;
+}
+
+</style>
