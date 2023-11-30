@@ -7,6 +7,9 @@ CREATE TYPE "control_type" AS ENUM ('PI', 'PD', 'PID');
 -- CreateEnum
 CREATE TYPE "notification_level" AS ENUM ('INFO', 'WARNING', 'CRITICAL');
 
+-- CreateEnum
+CREATE TYPE "notification_method[]" AS ENUM ('EMAIL', 'SLACK', 'DISCORD', 'TELEGRAM');
+
 -- CreateTable
 CREATE TABLE "users" (
     "uuid" UUID NOT NULL,
@@ -17,9 +20,9 @@ CREATE TABLE "users" (
     "city" TEXT NOT NULL,
     "state" TEXT NOT NULL,
     "country" TEXT NOT NULL,
-    "phone_number" INTEGER NOT NULL,
-    "phone_region_code" INTEGER NOT NULL,
     "phone_country_code" INTEGER NOT NULL,
+    "phone_region_code" INTEGER NOT NULL,
+    "phone_number" INTEGER NOT NULL,
     "role" "roles" NOT NULL DEFAULT 'USER',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -116,7 +119,7 @@ CREATE TABLE "notifications" (
     "name" TEXT NOT NULL,
     "enabled" BOOLEAN NOT NULL,
     "level" "notification_level" NOT NULL,
-    "type" TEXT NOT NULL,
+    "method" "notification_method[]"[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),

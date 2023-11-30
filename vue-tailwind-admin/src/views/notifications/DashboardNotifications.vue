@@ -130,13 +130,20 @@ export default {
         .catch(error => notifyError(this.$vs, error));
     },
     showModalCreate() {
-      this.notification = {}
+      this.notification = {
+        name: '123',
+        enabled: true,
+        level: 'CRITICAL',
+        method: [ 'EMAIL', 'SLACK' ],
+      }
       this.modalAction = this.CREATE
       this.modalActive = true;
     },
     createNotifications() {
-      notificationService.createNotification(this.notification)
-      .catch(error => notifyError(this.$vs, error));
+      console.log(this.notification)
+
+      // notificationService.createNotification(this.notification)
+      // .catch(error => notifyError(this.$vs, error));
     },
     showModalEdit(index) {
       this.modalAction = this.EDIT
