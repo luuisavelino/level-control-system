@@ -9,7 +9,9 @@
             @edit-item="editNotifications"
             @close-modal="closeModal">
 
-            <NotificationsModalBody :data="notification" :canEditModal="canEditOrCreateNotification && modalAction !== VIEW" />
+            <NotificationsModalBody 
+              :data="notification" :canEditModal="canEditOrCreateNotification && modalAction !== VIEW" 
+              @updateSelectedMethods="updateSelectedMethods" @updateSelectedLevel="updateSelectedLevel"/>
 
           </ModalCreate>
 
@@ -72,11 +74,11 @@ export default {
 },
   data() {
     return {
+      notification: {}, 
       notifications: [],
       showOptionsIndex: null,
       modalActive: false,
       modalDeleteActive: false,
-      notification: {},
       modalAction: '',
       canEditOrCreateNotification: true,
       VIEW: 'View',
@@ -116,7 +118,7 @@ export default {
         name: this.notifications[index].name,
         enabled: this.notifications[index].enabled,
         level: this.notifications[index].level,
-        type: this.notifications[index].type,
+        method: this.notifications[index].method,
       }
     },
     closeModal() {
@@ -131,19 +133,17 @@ export default {
     },
     showModalCreate() {
       this.notification = {
-        name: '123',
+        name: '',
         enabled: true,
-        level: 'CRITICAL',
-        method: [ 'EMAIL', 'SLACK' ],
+        level: 'INFO',
+        method: [],
       }
       this.modalAction = this.CREATE
       this.modalActive = true;
     },
     createNotifications() {
-      console.log(this.notification)
-
-      // notificationService.createNotification(this.notification)
-      // .catch(error => notifyError(this.$vs, error));
+      notificationService.createNotification(this.notification)
+        .catch(error => notifyError(this.$vs, error));
     },
     showModalEdit(index) {
       this.modalAction = this.EDIT
@@ -171,6 +171,12 @@ export default {
           this.modalDeleteActive = false;
           this.getNotifications();
         });
+    },
+    updateSelectedMethods(selectedMethods) {
+      this.notification.method = selectedMethods;
+    },
+    updateSelectedLevel(selectedLevel) {
+      this.notification.level = selectedLevel;
     },
   },
 }

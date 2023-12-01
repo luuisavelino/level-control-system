@@ -16,9 +16,10 @@
 
             <div class="col-span-2 m-1">
               <label for="name" class="modal-label">Notification Level</label>
-              <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              @change="setLevel(data.level)">
                 <option 
-                  v-for="(item, index) in levelsOptions" :key="index" :value="data.level"
+                  v-for="(item, index) in levelsOptions" :key="index"
                   :selected="item.key === data.level" class="mr-4">
                   {{ item.value }}
                 </option>
@@ -29,8 +30,10 @@
               <label for="name" class="modal-label">Notification Method</label>
 
               <div class="modal-checkbox">
-                <div v-for="(item, index) in methodsOptions" :key="index" :value="item.key">
-                  <input type="checkbox" :id="item.key" class="mr-2" :checked="checked(item.key)">
+                <div v-for="(item, index) in methodsOptions" :key="index">
+                  <input 
+                    type="checkbox" :id="item.key" :checked="checked(item.key)"
+                    class="mr-2" @change="updateSelectedMethods(item.key)">
                   <label class="label">{{ item.value }}</label>
                 </div>
               </div>
@@ -63,7 +66,7 @@ export default {
       },
       level: {
         type: String,
-        default: 'CRITICAL'
+        default: 'INFO'
       },
       method: {
         type: Array,
@@ -73,6 +76,7 @@ export default {
   },
   data() {
     return {
+      selectedMethods: this.data.method,
       levelsOptions: [
         { key: 'INFO', value: 'Info' },
         { key: 'WARNING', value: 'Warning' },
@@ -92,7 +96,20 @@ export default {
     },
     toggleEnabled(value) {
       this.data.enabled = value
-      console.log(this.data.enabled)
+    },
+    setLevel(value) {
+      this.$emit('updateSelectedLevel', value);
+    },
+    updateSelectedMethods(key) {
+      const index = this.selectedMethods.indexOf(key);
+
+      if (index === -1) {
+        this.selectedMethods.push(key);
+      } else {
+        this.selectedMethods.splice(index, 1);
+      }
+
+      this.$emit('updateSelectedMethods', this.selectedMethods);
     },
   }
 }

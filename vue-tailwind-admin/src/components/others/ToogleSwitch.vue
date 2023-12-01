@@ -1,24 +1,34 @@
 <template>
   <div>
     <label class="switch">
-      <input type="checkbox" :checked="checked">
-      <span class="slider round" @click="$emit('toggle-button')"></span>
+      <input type="checkbox" :checked="isChecked" @change="toggleChecked">
+      <span class="slider round"></span>
     </label>
   </div>
 </template>
 
 <script>
-
 export default {
   name: 'ToogleSwitch',
   props: {
     checked: {
       type: Boolean,
-      default: false
-    }
+      required: true,
+    },
   },
-}
+  computed: {
+    isChecked() {
+      return this.checked;
+    },
+  },
+  methods: {
+    toggleChecked() {
+      this.$emit('toggle-button', !this.checked);
+    },
+  },
+};
 </script>
+
 
 <style>
 .switch {
