@@ -18,7 +18,8 @@
 </template>
 
 <script>
-import axios from 'axios'
+import authService from '@/services/api/rest/auth/index'
+import { notifyError } from '@/services/notify/errors'
 
 export default {
   name: 'LoginPage',
@@ -36,38 +37,13 @@ export default {
         "password": this.password
       });
 
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'http://localhost:3000/auth/signin',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        data : data
-      };
-      
-      axios.request(config)
+      authService.signin(data)
         .then(response => {
           localStorage.clear()
           localStorage.setItem("token", response.data.accessToken)
           this.$router.push({ name: 'DashboardHome' })
         })
-        .catch(error => {
-          let errMsg = ''
-
-          if (error.response?.data?.message instanceof Array) {
-            errMsg = error?.response?.data?.message[0]
-          } else {
-            errMsg = error?.response?.data?.message
-          }
-
-          this.$vs.notify({
-            title: 'Error',
-            text: errMsg,
-            color: 'danger',
-            position: 'top-right'
-          })
-        });
+        .catch(error => notifyError(this.$vs, error));
     },
   }
 }

@@ -17,6 +17,56 @@ const getControls = () => {
   return axios.request(config)
 }
 
+const createControl = (control) => {
+  let config = {
+    method: 'post',
+    url: API_URL,
+    data: {
+      name: control.name,
+      description: control.description,
+      type: control.type,
+      kp: control.kp,
+      ki: control.ki,
+      kd: control.kd,
+    },
+    headers
+  };
+
+  return axios.request(config)
+}
+
+const updateControl = (control, uuid) => {
+  let config = {
+    method: 'put',
+    url: API_URL + uuid,
+    data: {
+      name: control.name,
+      description: control.description,
+      type: control.type,
+      kp: control.kp,
+      ki: control.ki,
+      kd: control.kd,
+    },
+    headers
+  };
+
+  return axios.request(config)
+}
+
+const deleteControl = (uuid) => {
+  let config = {
+    method: 'delete',
+    url: API_URL + uuid,
+    headers
+  };
+
+  return axios.request(config)
+}
+
+
 export default {
   getControls,
+  createControl,
+  updateControl,
+  deleteControl,
 }

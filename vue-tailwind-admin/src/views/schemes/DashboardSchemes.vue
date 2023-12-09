@@ -72,11 +72,11 @@ export default {
 },
   data() {
     return {
+      scheme: {},
       schemes: [],
       showOptionsIndex: null,
       modalActive: false,
       modalDeleteActive: false,
-      scheme: {},
       modalAction: '',
       canEditOrCreateScheme: true,
       VIEW: 'View',
