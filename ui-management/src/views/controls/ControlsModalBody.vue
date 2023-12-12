@@ -101,11 +101,5 @@ export default {
       },
     }
   },
-  methods: {
-    setType(type) {
-      console.log(type)
-      this.data.type = type
-    }
-  }
 }
 </script>

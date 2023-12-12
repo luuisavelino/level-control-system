@@ -156,10 +156,6 @@ export default {
     },
     showModalCreate() {
       this.configuration = {
-        uuid: '',
-        name: '',
-        notificationUuid: '',
-        scheduleUuid: '',
         notifications: this.notifications,
         schedules: this.schedules,
       }

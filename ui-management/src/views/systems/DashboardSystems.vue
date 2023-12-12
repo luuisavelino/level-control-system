@@ -1,6 +1,25 @@
 <template>
   <div id="home">
-          <ModalCreate :modalActive="modalCreateActive" @close-modal="closeModalCreate()"/>
+          <ModalCreate 
+            :modalAction="modalAction"
+            :modalActive="modalActive"
+            :modalHeader="modalHeader"
+            :itemUuid="schmeUuid"
+            @create-item="createSystems"
+            @edit-item="editSystems"
+            @close-modal="closeModal">
+
+            <SystemsModalBody :data="system" :canEditModal="canEditOrCreateSystem && modalAction !== VIEW" />
+
+          </ModalCreate>
+
+          <ModalDelete 
+            :itemName="'System'"  
+            :modalActive="modalDeleteActive"
+            :itemUuid="schmeUuid"
+            @close-modal-delete="closeModalDelete"
+            @delete-item="deleteSystem"
+          />
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -19,73 +38,18 @@
               </ol>
             </nav>
 
-            <button @click="showModalCreate()"
+            <button v-if="hasPermissionToCreate" @click="showModalCreate()"
               class="bg-green-500 hover:bg-blue-600 focus:outline-none rounded-lg px-4 py-2 text-white font-semibold shadow">
               Create System
             </button>
           </div>
 
-          <div class="flex flex-wrap -mx-3 mb-10">
-
-            <div class="w-1/2 xl:w-1/4 px-3">
-              <div class="w-full bg-white border text-blue-400 rounded-lg flex items-center p-4 mb-6 xl:mb-0">
-                <!-- TODO: icon -->
-
-                <div class="text-gray-700">
-                  <p class="font-semibold text-3xl">{{ systemsTotal }}</p>
-                  <p>Total Systems</p>
-                </div>
-
-              </div>
-            </div>
-
-            <div class="w-1/2 xl:w-1/4 px-3">
-              <div class="w-full bg-white border text-blue-400 rounded-lg flex items-center p-4 mb-6 xl:mb-0">
-                <!-- TODO: icon -->
-
-                <div class="text-gray-700">
-                  <p class="font-semibold text-3xl">{{ systemsSuccess }}</p>
-                  <p>Systems Success</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="w-1/2 xl:w-1/4 px-3">
-              <div class="w-full bg-white border text-blue-400 rounded-lg flex items-center p-4">
-                <!-- TODO: icon -->
-
-                <div class="text-gray-700">
-                  <p class="font-semibold text-3xl">{{ systemsWarning }}</p>
-                  <p>Systems Warning</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="w-1/2 xl:w-1/4 px-3">
-              <div class="w-full bg-white border text-blue-400 rounded-lg flex items-center p-4">
-                <!-- TODO: icon -->
-
-                <div class="text-gray-700">
-                  <p class="font-semibold text-3xl">{{ systemsError }}</p>
-                  <p>Systems Error</p>
-                </div>
-
-              </div>
-            </div>
-
+          <div class="flex flex-wrap -mx-3">
+            <ItemsList 
+              :listItemsName="'Systems'" :items="systems"
+              :viewItem="showModalView" :editItem="hasPermissionToEdit ? showModalEdit : null" 
+              :excludeItem="hasPermissionToDelete ? showModalDelete : null" />
           </div>
-
-          <div class="w-full xl px-3">
-            <div class="lg:flex justify-between items-center mb-6">
-              <p class="text-xl font-semibold mb-4">{{ listItemsName }}</p>
-              <PaginationField />
-            </div>
-
-            <div class="flex flex-wrap -mx-3">
-              <ItemsList :listItemsName="'Systems'" :items="systems"></ItemsList>
-            </div>
-          </div>
-
 
   </div>
 </template>
@@ -93,64 +57,215 @@
 <script>
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
+import SystemsModalBody from './SystemsModalBody'
+import ModalDelete from '../../components/modal/ModalDelete.vue'
+import systemService from '@/services/api/rest/systems/index'
+import configurationService from '@/services/api/rest/configurations/index'
+import schemeService from '@/services/api/rest/schemes/index'
+import controlService from '@/services/api/rest/controls/index'
+import { notifyError } from '@/services/notify/errors'
 
 export default {
   name: 'DashboardSystems',
   components: {
     ItemsList,
     ModalCreate,
-  },
+    SystemsModalBody,
+    ModalDelete
+},
   data() {
     return {
+      system: {},
       systems: [],
       showOptionsIndex: null,
-      modalCreateActive: false,
+      modalActive: false,
+      modalDeleteActive: false,
+      modalAction: '',
+      canEditOrCreateSystem: true,
+      VIEW: 'View',
+      EDIT: 'Edit',
+      CREATE: 'Create',
+      controls: {},
+      schemes: {},
+      configurations: {},
     }
   },
   beforeMount() {
     this.getSystems();
+    this.getControls();
+    this.getSchemes();
+    this.getConfigurations();
+
+    console.log(this.controls)
   },
   computed: {
-    systemsTotal() {
-      return this.systems.length;
+    schmeUuid() {
+      return this.system?.uuid || ''
     },
-    systemsSuccess() {
-      return this.systems.filter(system => system.status === 'success').length;
+    modalHeader() {
+      return `${this.modalAction} System ${this.system?.name || ''}`
     },
-    systemsWarning() {
-      return this.systems.filter(system => system.status === 'warning').length;
+    hasPermissionToCreate() {
+      return true
     },
-    systemsError() {
-      return this.systems.filter(system => system.status === 'error').length;
+    hasPermissionToEdit() {
+      return true
+    },
+    hasPermissionToDelete() {
+      return true
     },
   },
   methods: {
-    showModalCreate() {
-      this.modalCreateActive = true;
+    getControls() {
+      controlService.getControls()
+        .then(response => {
+          response.data.forEach(control => {
+            this.controls[control.uuid] = control.name
+          })
+        })
+        .catch(error => notifyError(this.$vs, error));
     },
-    closeModalCreate() {
-      this.modalCreateActive = false;
+    getSchemes() {
+      schemeService.getSchemes()
+        .then(response => {
+          response.data.forEach(scheme => {
+            this.schemes[scheme.uuid] = scheme.name
+          })
+        })
+        .catch(error => notifyError(this.$vs, error));
+    },
+    getConfigurations() {
+      configurationService.getConfigurations()
+        .then(response => {
+          response.data.forEach(configuration => {
+            this.configurations[configuration.uuid] = configuration.name
+          })
+        })
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalView(index) {
+      this.modalAction = this.VIEW
+      this.populateSystem(index)
+      this.modalActive = true;
+    },
+    populateSystem(index) {
+      this.system = {
+        uuid: this.systems[index].uuid,
+        name: this.systems[index].name,
+        configurationUuid: this.systems[index].configurationUuid,
+        scheduleUuid: this.systems[index].scheduleUuid,
+        controls: this.controls,
+        schemes: this.schemes,
+        configurations: this.configurations,
+      }
+    },
+    closeModal() {
+      this.modalActive = false;
     },
     getSystems() {
-      this.systems = [{
-        name: 'System 1',
-        description: 'System 1 description',
-        value: 1,
-        status: 'success',
-      },
-      {
-        name: 'System 2',
-        description: 'System 2 description',
-        value: 2,
-        status: 'warning',
-      },
-      {
-        name: 'System 3',
-        description: 'System 3 description',
-        value: 3,
-        status: 'error',
-      }]
+      systemService.getSystems()
+        .then(response => {
+          this.systems = response.data
+        })
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalCreate() {
+      this.system = {
+        controls: this.controls,
+        schemes: this.schemes,
+        configurations: this.configurations,
+      }
+      this.modalAction = this.CREATE
+      this.modalActive = true;
+    },
+    createSystems() {
+      systemService.createSystem(this.system)
+      .catch(error => notifyError(this.$vs, error));
+    },
+    showModalEdit(index) {
+      this.modalAction = this.EDIT
+      this.populateSystem(index)
+      this.modalActive = true;
+    },
+    editSystems(uuid) {
+      console.log(this.system)
+      systemService.updateSystem(this.system, uuid)
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalDelete(index) {
+      this.system = {
+        uuid: this.systems[index].uuid,
+      }
+      this.modalDeleteActive = true;
+    },
+    closeModalDelete() {
+      this.modalDeleteActive = false;
+    },
+    deleteSystem(uuid) {
+      systemService.deleteSystem(uuid)
+        .catch(error => notifyError(this.$vs, error))
+        .finally(() => {
+          this.modalDeleteActive = false;
+          this.getSystems();
+        });
     },
   },
 }
 </script>
+
+<style>
+
+.modal-label{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: #e2e8f0;
+  font-size: font-medium;
+  margin-bottom: 0.5rem;
+}
+
+.modal-input{
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+
+  box-sizing: border-box;
+  font-size: font-medium;
+  
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  border-style: solid;
+  border-radius: 0.7rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+}
+
+.modal-button{
+  color: #fff;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.5rem 1.25rem 0.5rem 1.25rem;
+  font-weight: 500;
+  align-items: margin-left;
+  display: inline-flex;
+  margin-top: 1rem;
+
+  background-color: #2b6cb0;
+  font-family: inherit;
+  cursor: pointer;
+  overflow: visible;
+  border-radius: 0.5rem;
+}
+
+</style>

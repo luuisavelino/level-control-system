@@ -11,7 +11,7 @@
 
             <NotificationsModalBody 
               :data="notification" :canEditModal="canEditOrCreateNotification && modalAction !== VIEW" 
-              @updateSelectedMethods="updateSelectedMethods" @updateSelectedLevel="updateSelectedLevel"/>
+            />
 
           </ModalCreate>
 
@@ -133,10 +133,8 @@ export default {
     },
     showModalCreate() {
       this.notification = {
-        name: '',
         enabled: true,
         level: 'INFO',
-        method: [],
       }
       this.modalAction = this.CREATE
       this.modalActive = true;
@@ -170,12 +168,6 @@ export default {
           this.modalDeleteActive = false;
           this.getNotifications();
         });
-    },
-    updateSelectedMethods(selectedMethods) {
-      this.notification.method = selectedMethods;
-    },
-    updateSelectedLevel(selectedLevel) {
-      this.notification.level = selectedLevel;
     },
   },
 }

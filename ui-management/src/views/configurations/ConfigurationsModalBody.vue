@@ -10,12 +10,11 @@
             </div>
 
             <div class="col-span-2 m-1">
-              <label for="level" class="modal-label">Select Schedules</label>
-              <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              @change="setSchedule(data.scheduleUuid)">
+              <label for="level" class="modal-label">Notification Schedules</label>
+              <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.scheduleUuid">
                 <option 
                   v-for="(item, index) in data.schedules" :key="index"
-                  :selected="index === data.scheduleUuid" class="mr-4">
+                  class="mr-4" :value="index">
                   {{ item }}
                 </option>
               </select>
@@ -23,11 +22,11 @@
 
             <div class="col-span-2 m-1">
               <label for="notification" class="modal-label">Select Notification</label>
-              <select id="notification" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              @change="setNotification('aaaaa' + index)">
+              <select id="notification" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
+              focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.notificationUuid">
                 <option 
                   v-for="(item, index) in data.notifications" :key="index"
-                  :selected="index === data.notificationUuid" class="mr-4">
+                  class="mr-4" :value="index">
                   {{ item }}
                 </option>
               </select>
@@ -67,16 +66,5 @@ export default {
       }
     }
   },
-  methods: {
-    setNotification(notificationUuid) {
-      console.log(notificationUuid)
-    },
-    setSchedule(schedulesUuid) {
-      console.log(schedulesUuid)
-    }
-  },
-  mounted() {
-    console.log(this.data)
-  }
 }
 </script>

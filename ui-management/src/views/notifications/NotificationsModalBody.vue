@@ -74,8 +74,6 @@ export default {
   },
   data() {
     return {
-      checkedNames: [],
-      selectedMethods: this.data.method,
       levelsOptions: [
         { key: 'INFO', value: 'Info' },
         { key: 'WARNING', value: 'Warning' },
@@ -90,26 +88,8 @@ export default {
     }
   },
   methods: {
-    checked(item) {
-      return this.data.method.includes(item)
-    },
     toggleEnabled(value) {
       this.data.enabled = value
-    },
-    setLevel(value) {
-      console.log(value)
-      this.$emit('updateSelectedLevel', value);
-    },
-    updateSelectedMethods(key) {
-      const index = this.selectedMethods.indexOf(key);
-
-      if (index === -1) {
-        this.selectedMethods.push(key);
-      } else {
-        this.selectedMethods.splice(index, 1);
-      }
-
-      this.$emit('updateSelectedMethods', this.selectedMethods);
     },
   }
 }
