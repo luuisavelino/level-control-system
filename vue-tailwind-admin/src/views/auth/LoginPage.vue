@@ -52,8 +52,6 @@ export default {
 <style>
 @import url('https://fonts.googleapis.com/css?family=Poppins');
 
-/* BASIC */
-
 html {
   background-color: #91b4c5;
 }
@@ -136,10 +134,6 @@ h2.active {
   border-bottom: 2px solid #5fbae9;
 }
 
-
-
-/* FORM TYPOGRAPHY*/
-
 input[type=button], input[type=submit], input[type=reset]  {
   background-color: #56baed;
   border: none;
@@ -204,11 +198,6 @@ input[type=text]:placeholder {
   color: #cccccc;
 }
 
-
-
-/* ANIMATIONS */
-
-/* Simple CSS3 Fade-in-down Animation */
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
@@ -244,7 +233,6 @@ input[type=text]:placeholder {
   }
 }
 
-/* Simple CSS3 Fade-in Animation */
 @-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 @-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -288,7 +276,6 @@ input[type=text]:placeholder {
   animation-delay: 1s;
 }
 
-/* Simple CSS3 Fade-in Animation */
 .underlineHover:after {
   display: block;
   left: 0;
@@ -307,10 +294,6 @@ input[type=text]:placeholder {
 .underlineHover:hover:after{
   width: 100%;
 }
-
-
-
-/* OTHERS */
 
 *:focus {
     outline: none;

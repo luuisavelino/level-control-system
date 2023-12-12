@@ -24,10 +24,10 @@ const createControl = (control) => {
     data: {
       name: control.name,
       description: control.description,
-      type: control.type,
-      kp: control.kp,
-      ki: control.ki,
-      kd: control.kd,
+      type: control.controlType,
+      kp: parseFloat(control.kp),
+      ki: parseFloat(control.ki),
+      kd: parseFloat(control.kd),
     },
     headers
   };
@@ -42,10 +42,10 @@ const updateControl = (control, uuid) => {
     data: {
       name: control.name,
       description: control.description,
-      type: control.type,
-      kp: control.kp,
-      ki: control.ki,
-      kd: control.kd,
+      type: control.controlType,
+      kp: parseFloat(control.kp),
+      ki: parseFloat(control.ki),
+      kd: parseFloat(control.kd),
     },
     headers
   };

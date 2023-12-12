@@ -8,7 +8,6 @@ const headers = {
 };
 
 const getSchedules = () => {
-  console.log(headers)
   let config = {
     method: 'get',
     url: API_URL,

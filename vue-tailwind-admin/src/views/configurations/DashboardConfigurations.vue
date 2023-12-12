@@ -1,6 +1,25 @@
 <template>
   <div id="home">
-          <ModalCreate :modalActive="modalCreateActive" @close-modal="closeModalCreate()"/>
+          <ModalCreate 
+            :modalAction="modalAction"
+            :modalActive="modalActive"
+            :modalHeader="modalHeader"
+            :itemUuid="schmeUuid"
+            @create-item="createConfigurations"
+            @edit-item="editConfigurations"
+            @close-modal="closeModal">
+
+            <ConfigurationsModalBody :data="configuration" :canEditModal="canEditOrCreateConfiguration && modalAction !== VIEW" />
+
+          </ModalCreate>
+
+          <ModalDelete 
+            :itemName="'Configuration'"  
+            :modalActive="modalDeleteActive"
+            :itemUuid="schmeUuid"
+            @close-modal-delete="closeModalDelete"
+            @delete-item="deleteConfiguration"
+          />
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -19,14 +38,17 @@
               </ol>
             </nav>
 
-            <button @click="showModalCreate()"
+            <button v-if="hasPermissionToCreate" @click="showModalCreate()"
               class="bg-green-500 hover:bg-blue-600 focus:outline-none rounded-lg px-4 py-2 text-white font-semibold shadow">
               Create Configuration
             </button>
           </div>
 
           <div class="flex flex-wrap -mx-3">
-            <ItemsList :listItemsName="'Configurations'" :items="configurations"></ItemsList>
+            <ItemsList 
+              :listItemsName="'Configurations'" :items="configurations"
+              :viewItem="showModalView" :editItem="hasPermissionToEdit ? showModalEdit : null" 
+              :excludeItem="hasPermissionToDelete ? showModalDelete : null" />
           </div>
 
   </div>
@@ -35,50 +57,203 @@
 <script>
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
+import ConfigurationsModalBody from './ConfigurationsModalBody'
+import ModalDelete from '../../components/modal/ModalDelete.vue'
+import configurationService from '@/services/api/rest/configurations/index'
+import notificationService from '@/services/api/rest/notifications/index'
+import scheduleService from '@/services/api/rest/schedules/index'
+import { notifyError } from '@/services/notify/errors'
 
 export default {
   name: 'DashboardConfigurations',
   components: {
     ItemsList,
     ModalCreate,
-  },
+    ConfigurationsModalBody,
+    ModalDelete
+},
   data() {
     return {
+      configuration: {},
       configurations: [],
       showOptionsIndex: null,
-      modalCreateActive: false,
+      modalActive: false,
+      modalDeleteActive: false,
+      modalAction: '',
+      canEditOrCreateConfiguration: true,
+      VIEW: 'View',
+      EDIT: 'Edit',
+      CREATE: 'Create',
+      notifications: {},
+      schedules: {},
     }
   },
   beforeMount() {
     this.getConfigurations();
+    this.getNotifications();
+    this.getSchedules();
+  },
+  computed: {
+    schmeUuid() {
+      return this.configuration?.uuid || ''
+    },
+    modalHeader() {
+      return `${this.modalAction} Configuration ${this.configuration?.name || ''}`
+    },
+    hasPermissionToCreate() {
+      return true
+    },
+    hasPermissionToEdit() {
+      return true
+    },
+    hasPermissionToDelete() {
+      return true
+    },
   },
   methods: {
-    showModalCreate() {
-      this.modalCreateActive = true;
+    getNotifications() {
+      notificationService.getNotifications()
+        .then(response => {
+          response.data.forEach(notification => {
+            this.notifications[notification.uuid] = notification.name
+          })
+        })
+        .catch(error => notifyError(this.$vs, error));
     },
-    closeModalCreate() {
-      this.modalCreateActive = false;
+    getSchedules() {
+      scheduleService.getSchedules()
+        .then(response => {
+          response.data.forEach(schedule => {
+            this.schedules[schedule.uuid] = schedule.name
+          })
+        })
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalView(index) {
+      this.modalAction = this.VIEW
+      this.populateConfiguration(index)
+      this.modalActive = true;
+    },
+    populateConfiguration(index) {
+      this.configuration = {
+        uuid: this.configurations[index].uuid,
+        name: this.configurations[index].name,
+        notificationUuid: this.configurations[index].notificationUuid,
+        scheduleUuid: this.configurations[index].scheduleUuid,
+        notifications: this.notifications,
+        schedules: this.schedules,
+      }
+    },
+    closeModal() {
+      this.modalActive = false;
     },
     getConfigurations() {
-      this.configurations = [{
-        name: 'Configuration 1',
-        description: 'Configuration 1 description',
-        value: 1,
-        status: 'success',
-      },
-      {
-        name: 'Configuration 2',
-        description: 'Configuration 2 description',
-        value: 2,
-        status: 'warning',
-      },
-      {
-        name: 'Configuration 3',
-        description: 'Configuration 3 description',
-        value: 3,
-        status: 'error',
-      }]
+      configurationService.getConfigurations()
+        .then(response => {
+          this.configurations = response.data
+        })
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalCreate() {
+      this.configuration = {
+        uuid: '',
+        name: '',
+        notificationUuid: '',
+        scheduleUuid: '',
+        notifications: this.notifications,
+        schedules: this.schedules,
+      }
+      this.modalAction = this.CREATE
+      this.modalActive = true;
+    },
+    createConfigurations() {
+      configurationService.createConfiguration(this.configuration)
+      .catch(error => notifyError(this.$vs, error));
+    },
+    showModalEdit(index) {
+      this.modalAction = this.EDIT
+      this.populateConfiguration(index)
+      this.modalActive = true;
+    },
+    editConfigurations(uuid) {
+      console.log(this.configuration)
+      configurationService.updateConfiguration(this.configuration, uuid)
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalDelete(index) {
+      this.configuration = {
+        uuid: this.configurations[index].uuid,
+      }
+      this.modalDeleteActive = true;
+    },
+    closeModalDelete() {
+      this.modalDeleteActive = false;
+    },
+    deleteConfiguration(uuid) {
+      configurationService.deleteConfiguration(uuid)
+        .catch(error => notifyError(this.$vs, error))
+        .finally(() => {
+          this.modalDeleteActive = false;
+          this.getConfigurations();
+        });
     },
   },
 }
 </script>
+
+<style>
+
+.modal-label{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: #e2e8f0;
+  font-size: font-medium;
+  margin-bottom: 0.5rem;
+}
+
+.modal-input{
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+
+  box-sizing: border-box;
+  font-size: font-medium;
+  
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  border-style: solid;
+  border-radius: 0.7rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+}
+
+.modal-button{
+  color: #fff;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.5rem 1.25rem 0.5rem 1.25rem;
+  font-weight: 500;
+  align-items: margin-left;
+  display: inline-flex;
+  margin-top: 1rem;
+
+  background-color: #2b6cb0;
+  font-family: inherit;
+  cursor: pointer;
+  overflow: visible;
+  border-radius: 0.5rem;
+}
+
+</style>

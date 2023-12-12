@@ -45,6 +45,16 @@
 <script>
 import ToogleSwitch from '@/components/others/ToogleSwitch.vue'
 
+const {
+  INFO,
+  WARNING,
+  CRITICAL,
+  EMAIL,
+  SLACK,
+  DISCORD,
+  TELEGRAM,
+} = require('@/services/constants/notifications')
+
 export default {
   name: 'NotificationsModalBody',
   components: {
@@ -66,7 +76,7 @@ export default {
       },
       level: {
         type: String,
-        default: 'INFO'
+        default: INFO
       },
       method: {
         type: Array,
@@ -78,15 +88,15 @@ export default {
     return {
       selectedMethods: this.data.method,
       levelsOptions: [
-        { key: 'INFO', value: 'Info' },
-        { key: 'WARNING', value: 'Warning' },
-        { key: 'CRITICAL', value: 'Critical' },
+        { key: INFO, value: 'Info' },
+        { key: WARNING, value: 'Warning' },
+        { key: CRITICAL, value: 'Critical' },
       ],
       methodsOptions: [
-        { key: 'EMAIL', value: 'Email' },
-        { key: 'SLACK', value: 'Slack' },
-        { key: 'DISCORD', value: 'Discord' },
-        { key: 'TELEGRAM', value: 'Telegram' },
+        { key: EMAIL, value: 'Email' },
+        { key: SLACK, value: 'Slack' },
+        { key: DISCORD, value: 'Discord' },
+        { key: TELEGRAM, value: 'Telegram' },
       ],
     }
   },
@@ -98,6 +108,7 @@ export default {
       this.data.enabled = value
     },
     setLevel(value) {
+      console.log(value)
       this.$emit('updateSelectedLevel', value);
     },
     updateSelectedMethods(key) {

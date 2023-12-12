@@ -1,6 +1,25 @@
 <template>
   <div id="home">
-          <ModalCreate :modalActive="modalCreateActive" @close-modal="closeModalCreate()"/>
+          <ModalCreate 
+            :modalAction="modalAction"
+            :modalActive="modalActive"
+            :modalHeader="modalHeader"
+            :itemUuid="schmeUuid"
+            @create-item="createControls"
+            @edit-item="editControls"
+            @close-modal="closeModal">
+
+            <ControlsModalBody :data="control" :canEditModal="canEditOrCreateControl && modalAction !== VIEW" />
+
+          </ModalCreate>
+
+          <ModalDelete 
+            :itemName="'Control'"  
+            :modalActive="modalDeleteActive"
+            :itemUuid="schmeUuid"
+            @close-modal-delete="closeModalDelete"
+            @delete-item="deleteControl"
+          />
 
           <div class="lg:flex justify-between items-center mb-6">
             <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -19,15 +38,17 @@
               </ol>
             </nav>
 
-            <button @click="showModalCreate()"
+            <button v-if="hasPermissionToCreate" @click="showModalCreate()"
               class="bg-green-500 hover:bg-blue-600 focus:outline-none rounded-lg px-4 py-2 text-white font-semibold shadow">
               Create Control
             </button>
           </div>
 
-   
           <div class="flex flex-wrap -mx-3">
-            <ItemsList :listItemsName="'Controls'" :items="controls"></ItemsList>
+            <ItemsList 
+              :listItemsName="'Controls'" :items="controls"
+              :viewItem="showModalView" :editItem="hasPermissionToEdit ? showModalEdit : null" 
+              :excludeItem="hasPermissionToDelete ? showModalDelete : null" />
           </div>
 
   </div>
@@ -36,50 +57,174 @@
 <script>
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
+import ControlsModalBody from './ControlsModalBody'
+import ModalDelete from '../../components/modal/ModalDelete.vue'
+import controlService from '@/services/api/rest/controls/index'
+import { notifyError } from '@/services/notify/errors'
 
 export default {
   name: 'DashboardControls',
   components: {
     ItemsList,
     ModalCreate,
-  },
+    ControlsModalBody,
+    ModalDelete
+},
   data() {
     return {
+      control: {},
       controls: [],
       showOptionsIndex: null,
-      modalCreateActive: false,
-    }
+      modalActive: false,
+      modalDeleteActive: false,
+      modalAction: '',
+      canEditOrCreateControl: true,
+      VIEW: 'View',
+      EDIT: 'Edit',
+      CREATE: 'Create'
+      }
   },
   beforeMount() {
     this.getControls();
   },
-  methods: {
-    showModalCreate() {
-      this.modalCreateActive = true;
+  computed: {
+    schmeUuid() {
+      return this.control?.uuid || ''
     },
-    closeModalCreate() {
-      this.modalCreateActive = false;
+    modalHeader() {
+      return `${this.modalAction} Control ${this.control?.name || ''}`
+    },
+    hasPermissionToCreate() {
+      return true
+    },
+    hasPermissionToEdit() {
+      return true
+    },
+    hasPermissionToDelete() {
+      return true
+    },
+  },
+  methods: {
+    showModalView(index) {
+      this.modalAction = this.VIEW
+      this.populateControl(index)
+      this.modalActive = true;
+    },
+    populateControl(index) {
+      this.control = {
+        uuid: this.controls[index].uuid,
+        name: this.controls[index].name,
+        description: this.controls[index].description,
+        controlType: this.controls[index].type,
+        kp: this.controls[index].kp,
+        ki: this.controls[index].ki,
+        kd: this.controls[index].kd,
+      }
+    },
+    closeModal() {
+      this.modalActive = false;
     },
     getControls() {
-      this.controls = [{
-        name: 'Control 1',
-        description: 'Control 1 description',
-        value: 1,
-        status: 'success',
-      },
-      {
-        name: 'Control 2',
-        description: 'Control 2 description',
-        value: 2,
-        status: 'warning',
-      },
-      {
-        name: 'Control 3',
-        description: 'Control 3 description',
-        value: 3,
-        status: 'error',
-      }]
+      controlService.getControls()
+        .then(response => {
+          this.controls = response.data
+        })
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalCreate() {
+      this.control = {}
+
+      this.modalAction = this.CREATE
+      this.modalActive = true;
+    },
+    createControls() {
+      controlService.createControl(this.control)
+      .catch(error => notifyError(this.$vs, error));
+    },
+    showModalEdit(index) {
+      this.modalAction = this.EDIT
+      this.populateControl(index)
+      this.modalActive = true;
+    },
+    editControls(uuid) {
+      console.log(this.control)
+      controlService.updateControl(this.control, uuid)
+        .catch(error => notifyError(this.$vs, error));
+    },
+    showModalDelete(index) {
+      this.control = {
+        uuid: this.controls[index].uuid,
+      }
+      this.modalDeleteActive = true;
+    },
+    closeModalDelete() {
+      this.modalDeleteActive = false;
+    },
+    deleteControl(uuid) {
+      controlService.deleteControl(uuid)
+        .catch(error => notifyError(this.$vs, error))
+        .finally(() => {
+          this.modalDeleteActive = false;
+          this.getControls();
+        });
     },
   },
 }
 </script>
+
+<style>
+
+.modal-label{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: #e2e8f0;
+  font-size: font-medium;
+  margin-bottom: 0.5rem;
+}
+
+.modal-input{
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #1a202c;
+  display: block;
+
+  box-sizing: border-box;
+  font-size: font-medium;
+  
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  border-style: solid;
+  border-radius: 0.7rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+}
+
+.modal-button{
+  color: #fff;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.5rem 1.25rem 0.5rem 1.25rem;
+  font-weight: 500;
+  align-items: margin-left;
+  display: inline-flex;
+  margin-top: 1rem;
+
+  background-color: #2b6cb0;
+  font-family: inherit;
+  cursor: pointer;
+  overflow: visible;
+  border-radius: 0.5rem;
+}
+
+</style>
