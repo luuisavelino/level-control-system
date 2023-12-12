@@ -1,14 +1,11 @@
 <template>
-
-  <NavBar />
-  <SideBar />
-
-  <div :style="{ 'margin-left': sidebarWidth }" />
-
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
-<script setup>
-import NavBar from '@/components/Layouts/Navbar/NavBar.vue'
-import SideBar from '@/components/Layouts/Sidebar/SideBar.vue'
-import { sidebarWidth } from '@/components/Layouts/Sidebar/state'
+<script>
+export default {
+  name: 'app'
+}
 </script>

@@ -66,6 +66,7 @@ export class UsersService {
       throw new NotFoundException();
     }
 
+    // TODO: Get just what is needed to update
     const userUpdated = await this.usersRepo.update({
       where: { uuid },
       data: updateUserDto,
