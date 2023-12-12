@@ -3,12 +3,18 @@ import { CreateSystemDto } from '../dto/create-system.dto';
 import { UpdateSystemDto } from '../dto/update-system.dto';
 import { SystemsRepository } from 'src/shared/database/repositories/systems.repositories';
 import { ValidateSystemService } from './validate-systems.service';
+import { ValidateSchemeService } from 'src/modules/schemes/services/validate-scheme.service';
+import { ValidateConfigurationService } from 'src/modules/configurations/services/validate-configuration.service';
+import { ValidateControlService } from 'src/modules/controls/services/validate-control.service';
 
 @Injectable()
 export class SystemsService {
   constructor(
     private readonly systemRepo: SystemsRepository,
+    private readonly validateSchemeService: ValidateSchemeService,
     private readonly validateSystemService: ValidateSystemService,
+    private readonly validateControlService: ValidateControlService,
+    private readonly validateConfigurationService: ValidateConfigurationService,
   ) {}
 
   findAll() {
@@ -112,10 +118,10 @@ export class SystemsService {
   }) {
     await Promise.all([
       systemUuid && this.validateSystemService.validate(systemUuid),
-      schemeUuid && this.validateSystemService.validate(schemeUuid),
-      controlUuid && this.validateSystemService.validate(controlUuid),
+      schemeUuid && this.validateSchemeService.validate(schemeUuid),
+      controlUuid && this.validateControlService.validate(controlUuid),
       configurationUuid &&
-        this.validateSystemService.validate(configurationUuid),
+        this.validateConfigurationService.validate(configurationUuid),
     ]);
   }
 }

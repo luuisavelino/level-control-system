@@ -13,7 +13,7 @@
               <label for="level" class="modal-label">Notification Schedules</label>
               <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.scheduleUuid">
                 <option 
-                  v-for="(item, index) in data.schedules" :key="index"
+                  v-for="(item, index) in schedules" :key="index"
                   class="mr-4" :value="index">
                   {{ item }}
                 </option>
@@ -25,7 +25,7 @@
               <select id="notification" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
               focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.notificationUuid">
                 <option 
-                  v-for="(item, index) in data.notifications" :key="index"
+                  v-for="(item, index) in notifications" :key="index"
                   class="mr-4" :value="index">
                   {{ item }}
                 </option>
@@ -43,6 +43,14 @@ export default {
       type: Boolean,
       default: false
     },
+    notifications: {
+      type: Object,
+      default: null,
+    },
+    schedules: {
+      type: Object,
+      default: null,
+    },
     data: {
       name: {
         type: String,
@@ -56,14 +64,6 @@ export default {
         type: String,
         default: ''
       },
-      notifications: {
-        type: Object,
-        default: {}
-      },
-      schedules: {
-        type: Object,
-        default: {}
-      }
     }
   },
 }

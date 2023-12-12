@@ -26,7 +26,7 @@
               <label for="control" class="modal-label">Select Control</label>
               <select id="control" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.controlUuid">
                 <option 
-                  v-for="(item, index) in data.controls" :key="index"
+                  v-for="(item, index) in controls" :key="index"
                   class="mr-4" :value="index">
                   {{ item }}
                 </option>
@@ -37,7 +37,7 @@
               <label for="scheme" class="modal-label">Select Scheme</label>
               <select id="scheme" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.schemeUuid">
                 <option 
-                  v-for="(item, index) in data.schemes" :key="index"
+                  v-for="(item, index) in schemes" :key="index"
                   class="mr-4" :value="index">
                   {{ item }}
                 </option>
@@ -48,7 +48,7 @@
               <label for="configuration" class="modal-label">Select Configuration</label>
               <select id="configuration" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.configurationUuid">
                 <option 
-                  v-for="(item, index) in data.configurations" :key="index"
+                  v-for="(item, index) in configurations" :key="index"
                   class="mr-4" :value="index">
                   {{ item }}
                 </option>
@@ -79,7 +79,20 @@ export default {
       type: Boolean,
       default: false
     },
+    controls: {
+      type: Object,
+      default: null,
+    },
+    schemes: {
+      type: Object,
+      default: null,
+    },
+    configurations: {
+      type: Object,
+      default: null,
+    },
     data: {
+      type: Object,
       name: {
         type: String,
         default: ''
@@ -108,19 +121,8 @@ export default {
         type: String,
         default: ''
       },
-      controls: {
-        type: Object,
-        default: {}
-      },
-      schemes: {
-        type: Object,
-        default: {}
-      },
-      configurations: {
-        type: Object,
-        default: {}
-      }
-    }
+    },
+
   },
   methods: {
     toggleEnabled(value) {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import store from "@/store";
 
-const API_URL = "http://localhost:3000/systems/";
+const API_URL = "http://localhost:3000/systems";
 const headers = {
   "Content-Type": "application/json",
   Authorization: "Bearer " + store.getters.getToken,

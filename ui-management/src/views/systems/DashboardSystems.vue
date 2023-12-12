@@ -9,8 +9,9 @@
             @edit-item="editSystems"
             @close-modal="closeModal">
 
-            <SystemsModalBody :data="system" :canEditModal="canEditOrCreateSystem && modalAction !== VIEW" />
-
+            <SystemsModalBody :data="system" :controls="controls" 
+              :schemes="schemes" :configurations="configurations"
+              :canEditModal="canEditOrCreateSystem && modalAction !== VIEW" />
           </ModalCreate>
 
           <ModalDelete 
@@ -95,8 +96,6 @@ export default {
     this.getControls();
     this.getSchemes();
     this.getConfigurations();
-
-    console.log(this.controls)
   },
   computed: {
     schmeUuid() {
@@ -154,9 +153,6 @@ export default {
         name: this.systems[index].name,
         configurationUuid: this.systems[index].configurationUuid,
         scheduleUuid: this.systems[index].scheduleUuid,
-        controls: this.controls,
-        schemes: this.schemes,
-        configurations: this.configurations,
       }
     },
     closeModal() {
@@ -170,11 +166,7 @@ export default {
         .catch(error => notifyError(this.$vs, error));
     },
     showModalCreate() {
-      this.system = {
-        controls: this.controls,
-        schemes: this.schemes,
-        configurations: this.configurations,
-      }
+      this.system = {}
       this.modalAction = this.CREATE
       this.modalActive = true;
     },

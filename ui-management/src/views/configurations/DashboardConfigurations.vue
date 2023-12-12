@@ -9,7 +9,9 @@
             @edit-item="editConfigurations"
             @close-modal="closeModal">
 
-            <ConfigurationsModalBody :data="configuration" :canEditModal="canEditOrCreateConfiguration && modalAction !== VIEW" />
+            <ConfigurationsModalBody :data="configuration" 
+            :schedules="schedules" :notifications="notifications"
+            :canEditModal="canEditOrCreateConfiguration && modalAction !== VIEW" />
 
           </ModalCreate>
 
@@ -140,8 +142,6 @@ export default {
         name: this.configurations[index].name,
         notificationUuid: this.configurations[index].notificationUuid,
         scheduleUuid: this.configurations[index].scheduleUuid,
-        notifications: this.notifications,
-        schedules: this.schedules,
       }
     },
     closeModal() {
@@ -155,10 +155,7 @@ export default {
         .catch(error => notifyError(this.$vs, error));
     },
     showModalCreate() {
-      this.configuration = {
-        notifications: this.notifications,
-        schedules: this.schedules,
-      }
+      this.configuration = {}
       this.modalAction = this.CREATE
       this.modalActive = true;
     },
@@ -172,7 +169,6 @@ export default {
       this.modalActive = true;
     },
     editConfigurations(uuid) {
-      console.log(this.configuration)
       configurationService.updateConfiguration(this.configuration, uuid)
         .catch(error => notifyError(this.$vs, error));
     },
