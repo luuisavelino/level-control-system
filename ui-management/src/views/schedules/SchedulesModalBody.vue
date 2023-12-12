@@ -6,25 +6,23 @@
               <input 
                 :disabled="!canEditModal"
                 type="text" name="name" id="name" required=""
-                class="modal-input" placeholder="Type schedule name" :v-model="data.name">
+                class="modal-input" placeholder="Type schedule name" v-model="data.name">
             </div>
 
             <div class="col-span-2">
               <label for="startTime" class="modal-label">Start Time</label>
               <input
                 :disabled="!canEditModal"
-                type="datetime-local" name="startTime" id="startTime" required=""
-                class="modal-input" :v-model="data.startTime">
+                type="datetime-local" name="startTime" id="startTime" required="false"
+                class="modal-input" v-model="data.startTime">
             </div>
 
             <div class="col-span-2">
               <label for="endTime" class="modal-label">End Time</label>
               <input
                 :disabled="!canEditModal"
-                type="datetime-local" name="endTime" id="endTime" required=""
-                class="modal-input"
-                :v-model="dataaaa">
-            
+                type="datetime-local" name="endTime" id="endTime" required="false"
+                class="modal-input" v-model="data.endTime">
             </div>
 
   </div>
@@ -34,11 +32,6 @@
 
 export default {
   name: 'SchedulesModalBody',
-  computed: {
-    dataaaa() {
-      return this.data.endTime
-    } 
-  },
   props: {
     canEditModal: {
       type: Boolean,

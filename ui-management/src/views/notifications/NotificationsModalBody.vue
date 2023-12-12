@@ -10,30 +10,28 @@
             </div>
 
             <div class="col-span-2 m-1" >
-              <label for="name" class="modal-label">Notification Enabled</label>
-              <ToogleSwitch :checked="data.enabled" @toggle-button="toggleEnabled"/>
+              <label for="enabled" class="modal-label">Notification Enabled</label>
+              <ToogleSwitch id="enabled" :checked="data.enabled" @toggle-button="toggleEnabled"/>
             </div>
 
             <div class="col-span-2 m-1">
-              <label for="name" class="modal-label">Notification Level</label>
-              <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              @change="setLevel(data.level)">
+              <label for="level" class="modal-label">Notification Level</label>
+              <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.level">
                 <option 
                   v-for="(item, index) in levelsOptions" :key="index"
-                  :selected="item.key === data.level" class="mr-4">
+                  class="mr-4" :value="item.key">
                   {{ item.value }}
                 </option>
               </select>
             </div>
 
             <div class="col-span-2 m-1">
-              <label for="name" class="modal-label">Notification Method</label>
-
-              <div class="modal-checkbox">
+              <label for="method" class="modal-label">Notification Method</label>
+              <div id="method" class="modal-checkbox">
                 <div v-for="(item, index) in methodsOptions" :key="index">
                   <input 
-                    type="checkbox" :id="item.key" :checked="checked(item.key)"
-                    class="mr-2" @change="updateSelectedMethods(item.key)">
+                    type="checkbox" :id="item.key" :value="item.key"
+                    class="mr-2" v-model="data.method">
                   <label class="label">{{ item.value }}</label>
                 </div>
               </div>
@@ -44,16 +42,6 @@
 
 <script>
 import ToogleSwitch from '@/components/others/ToogleSwitch.vue'
-
-const {
-  INFO,
-  WARNING,
-  CRITICAL,
-  EMAIL,
-  SLACK,
-  DISCORD,
-  TELEGRAM,
-} = require('@/services/constants/notifications')
 
 export default {
   name: 'NotificationsModalBody',
@@ -76,7 +64,7 @@ export default {
       },
       level: {
         type: String,
-        default: INFO
+        default: 'INFO'
       },
       method: {
         type: Array,
@@ -86,17 +74,18 @@ export default {
   },
   data() {
     return {
+      checkedNames: [],
       selectedMethods: this.data.method,
       levelsOptions: [
-        { key: INFO, value: 'Info' },
-        { key: WARNING, value: 'Warning' },
-        { key: CRITICAL, value: 'Critical' },
+        { key: 'INFO', value: 'Info' },
+        { key: 'WARNING', value: 'Warning' },
+        { key: 'CRITICAL', value: 'Critical' },
       ],
       methodsOptions: [
-        { key: EMAIL, value: 'Email' },
-        { key: SLACK, value: 'Slack' },
-        { key: DISCORD, value: 'Discord' },
-        { key: TELEGRAM, value: 'Telegram' },
+        { key: 'EMAIL', value: 'Email' },
+        { key: 'SLACK', value: 'Slack' },
+        { key: 'DISCORD', value: 'Discord' },
+        { key: 'TELEGRAM', value: 'Telegram' },
       ],
     }
   },

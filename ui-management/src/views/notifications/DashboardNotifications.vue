@@ -151,7 +151,6 @@ export default {
       this.modalActive = true;
     },
     editNotifications(uuid) {
-      console.log(this.notification)
       notificationService.updateNotification(this.notification, uuid)
         .catch(error => notifyError(this.$vs, error));
     },

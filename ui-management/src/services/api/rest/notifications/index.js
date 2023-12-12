@@ -26,6 +26,7 @@ const createNotification = (notification) => {
       enabled: notification.enabled,
       level: notification.level,
       type: notification.type,
+      method: notification.method,
     },
     headers
   };
@@ -42,6 +43,7 @@ const updateNotification = (notification, uuid) => {
       enabled: notification.enabled,
       level: notification.level,
       type: notification.type,
+      method: notification.method,
     },
     headers
   };

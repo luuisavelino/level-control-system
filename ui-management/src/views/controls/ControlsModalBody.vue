@@ -10,12 +10,11 @@
             </div>
 
             <div class="col-span-2 m-1">
-              <label for="name" class="modal-label">Control Type</label>
-              <select id="controlType" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              @change="setType(data.controlType)">
+              <label for="controlType" class="modal-label">Control Type</label>
+              <select id="controlType" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.controlType">
                 <option 
                   v-for="(item, index) in typesOptions" :key="index"
-                  :selected="item.key === data.controlType" class="mr-4">
+                  class="mr-4" :value="item.key">
                   {{ item.value }}
                 </option>
               </select>
@@ -58,20 +57,15 @@
 </template>
 
 <script>
-const {
-  PI,
-  PD,
-  PID
-} = require('@/services/constants/controls')
 
 export default {
   name: 'ControlsModalBody',
   data() {
     return {
       typesOptions: [
-        { key: PI, value: 'PI' },
-        { key: PD, value: 'PD' },
-        { key: PID, value: 'PID' },
+        { key: 'PI', value: 'PI' },
+        { key: 'PD', value: 'PD' },
+        { key: 'PID', value: 'PID' },
       ],
     }
   },

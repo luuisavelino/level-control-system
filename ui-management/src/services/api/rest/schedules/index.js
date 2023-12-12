@@ -1,5 +1,6 @@
 import axios from 'axios';
 import store from '@/store';
+import moment from 'moment';
 
 const API_URL = 'http://localhost:3000/schedules/';
 const headers = {
@@ -23,8 +24,8 @@ const createSchedule = (scheme) => {
     url: API_URL,
     data: {
       name: scheme.name,
-      startTime: new Date(scheme.startTime).toISOString(),
-      endTime: new Date(scheme.endTime).toISOString(),
+      startTime: moment(scheme.startTime).toISOString(),
+      endTime: moment(scheme.endTime).toISOString(),
     },
     headers
   };
@@ -38,8 +39,8 @@ const updateSchedule = (scheme, uuid) => {
     url: API_URL + uuid,
     data: {
       name: scheme.name,
-      startTime: scheme.startTime,
-      endTime: scheme.endTime,
+      startTime: moment(scheme.startTime).toISOString(),
+      endTime: moment(scheme.endTime).toISOString(),
     },
     headers
   };

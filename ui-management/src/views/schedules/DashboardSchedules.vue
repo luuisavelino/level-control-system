@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
 import SchedulesModalBody from './SchedulesModalBody'
@@ -111,13 +113,14 @@ export default {
       this.modalActive = true;
     },
     populateSchedule(index) {
-      console.log(new Date(this.schedules[index].startTime).toISOString())
       this.schedule = {
         uuid: this.schedules[index].uuid,
         name: this.schedules[index].name,
-        startTime: new Date(this.schedules[index].startTime).toISOString(), // convert ISO-8601 to datetime-local
-        endTime: new Date(this.schedules[index].endTime).toISOString(),
+        startTime: moment(this.schedules[index].startTime).format('YYYY-MM-DD HH:mm:ss'),
+        endTime: moment(this.schedules[index].endTime).format('YYYY-MM-DD HH:mm:ss'),
       }
+
+      console.log(this.schedule)
     },
     closeModal() {
       this.modalActive = false;

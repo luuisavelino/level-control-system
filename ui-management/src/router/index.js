@@ -28,7 +28,10 @@ const router = new Router({
         {
           path: "dashboard",
           name: "DashboardUsers",
-          component: null,
+          component: () => import("@/views/users/DashboardUsers"),
+          meta: {
+            requiresAuth: true,
+          },
         },
       ],
     },
