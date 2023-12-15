@@ -8,7 +8,7 @@ const router = new Router({
     {
       path: "/",
       redirect: {
-        name: "DashboardHome",
+        name: "HomeDashboard",
       },
     },
     {
@@ -22,13 +22,13 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardUsers",
+            name: "UsersDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardUsers",
-          component: () => import("@/views/users/DashboardUsers"),
+          name: "UsersDashboard",
+          component: () => import("@/views/users/UsersDashboard"),
           meta: {
             requiresAuth: true,
           },
@@ -42,12 +42,12 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardPreferences",
+            name: "PreferencesDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardPreferences",
+          name: "PreferencesDashboard",
           component: null,
         },
       ],
@@ -59,13 +59,13 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardHome",
+            name: "HomeDashboard",
           },
         },
         {
           path: "home",
-          name: "DashboardHome",
-          component: () => import("@/views/home/DashboardHome"),
+          name: "HomeDashboard",
+          component: () => import("@/views/home/HomeDashboard"),
           meta: {
             requiresAuth: true,
           },
@@ -79,13 +79,21 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardSystems",
+            name: "SystemsDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardSystems",
-          component: () => import("@/views/systems/DashboardSystems"),
+          name: "SystemsDashboard",
+          component: () => import("@/views/systems/SystemsDashboard"),
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "charts",
+          name: "SystemsCharts",
+          component: () => import("@/views/systems/SystemsCharts"),
           meta: {
             requiresAuth: true,
           },
@@ -99,13 +107,13 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardControls",
+            name: "ControlsDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardControls",
-          component: () => import("@/views/controls/DashboardControls"),
+          name: "ControlsDashboard",
+          component: () => import("@/views/controls/ControlsDashboard"),
           meta: {
             requiresAuth: true,
           },
@@ -119,13 +127,13 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardSchemes",
+            name: "SchemesDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardSchemes",
-          component: () => import("@/views/schemes/DashboardSchemes"),
+          name: "SchemesDashboard",
+          component: () => import("@/views/schemes/SchemesDashboard"),
           meta: {
             requiresAuth: true,
           },
@@ -139,14 +147,14 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardConfigurations",
+            name: "ConfigurationsDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardConfigurations",
+          name: "ConfigurationsDashboard",
           component: () =>
-            import("@/views/configurations/DashboardConfigurations"),
+            import("@/views/configurations/ConfigurationsDashboard"),
           meta: {
             requiresAuth: true,
           },
@@ -160,14 +168,14 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardNotifications",
+            name: "NotificationsDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardNotifications",
+          name: "NotificationsDashboard",
           component: () =>
-            import("@/views/notifications/DashboardNotifications"),
+            import("@/views/notifications/NotificationsDashboard"),
           meta: {
             requiresAuth: true,
           },
@@ -181,13 +189,13 @@ const router = new Router({
         {
           path: "/",
           redirect: {
-            name: "DashboardSchedules",
+            name: "SchedulesDashboard",
           },
         },
         {
           path: "dashboard",
-          name: "DashboardSchedules",
-          component: () => import("@/views/schedules/DashboardSchedules"),
+          name: "SchedulesDashboard",
+          component: () => import("@/views/schedules/SchedulesDashboard"),
           meta: {
             requiresAuth: true,
           },

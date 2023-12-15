@@ -5,21 +5,20 @@
             :modalActive="modalActive"
             :modalHeader="modalHeader"
             :itemUuid="schmeUuid"
-            @create-item="createSystems"
-            @edit-item="editSystems"
+            @create-item="createSchemes"
+            @edit-item="editSchemes"
             @close-modal="closeModal">
 
-            <SystemsModalBody :data="system" :controls="controls" 
-              :schemes="schemes" :configurations="configurations"
-              :canEditModal="canEditOrCreateSystem && modalAction !== VIEW" />
+            <SchemesModalBody :data="scheme" :canEditModal="canEditOrCreateScheme && modalAction !== VIEW" />
+
           </ModalCreate>
 
           <ModalDelete 
-            :itemName="'System'"  
+            :itemName="'Scheme'"  
             :modalActive="modalDeleteActive"
             :itemUuid="schmeUuid"
             @close-modal-delete="closeModalDelete"
-            @delete-item="deleteSystem"
+            @delete-item="deleteScheme"
           />
 
           <div class="lg:flex justify-between items-center mb-6">
@@ -27,13 +26,13 @@
               <ol class="list-none p-0 inline-flex">
                 <li class="flex items-center text-blue-500">
                   <router-link :to="'/dashboard/home'" class="link">
-                    <a class="text-gray-700">Home</a>
+                    <a class="text-gray-600">Home</a>
                   </router-link>
                   <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
                 </li>
                 <li class="flex items-center">
-                  <router-link :to="'/systems/dashboard'" class="link">
-                    <a class="text-gray-600">Systems</a>
+                  <router-link :to="'/schemes/dashboard'" class="link">
+                    <a class="text-gray-700">Schemes</a>
                   </router-link>
                 </li>
               </ol>
@@ -41,13 +40,13 @@
 
             <button v-if="hasPermissionToCreate" @click="showModalCreate()"
               class="bg-green-500 hover:bg-blue-600 focus:outline-none rounded-lg px-4 py-2 text-white font-semibold shadow">
-              Create System
+              Create Scheme
             </button>
           </div>
 
           <div class="flex flex-wrap -mx-3">
             <ItemsList 
-              :listItemsName="'Systems'" :items="systems"
+              :listItemsName="'Schemes'" :items="schemes"
               :viewItem="showModalView" :editItem="hasPermissionToEdit ? showModalEdit : null" 
               :excludeItem="hasPermissionToDelete ? showModalDelete : null" />
           </div>
@@ -58,51 +57,42 @@
 <script>
 import ItemsList from '@/components/listItems/ListItems'
 import ModalCreate from '@/components/modal/ModalCreate'
-import SystemsModalBody from './SystemsModalBody'
+import SchemesModalBody from './SchemesModalBody'
 import ModalDelete from '../../components/modal/ModalDelete.vue'
-import systemService from '@/services/api/rest/systems/index'
-import configurationService from '@/services/api/rest/configurations/index'
 import schemeService from '@/services/api/rest/schemes/index'
-import controlService from '@/services/api/rest/controls/index'
 import { notifyError } from '@/services/notify/errors'
 
 export default {
-  name: 'DashboardSystems',
+  name: 'SchemesDashboard',
   components: {
     ItemsList,
     ModalCreate,
-    SystemsModalBody,
+    SchemesModalBody,
     ModalDelete
 },
   data() {
     return {
-      system: {},
-      systems: [],
+      scheme: {},
+      schemes: [],
       showOptionsIndex: null,
       modalActive: false,
       modalDeleteActive: false,
       modalAction: '',
-      canEditOrCreateSystem: true,
+      canEditOrCreateScheme: true,
       VIEW: 'View',
       EDIT: 'Edit',
-      CREATE: 'Create',
-      controls: {},
-      schemes: {},
-      configurations: {},
-    }
+      CREATE: 'Create'
+      }
   },
   beforeMount() {
-    this.getSystems();
-    this.getControls();
     this.getSchemes();
-    this.getConfigurations();
   },
   computed: {
     schmeUuid() {
-      return this.system?.uuid || ''
+      return this.scheme?.uuid || ''
     },
     modalHeader() {
-      return `${this.modalAction} System ${this.system?.name || ''}`
+      return `${this.modalAction} Scheme ${this.scheme?.name || ''}`
     },
     hasPermissionToCreate() {
       return true
@@ -115,93 +105,65 @@ export default {
     },
   },
   methods: {
-    getControls() {
-      controlService.getControls()
-        .then(response => {
-          response.data.forEach(control => {
-            this.controls[control.uuid] = control.name
-          })
-        })
-        .catch(error => notifyError(this.$vs, error));
-    },
-    getSchemes() {
-      schemeService.getSchemes()
-        .then(response => {
-          response.data.forEach(scheme => {
-            this.schemes[scheme.uuid] = scheme.name
-          })
-        })
-        .catch(error => notifyError(this.$vs, error));
-    },
-    getConfigurations() {
-      configurationService.getConfigurations()
-        .then(response => {
-          response.data.forEach(configuration => {
-            this.configurations[configuration.uuid] = configuration.name
-          })
-        })
-        .catch(error => notifyError(this.$vs, error));
-    },
     showModalView(index) {
       this.modalAction = this.VIEW
-      this.populateSystem(index)
+      this.populateScheme(index)
       this.modalActive = true;
     },
-    populateSystem(index) {
-      this.system = {
-        uuid: this.systems[index].uuid,
-        name: this.systems[index].name,
-        path: this.systems[index].path,
-        enabled: this.systems[index].enabled,
-        description: this.systems[index].description,
-        controlUuid: this.systems[index].controlUuid,
-        configurationUuid: this.systems[index].configurationUuid,
-        schemeUuid: this.systems[index].schemeUuid,
+    populateScheme(index) {
+      this.scheme = {
+        uuid: this.schemes[index].uuid,
+        name: this.schemes[index].name,
+        description: this.schemes[index].description,
+        setpoint: this.schemes[index].setpoint,
+        minLevel: this.schemes[index].minLevel,
+        maxLevel: this.schemes[index].maxLevel,
       }
     },
     closeModal() {
       this.modalActive = false;
     },
-    getSystems() {
-      systemService.getSystems()
+    getSchemes() {
+      schemeService.getSchemes()
         .then(response => {
-          this.systems = response.data
+          this.schemes = response.data
         })
         .catch(error => notifyError(this.$vs, error));
     },
     showModalCreate() {
-      this.system = {}
+      this.scheme = {}
       this.modalAction = this.CREATE
       this.modalActive = true;
     },
-    createSystems() {
-      systemService.createSystem(this.system)
+    createSchemes() {
+      schemeService.createScheme(this.scheme)
       .catch(error => notifyError(this.$vs, error));
     },
     showModalEdit(index) {
       this.modalAction = this.EDIT
-      this.populateSystem(index)
+      this.populateScheme(index)
       this.modalActive = true;
     },
-    editSystems(uuid) {
-      systemService.updateSystem(this.system, uuid)
+    editSchemes(uuid) {
+      console.log(this.scheme)
+      schemeService.updateScheme(this.scheme, uuid)
         .catch(error => notifyError(this.$vs, error));
     },
     showModalDelete(index) {
-      this.system = {
-        uuid: this.systems[index].uuid,
+      this.scheme = {
+        uuid: this.schemes[index].uuid,
       }
       this.modalDeleteActive = true;
     },
     closeModalDelete() {
       this.modalDeleteActive = false;
     },
-    deleteSystem(uuid) {
-      systemService.deleteSystem(uuid)
+    deleteScheme(uuid) {
+      schemeService.deleteScheme(uuid)
         .catch(error => notifyError(this.$vs, error))
         .finally(() => {
           this.modalDeleteActive = false;
-          this.getSystems();
+          this.getSchemes();
         });
     },
   },

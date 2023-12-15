@@ -142,7 +142,7 @@
 import Chart from 'chart.js'
 
 export default {
-    name: 'DashboardHome',
+    name: 'HomeDashboard',
     data() {
         return {
             buyersData: {

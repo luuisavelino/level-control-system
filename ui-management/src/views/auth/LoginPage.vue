@@ -41,7 +41,7 @@ export default {
         .then(response => {
           localStorage.clear()
           localStorage.setItem("token", response.data.accessToken)
-          this.$router.push({ name: 'DashboardHome' })
+          this.$router.push({ name: 'HomeDashboard' })
         })
         .catch(error => notifyError(this.$vs, error));
     },

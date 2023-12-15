@@ -18,12 +18,13 @@
                 <button v-if="viewItem" @click="viewItem(index)" class="text-green-500">View</button>
                 <button v-if="editItem" @click="editItem(index)" class="text-blue-500">Edit</button>
                 <button v-if="excludeItem" @click="excludeItem(index)" class="text-red-500">Exclude</button>
+                <button v-if="openItem" @click="openItem(index)" class="text-black-500">Exclude</button>
               </div>
               <div v-else>
                 <span class="text-green-500 font-semibold text-lg">{{ item.value }}</span>
               </div>
             </div>
-          </div>
+          </div>  
 
   </div>
 </template>
@@ -53,6 +54,10 @@ export default {
       type: Function,
       required: false,
     },
+    openItem: {
+      type: Function,
+      required: false,
+    },
   },
 
   data() {
@@ -67,7 +72,6 @@ export default {
     hideOptions() {
       this.showOptionsIndex = null;
     },
-
   },
 }
 </script>

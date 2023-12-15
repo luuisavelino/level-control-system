@@ -1,5 +1,5 @@
 <template>
-    <div class="w-1/2 md:w-1/3 lg:w-64 fixed md:top-0 md:left-0 h-screen lg:block bg-gray-100 border-r z-30" :class="sideBarOpen ? '' : 'hidden'" id="main-nav">
+    <div class="w-1/2 md:w-1/3 lg:w-48 fixed md:top-0 md:left-0 h-screen lg:block bg-gray-100 border-r z-30" :class="sideBarOpen ? '' : 'hidden'" id="main-nav">
 
           <div class="w-full h-20 border-b flex px-4 items-center mb-8">
             <router-link to="/">
