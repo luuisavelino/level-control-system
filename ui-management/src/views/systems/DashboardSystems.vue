@@ -151,8 +151,12 @@ export default {
       this.system = {
         uuid: this.systems[index].uuid,
         name: this.systems[index].name,
+        path: this.systems[index].path,
+        enabled: this.systems[index].enabled,
+        description: this.systems[index].description,
+        controlUuid: this.systems[index].controlUuid,
         configurationUuid: this.systems[index].configurationUuid,
-        scheduleUuid: this.systems[index].scheduleUuid,
+        schemeUuid: this.systems[index].schemeUuid,
       }
     },
     closeModal() {
@@ -180,7 +184,6 @@ export default {
       this.modalActive = true;
     },
     editSystems(uuid) {
-      console.log(this.system)
       systemService.updateSystem(this.system, uuid)
         .catch(error => notifyError(this.$vs, error));
     },

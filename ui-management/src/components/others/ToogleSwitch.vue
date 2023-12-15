@@ -1,7 +1,7 @@
 <template>
   <div>
     <label class="switch">
-      <input type="checkbox" :checked="isChecked" @change="toggleChecked">
+      <input type="checkbox" :disabled="disabled" :checked="isChecked" @change="toggleChecked">
       <span class="slider round"></span>
     </label>
   </div>
@@ -14,6 +14,10 @@ export default {
     checked: {
       type: Boolean,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {

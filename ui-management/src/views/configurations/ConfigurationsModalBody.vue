@@ -11,7 +11,8 @@
 
             <div class="col-span-2 m-1">
               <label for="level" class="modal-label">Notification Schedules</label>
-              <select id="level" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.scheduleUuid">
+              <select id="level" :disabled="!canEditModal" v-model="data.scheduleUuid"
+              class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option 
                   v-for="(item, index) in schedules" :key="index"
                   class="mr-4" :value="index">
@@ -22,8 +23,9 @@
 
             <div class="col-span-2 m-1">
               <label for="notification" class="modal-label">Select Notification</label>
-              <select id="notification" class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
-              focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="data.notificationUuid">
+              <select id="notification" :disabled="!canEditModal" v-model="data.notificationUuid"
+              class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
+              focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option 
                   v-for="(item, index) in notifications" :key="index"
                   class="mr-4" :value="index">
