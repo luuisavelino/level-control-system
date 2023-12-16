@@ -1,121 +1,144 @@
 <template>
   <div>
 
-            <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
-              <ol class="list-none p-0 inline-flex">
-                <li class="flex items-center text-blue-500">
-                  <router-link :to="'/dashboard/home'" class="link">
-                    <a class="text-gray-600">Home</a>
-                  </router-link>
-                  <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
-                </li>
-                <li class="flex items-center text-blue-500">
-                  <router-link :to="'/systems/dashboard'" class="link">
-                    <a class="text-gray-600">Systems</a>
-                  </router-link>
-                  <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
-                </li>
-                <li class="flex items-center">
-                  <router-link :to="'/systems/charts'" class="link">
-                    <a class="text-gray-700">Charts</a>
-                  </router-link>
-                </li>
-              </ol>
-            </nav>
+    <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
+      <ol class="list-none p-0 inline-flex">
+        <li class="flex items-center text-blue-500">
+          <router-link :to="'/dashboard/home'" class="link">
+            <a class="text-gray-600">Home</a>
+          </router-link>
+          <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path
+              d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" />
+          </svg>
+        </li>
+        <li class="flex items-center text-blue-500">
+          <router-link :to="'/systems/dashboard'" class="link">
+            <a class="text-gray-600">Systems</a>
+          </router-link>
+          <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path
+              d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" />
+          </svg>
+        </li>
+        <li class="flex items-center">
+          <router-link :to="'/systems/charts'" class="link">
+            <a class="text-gray-700">Charts</a>
+          </router-link>
+        </li>
+      </ol>
+    </nav>
 
-            <div class="flex flex-wrap -mx-3">
+    <div class="flex flex-wrap -mx-3">
 
-              <div class="w-full xl:w-3/4 px-2">
-                <div class="w-full bg-white border rounded-lg p-4 mb-8 xl:mb-0">
-                  <p class="text-xl font-semibold mb-4 ">Options</p>
-                  <canvas id="buyers-chart" width="1280" height="720"></canvas>
-                </div>
-              </div>
+      <div class="w-full xl:w-3/4 px-2">
+        <div class="w-full bg-white border rounded-lg p-4 mb-8 xl:mb-0">
+          <div class="lg:flex justify-between items-start mb-6">
+            <label class="text-xl font-semibold mb-4">System A</label>
+            <select id="interval"
+              class="px-2 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block m-2 w-full xl:w-1/6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <option v-for="(item, index) in intervals" :key="index" class="mr-4" :value="index">
+                {{ item }}
+              </option>
+            </select>
+          </div>
 
-              <div class="w-full xl:w-1/4 px-2">
-                <div class="w-full bg-white border rounded-lg p-4 mb-8 xl:mb-0 grid gap-4 mb-4 grid-cols-2">
-                  <p class="text-xl font-semibold mb-4 ">Options</p>
+          <canvas id="buyers-chart" width="1280" height="720"></canvas>
 
-                  <div class="col-span-2">
-                    <label for="interval" class="modal-label">Interval</label>
-                    <select id="interval"
-                    class="bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <option 
-                        v-for="(item, index) in intervals" :key="index"
-                        class="mr-4" :value="index">
-                        {{ item }}
-                      </option>
-                    </select>
-                  </div>
+        </div>
 
-                  <div class="col-span-2 border border-gray-300 rounded-lg">
-                    <label for="setpoint" class="modal-label m-2">Setpoint</label>
-                    <input
-                      type="number" name="setpoint" id="setpoint" required="" 
-                      class="modal-input m-2 w-full xl:w-3/4" placeholder="20 (cm)">
-                      <input type="checkbox" class="ml-2 mt-2 mr-2">
-                      <label class="text-gray-700 text-sm" 
-                      title="If selected, when saving, you will edit this group, affecting other systems that also use it. If not selected, you will create a new group for this item, which only this system will be using.">
-                        Edit group
-                      </label>
-                  </div>
+      </div>
 
-                  <div class="col-span-2 border border-gray-300 rounded-lg">
-                    <label for="controlType" class="modal-label m-2">Control Type</label>
-                    <select id="controlType"
-                    class="m-2 mb-4 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full xl:w-3/4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <option 
-                        v-for="(item, index) in controlTypesOptions" :key="index"
-                        class="mr-4" :value="item.key">
-                        {{ item.value }}
-                      </option>
-                    </select>
+      <div class="w-full xl:w-1/4 px-2">
+        <div class="w-full bg-white border rounded-lg p-4 mb-8 xl:mb-0 grid gap-4 mb-4 grid-cols-2">
+          <p class="text-xl font-semibold mb-4 ">Options</p>
 
-                    <div>
-                      <label for="controlType" class="modal-label ml-2">Proporcional gain</label>
-                      <input
-                        type="number" name="setpoint" id="setpoint" required="" 
-                        class="modal-input ml-2 w-full xl:w-3/4" placeholder="1.123">
-                      </div>
+          <div class="flex justify-between items-center col-span-2 border border-gray-300 rounded-lg">
+            <label for="setpoint" class="modal-label m-2 ml-2">System Enabled</label>
+            <ToogleSwitch class="mr-2" id="enabled" :checked="systemEnabled" @toggle-button="toggleEnabled"/>
+          </div>
 
-                    <div v-if="controlType !== 'PD'">
-                      <label for="controlType" class="modal-label ml-2 mt-2">Integrative gain</label>
-                      <input
-                        type="number" name="setpoint" id="setpoint" required="" 
-                        class="modal-input ml-2 w-full xl:w-3/4" placeholder="0.345">
-                    </div>
+          <div class="col-span-2 border border-gray-300 rounded-lg">
+            <label for="setpoint" class="modal-label m-2">Setpoint</label>
+            <input type="number" name="setpoint" id="setpoint" required="" class="modal-input m-2 w-full xl:w-3/4"
+              placeholder="20 (cm)" v-model="setpoint">
+            <input type="checkbox" class="ml-2 mt-2 mr-2" v-model="editGroup.scheme">
+            <label class="text-gray-700 text-sm"
+              title="If selected, when saving, you will edit this group, affecting other systems that also use it. If not selected, you will create a new group for this item, which only this system will be using.">
+              Edit group
+            </label>
+          </div>
 
-                    <div v-if="controlType !== 'PI'">
-                      <label for="controlType" class="modal-label ml-2 mt-2">Derivative gain</label>
-                      <input
-                      type="number" name="setpoint" id="setpoint" required="" 
-                      class="modal-input m-2 w-full xl:w-3/4" placeholder="3.123">
-                    </div>
+          <div class="col-span-2 border border-gray-300 rounded-lg">
+            <label for="controlType" class="modal-label m-2">Control Type</label>
+            <select id="controlType"
+              class="px-2 m-2 mb-4 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full xl:w-3/4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="controlType">
+              <option v-for="(item, index) in controlTypesOptions" :key="index" class="mr-4" :value="item.key">
+                {{ item.value }}
+              </option>
+            </select>
 
-                    <input type="checkbox" class="ml-2 mt-2 mr-2">
-                    <label class="text-gray-700 text-sm" 
-                    title="If selected, when saving, you will edit this group, affecting other systems that also use it. If not selected, you will create a new group for this item, which only this system will be using.">
-                      Edit group
-                    </label>
-
-                  </div>
-
-
-                </div>
-              </div>
+            <div>
+              <label for="controlType" class="modal-label ml-2">Proportional gain</label>
+              <input type="number" name="setpoint" id="setpoint" required="" class="modal-input ml-2 w-full xl:w-3/4"
+                placeholder="1.123" v-model="gain.proportional">
             </div>
+
+            <div v-if="controlType !== 'PD'">
+              <label for="controlType" class="modal-label ml-2 mt-2">Integrative gain</label>
+              <input type="number" name="setpoint" id="setpoint" required="" class="modal-input ml-2 w-full xl:w-3/4"
+                placeholder="0.345" v-model="gain.integrative">
+            </div>
+
+            <div v-if="controlType !== 'PI'">
+              <label for="controlType" class="modal-label ml-2 mt-2">Derivative gain</label>
+              <input type="number" name="setpoint" id="setpoint" required="" class="modal-input m-2 w-full xl:w-3/4"
+                placeholder="3.123" v-model="gain.derivative">
+            </div>
+
+            <input type="checkbox" class="ml-2 mt-2 mr-2" v-model="editGroup.control">
+            <label class="text-gray-700 text-sm"
+              title="If selected, when saving, you will edit this group, affecting other systems that also use it. If not selected, you will create a new group for this item, which only this system will be using.">
+              Edit group
+            </label>
+
+          </div>
+
+          <button @click="editSystem()"
+            class="bg-blue-500 hover:bg-blue-600 focus:outline-none rounded-lg px-2 py-1 text-white font-semibold shadow">
+            Edit System
+          </button>
+
+        </div>
+      </div>
+    </div>
 
   </div>
 </template>
 
 <script>
 import Chart from 'chart.js'
+import ToogleSwitch from '@/components/others/ToogleSwitch.vue'
 
 export default {
   name: 'SystemsCharts',
+  components: {
+    ToogleSwitch
+  },
   data() {
     return {
-      controlType: 'PID',
+      systemEnabled: true,
+      setpoint: null,
+      editGroup: {
+        scheme: false,
+        control: false,
+      },
+      controlType: null,
+      gain: { 
+        proportional: null,
+        integrative: null,
+        derivative: null,
+      },
       intervals: {
         '1m': '1 minute',
         '5m': '5 minutes',
@@ -176,53 +199,47 @@ export default {
           }
         }
       },
-      reviewsData: {
-        type: 'bar',
-        data: {
-          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          datasets: [{
-            backgroundColor: "rgba(99,179,237,0.4)",
-            strokeColor: "#63b3ed",
-            pointColor: "#fff",
-            pointStrokeColor: "#63b3ed",
-            data: [203, 156, 99, 251, 305, 247, 256]
-          }]
-        },
-        options: {
-          legend: {
-            display: false
-          },
-          scales: {
-            yAxes: [{
-              gridLines: {
-                display: false
-              },
-              ticks: {
-                display: false
-              }
-            }],
-            xAxes: [{
-              gridLines: {
-                display: false
-              }
-            }]
-          }
-        }
-
-      }
     }
   },
   mounted() {
     new Chart(document.getElementById('buyers-chart'), this.buyersData)
-    new Chart(document.getElementById('reviews-chart'), this.reviewsData)
+    
+    this.populateOptionsData()
+  },
+  methods: {
+    editSystem() {
+      const data = {
+        systemEnabled: this.systemEnabled,
+        setpoint: this.setpoint,
+        controlType: this.controlType,
+        gain: this.gain,
+        editGroup: this.editGroup,
+      }
+
+      const uuid = this.$route.params.uuid
+
+      console.log('Edit system:', uuid, data)
+    },
+    toggleEnabled(value) {
+      this.systemEnabled = value
+    },
+    populateOptionsData() {
+      this.systemEnabled = true
+      this.setpoint = 20
+      this.controlType = 'PI'
+      this.gain = {
+        proportional: 1.123,
+        integrative: 0.345,
+        derivative: null,
+      }
+    }
   }
 }
 
 </script>
 
 <style>
-
-.modal-checkbox{
+.modal-checkbox {
   width: 100%;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -235,7 +252,7 @@ export default {
 
 }
 
-.modal-label{
+.modal-label {
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
@@ -248,7 +265,7 @@ export default {
   margin-bottom: 0.5rem;
 }
 
-.modal-input{
+.modal-input {
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
@@ -257,7 +274,7 @@ export default {
 
   box-sizing: border-box;
   font-size: font-medium;
-  
+
   padding: 0.5rem 1rem;
   border-radius: 0.2rem;
   background-color: #fff;
@@ -270,7 +287,7 @@ export default {
   transition: all 0.2s ease-in-out;
 }
 
-.modal-button{
+.modal-button {
   color: #fff;
   font-size: 0.875rem;
   text-align: center;
@@ -286,5 +303,4 @@ export default {
   overflow: visible;
   border-radius: 0.5rem;
 }
-
 </style>

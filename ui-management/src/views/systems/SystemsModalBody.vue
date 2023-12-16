@@ -25,7 +25,7 @@
             <div class="col-span-2">
               <label for="control" class="modal-label">Select Control</label>
               <select id="control" :disabled="!canEditModal" v-model="data.controlUuid"
-              class="bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              class="px-2 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option 
                   v-for="(item, index) in controls" :key="index"
                   class="mr-4" :value="index">
@@ -37,7 +37,7 @@
             <div class="col-span-2">
               <label for="scheme" class="modal-label">Select Scheme</label>
               <select id="scheme" :disabled="!canEditModal" v-model="data.schemeUuid"
-              class="bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              class="px-2 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option 
                   v-for="(item, index) in schemes" :key="index"
                   class="mr-4" :value="index">
@@ -49,7 +49,7 @@
             <div class="col-span-2">
               <label for="configuration" class="modal-label">Select Configuration</label>
               <select id="configuration" :disabled="!canEditModal" v-model="data.configurationUuid"
-              class="bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              class="px-2 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option 
                   v-for="(item, index) in configurations" :key="index"
                   class="mr-4" :value="index">

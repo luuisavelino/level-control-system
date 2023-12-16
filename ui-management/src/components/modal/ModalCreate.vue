@@ -18,7 +18,7 @@
                 </div>
 
                 <!-- Modal body -->
-                <div action="" class="p-4 md:p-5">
+                <form action="" class="p-4 md:p-5">
                   <slot />
 
                   <div class="flex border-t dark:border-gray-600" v-if="modalAction !== VIEW">
@@ -30,7 +30,7 @@
                     </button>
                   </div>
 
-                </div>
+                </form>
               </div>
             </div>
 
