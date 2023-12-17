@@ -32,7 +32,7 @@ export class ConfigurationsService {
   }
 
   async create(createConfigurationDto: CreateConfigurationDto) {
-    const { notificationUuid, scheduleUuid } = createConfigurationDto;
+    const { name, notificationUuid, scheduleUuid } = createConfigurationDto;
 
     await this.validateEntities({
       notificationUuid,
@@ -40,7 +40,11 @@ export class ConfigurationsService {
     });
 
     return this.configRepo.create({
-      data: createConfigurationDto,
+      data: {
+        name,
+        scheduleUuid,
+        notificationUuid,
+      },
     });
   }
 

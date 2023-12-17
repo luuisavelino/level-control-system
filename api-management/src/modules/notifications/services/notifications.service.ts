@@ -28,8 +28,14 @@ export class NotificationsService {
   }
 
   create(createNotificationDto: CreateNotificationDto) {
+    const { name, enabled, level, method } = createNotificationDto;
     return this.notificationRepo.create({
-      data: createNotificationDto,
+      data: {
+        name,
+        enabled,
+        level,
+        method,
+      },
     });
   }
 

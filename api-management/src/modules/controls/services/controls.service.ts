@@ -30,8 +30,17 @@ export class ControlsService {
   }
 
   create(createControlDto: CreateControlDto) {
+    const { name, description, type, kp, ki, kd } = createControlDto;
+
     return this.controlRepo.create({
-      data: createControlDto,
+      data: {
+        name,
+        description,
+        type,
+        kp,
+        ki,
+        kd,
+      },
     });
   }
 

@@ -29,8 +29,20 @@ export class SchemesService {
   }
 
   create(createSchemeDto: CreateSchemeDto) {
+    const { name, description, setpoint, minLevel, maxLevel } = createSchemeDto;
+
+    if (setpoint < minLevel || setpoint > maxLevel) {
+      throw createError(400, 'Setpoint must be between min and max level');
+    }
+
     return this.schemeRepo.create({
-      data: createSchemeDto,
+      data: {
+        name,
+        description,
+        setpoint,
+        minLevel,
+        maxLevel,
+      },
     });
   }
 
@@ -38,6 +50,10 @@ export class SchemesService {
     await this.validateSchemeService.validate(schemeUuid);
 
     const { name, description, setpoint, minLevel, maxLevel } = updateSchemeDto;
+
+    if (setpoint < minLevel || setpoint > maxLevel) {
+      throw createError(400, 'Setpoint must be between min and max level');
+    }
 
     return this.schemeRepo.update({
       where: { uuid: schemeUuid },

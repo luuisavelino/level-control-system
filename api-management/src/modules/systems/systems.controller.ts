@@ -19,6 +19,7 @@ import {
   Roles,
   USER,
 } from 'src/shared/decorators/roles.decorator';
+import { EditSystemDto } from './dto/edit-system.dto';
 @Controller('systems')
 export class SystemsController {
   constructor(private readonly systemsService: SystemsService) {}
@@ -35,6 +36,12 @@ export class SystemsController {
     return this.systemsService.findOne(systemUuid);
   }
 
+  @Get(':systemUuid/detailed')
+  @Roles(ADMIN, ENGINEER, USER)
+  findOneDetailed(@Param('systemUuid', ParseUUIDPipe) systemUuid: string) {
+    return this.systemsService.findOneWithRelations(systemUuid);
+  }
+
   @Post()
   @Roles(ADMIN, ENGINEER)
   create(@Body() createSystemDto: CreateSystemDto) {
@@ -43,6 +50,7 @@ export class SystemsController {
 
   @Put(':systemUuid')
   @Roles(ADMIN, ENGINEER)
+  @HttpCode(HttpStatus.NO_CONTENT)
   update(
     @Param('systemUuid', ParseUUIDPipe) systemUuid: string,
     @Body() updateSystemDto: UpdateSystemDto,
@@ -55,5 +63,15 @@ export class SystemsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('systemUuid', ParseUUIDPipe) systemUuid: string) {
     return this.systemsService.remove(systemUuid);
+  }
+
+  @Put(':systemUuid/edit')
+  @Roles(ADMIN, ENGINEER)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  edit(
+    @Param('systemUuid', ParseUUIDPipe) systemUuid: string,
+    @Body() editSystemDto: EditSystemDto,
+  ) {
+    return this.systemsService.edit(systemUuid, editSystemDto);
   }
 }

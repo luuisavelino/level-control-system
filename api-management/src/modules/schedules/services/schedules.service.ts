@@ -28,8 +28,10 @@ export class SchedulesService {
   }
 
   create(createScheduleDto: CreateScheduleDto) {
+    const { name, startTime, endTime } = createScheduleDto;
+
     return this.scheduleRepo.create({
-      data: createScheduleDto,
+      data: { name, startTime, endTime },
     });
   }
 
