@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '@/store';
 
-const API_URL = 'http://localhost:3000/notifications/';
+const API_URL = 'http://localhost:3000/notifications';
 const headers = {
   'Content-Type': 'application/json',
   'Authorization': 'Bearer ' + store.getters.getToken,
@@ -37,7 +37,7 @@ const createNotification = (notification) => {
 const updateNotification = (notification, uuid) => {
   let config = {
     method: 'put',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     data: {
       name: notification.name,
       enabled: notification.enabled,
@@ -54,7 +54,7 @@ const updateNotification = (notification, uuid) => {
 const deleteNotification = (uuid) => {
   let config = {
     method: 'delete',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     headers
   };
 

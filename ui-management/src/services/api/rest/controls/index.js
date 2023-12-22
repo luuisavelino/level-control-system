@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '@/store';
 
-const API_URL = 'http://localhost:3000/controls/';
+const API_URL = 'http://localhost:3000/controls';
 const headers = {
   'Content-Type': 'application/json',
   'Authorization': 'Bearer ' + store.getters.getToken,
@@ -38,7 +38,7 @@ const createControl = (control) => {
 const updateControl = (control, uuid) => {
   let config = {
     method: 'put',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     data: {
       name: control.name,
       description: control.description,
@@ -56,7 +56,7 @@ const updateControl = (control, uuid) => {
 const deleteControl = (uuid) => {
   let config = {
     method: 'delete',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     headers
   };
 

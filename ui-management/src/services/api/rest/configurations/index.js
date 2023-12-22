@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '@/store';
 
-const API_URL = 'http://localhost:3000/configurations/';
+const API_URL = 'http://localhost:3000/configurations';
 const headers = {
   'Content-Type': 'application/json',
   'Authorization': 'Bearer ' + store.getters.getToken,
@@ -35,7 +35,7 @@ const createConfiguration = (configuration) => {
 const updateConfiguration = (configuration, uuid) => {
   let config = {
     method: 'put',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     data: {
       name: configuration.name,
       scheduleUuid: configuration.scheduleUuid,
@@ -50,7 +50,7 @@ const updateConfiguration = (configuration, uuid) => {
 const deleteConfiguration = (uuid) => {
   let config = {
     method: 'delete',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     headers
   };
 

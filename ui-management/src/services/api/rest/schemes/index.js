@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '@/store';
 
-const API_URL = 'http://localhost:3000/schemes/';
+const API_URL = 'http://localhost:3000/schemes';
 const headers = {
   'Content-Type': 'application/json',
   'Authorization': 'Bearer ' + store.getters.getToken,
@@ -37,7 +37,7 @@ const createScheme = (scheme) => {
 const updateScheme = (scheme, uuid) => {
   let config = {
     method: 'put',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     data: {
       name: scheme.name,
       description: scheme.description,
@@ -54,7 +54,7 @@ const updateScheme = (scheme, uuid) => {
 const deleteScheme = (uuid) => {
   let config = {
     method: 'delete',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     headers
   };
 

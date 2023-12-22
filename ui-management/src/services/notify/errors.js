@@ -15,6 +15,16 @@ const notifyError = (vs, error) => {
   })
 }
 
+const notifySuccess = (vs, message) => {
+  vs.notify({
+    title: 'Success',
+    text: message,
+    color: 'success',
+    position: 'top-right'
+  })
+}
+
 export {
   notifyError,
+  notifySuccess
 }

@@ -39,7 +39,7 @@ const createSystem = (system) => {
 const updateSystem = (system, uuid) => {
   let config = {
     method: "put",
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     data: {
       name: system.name,
       path: system.path,
@@ -58,7 +58,37 @@ const updateSystem = (system, uuid) => {
 const deleteSystem = (uuid) => {
   let config = {
     method: "delete",
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
+    headers,
+  };
+
+  return axios.request(config);
+};
+
+const fastEdit = (uuid, system) => {
+  let config = {
+    method: "put",
+    url: `${API_URL}/${uuid}/edit`,
+    data: {
+      enabled: system.systemEnabled,
+      setpoint: parseFloat(system.setpoint),
+      type: system.controlType,
+      kp: parseFloat(system.gain.proportional),
+      ki: parseFloat(system.gain.integrative),
+      kd: parseFloat(system.gain.derivative),
+      editGroupControl: system.editGroup.control,
+      editGroupScheme: system.editGroup.scheme,
+    },
+    headers,
+  };
+
+  return axios.request(config);
+}
+
+const getSystemDetailed = (uuid) => {
+  let config = {
+    method: "get",
+    url: `${API_URL}/${uuid}/detailed`,
     headers,
   };
 
@@ -70,4 +100,6 @@ export default {
   createSystem,
   updateSystem,
   deleteSystem,
+  fastEdit,
+  getSystemDetailed
 };

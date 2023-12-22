@@ -56,16 +56,22 @@ export class InfluxDbService implements OnModuleInit {
   }
 
   async writeMeasurement(measurement: string, data: string) {
+    console.log(measurement, data);
     const point = new Point(measurement).floatField('used_percent', data);
     this.writeApi.writePoint(point);
-    this.writeApi
-      .close()
-      .then(() => {
-        console.log('FINISHED');
-      })
-      .catch((e) => {
-        console.error(e);
-        console.log('\\nFinished ERROR');
-      });
+    this.writeApi;
+    // .close()
+    // .then(() => {
+    //   console.log('FINISHED');
+    // })
+    // .catch((e) => {
+    //   console.error(e);
+    //   console.log('\\nFinished ERROR');
+    // });
+  }
+
+  async createContinuousQuery(query: string) {
+    console.log(query);
+    return Promise.resolve();
   }
 }

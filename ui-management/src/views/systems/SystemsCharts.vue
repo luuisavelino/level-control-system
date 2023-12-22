@@ -119,6 +119,9 @@
 <script>
 import Chart from 'chart.js'
 import ToogleSwitch from '@/components/others/ToogleSwitch.vue'
+import systemService from '@/services/api/rest/systems/index'
+import { notifyError, notifySuccess } from '@/services/notify/errors'
+import io from 'socket.io-client'
 
 export default {
   name: 'SystemsCharts',
@@ -127,17 +130,18 @@ export default {
   },
   data() {
     return {
+      socket: null,
       systemEnabled: true,
       setpoint: null,
       editGroup: {
-        scheme: false,
-        control: false,
+        scheme: true,
+        control: true,
       },
       controlType: null,
       gain: { 
-        proportional: null,
-        integrative: null,
-        derivative: null,
+        proportional: 0,
+        integrative: 0,
+        derivative: 0,
       },
       intervals: {
         '1m': '1 minute',
@@ -155,32 +159,31 @@ export default {
       buyersData: {
         type: 'line',
         data: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          labels: Array.from(Array(100).keys()),
           datasets: [{
             backgroundColor: "rgba(99,179,237,0.4)",
             strokeColor: "#63b3ed",
             pointColor: "#fff",
             pointStrokeColor: "#63b3ed",
-            data: [203, 156, 99, 251, 305, 247, 256]
+            // randon 100 data to populate the chart
+            data: [86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1]
           },
           {
             backgroundColor: "rgba(198,198,198,0.4)",
             strokeColor: "#f7fafc",
             pointColor: "#fff",
             pointStrokeColor: "#f7fafc",
-            data: [86, 97, 144, 114, 94, 108, 156]
-          },
-          {
-            backgroundColor: "rgba(198,198,198,0.4)",
-            strokeColor: "#f7fafc",
-            pointColor: "#fff",
-            pointStrokeColor: "#f7fafc",
-            data: [97, 144, 114, 156, 86, 94, 108]
+            data: [86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1]
           }]
         },
         options: {
           legend: {
             display: true
+          },
+          elements: {
+            point: {
+              radius: 0
+            }
           },
           scales: {
             yAxes: [{
@@ -194,6 +197,10 @@ export default {
             xAxes: [{
               gridLines: {
                 display: true
+              },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 15
               }
             }]
           }
@@ -202,9 +209,19 @@ export default {
     }
   },
   mounted() {
-    new Chart(document.getElementById('buyers-chart'), this.buyersData)
-    
+    const chart = new Chart(document.getElementById('buyers-chart'), this.buyersData)
     this.populateOptionsData()
+    this.socket = new io('ws://localhost:3000');
+
+    this.socket.on('events', (data) => {
+      chart.data.datasets[0].data.shift();
+      chart.data.datasets[0].data.push(data * 100);
+
+      chart.update();
+    });
+  },
+  beforeDestroy() {
+    this.socket.close();
   },
   methods: {
     editSystem() {
@@ -213,25 +230,31 @@ export default {
         setpoint: this.setpoint,
         controlType: this.controlType,
         gain: this.gain,
-        editGroup: this.editGroup,
+        editGroup: this.editGroup
       }
 
-      const uuid = this.$route.params.uuid
-
-      console.log('Edit system:', uuid, data)
+      systemService.fastEdit(this.$route.params.uuid, data)
+        .then(() => {
+          notifySuccess(this.$vs, 'System edited successfully')
+        })
+        .catch(error => notifyError(this.$vs, error));
     },
     toggleEnabled(value) {
       this.systemEnabled = value
     },
     populateOptionsData() {
-      this.systemEnabled = true
-      this.setpoint = 20
-      this.controlType = 'PI'
-      this.gain = {
-        proportional: 1.123,
-        integrative: 0.345,
-        derivative: null,
-      }
+      systemService.getSystemDetailed(this.$route.params.uuid)
+        .then((response) => {
+          this.systemEnabled = response.data.enabled
+          this.setpoint = response.data.Scheme.setpoint
+          this.controlType = response.data.Control.type
+          this.gain = {
+            proportional: response.data.Control.kp,
+            integrative: response.data.Control.ki,
+            derivative: response.data.Control.kd,
+          }
+        })
+        .catch(error => notifyError(this.$vs, error));
     }
   }
 }

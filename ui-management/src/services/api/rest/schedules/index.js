@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '@/store';
 import moment from 'moment';
 
-const API_URL = 'http://localhost:3000/schedules/';
+const API_URL = 'http://localhost:3000/schedules';
 const headers = {
   'Content-Type': 'application/json',
   'Authorization': 'Bearer ' + store.getters.getToken,
@@ -36,7 +36,7 @@ const createSchedule = (scheme) => {
 const updateSchedule = (scheme, uuid) => {
   let config = {
     method: 'put',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     data: {
       name: scheme.name,
       startTime: moment(scheme.startTime).toISOString(),
@@ -51,7 +51,7 @@ const updateSchedule = (scheme, uuid) => {
 const deleteSchedule = (uuid) => {
   let config = {
     method: 'delete',
-    url: API_URL + uuid,
+    url: `${API_URL}/${uuid}`,
     headers
   };
 
