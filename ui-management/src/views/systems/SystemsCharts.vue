@@ -211,7 +211,17 @@ export default {
   mounted() {
     const chart = new Chart(document.getElementById('buyers-chart'), this.buyersData)
     this.populateOptionsData()
-    this.socket = new io('ws://localhost:3000');
+    this.socket = new io('ws://localhost:3000', {
+      query: {
+        userId: 10,
+        // Add more parameters as needed
+      },
+      extraHeaders: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    this.socket.emit('events', 10);
 
     this.socket.on('events', (data) => {
       chart.data.datasets[0].data.shift();

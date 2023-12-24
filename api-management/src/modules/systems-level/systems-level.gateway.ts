@@ -1,6 +1,6 @@
 import {
-  OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -8,33 +8,27 @@ import { Server } from 'socket.io';
 import { AuthGuard } from '../auth/auth.guard';
 import { ADMIN, ENGINEER, Roles } from 'src/shared/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
+import { SystemsLevelService } from './systems-level.service';
 
 @WebSocketGateway({
   cors: {
     origin: '*',
   },
 })
-export class SystemsLevelGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class SystemsLevelGateway implements OnGatewayDisconnect {
+  constructor(private readonly systemsLevelService: SystemsLevelService) {}
+
   @WebSocketServer()
   server: Server;
 
-  @UseGuards(AuthGuard)
-  @Roles(ADMIN, ENGINEER)
-  handleConnection(client: any) {
-    const interval = setInterval(() => {
-      const randomData = Math.random();
-      console.log('Sending data to client:', randomData);
-      client.emit('events', randomData);
-    }, 1000);
-
-    client.intervalId = interval;
-    return;
+  handleDisconnect(client: any) {
+    clearInterval(client.intervalId);
   }
 
-  handleDisconnect(client: any) {
-    console.log('Client disconnected:', client.id);
-    clearInterval(client.intervalId);
+  @UseGuards(AuthGuard)
+  @Roles(ADMIN, ENGINEER)
+  @SubscribeMessage('events')
+  async handleEvent(client: any, data: any) {
+    return this.systemsLevelService.findOne(client, data);
   }
 }

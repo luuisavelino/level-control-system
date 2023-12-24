@@ -35,23 +35,31 @@ export class InfluxDbService implements OnModuleInit {
   }
 
   async getMeasurementData(measurement: string, field: string) {
-    const query = flux`from(bucket: "${env.influxDbBucket}") 
-    |> range(start: -1d)
-    |> filter(fn: (r) => r._field == "${field}")
-    |> filter(fn: (r) => r._measurement == "${measurement}")`;
+    const point = new Point(measurement).floatField('used_percent', 10);
+    this.writeApi.writePoint(point);
 
-    return this.queryApi.queryRows(query, {
-      next(row, tableMeta) {
-        const o = tableMeta.toObject(row);
-        console.log(`${o._time} ${o._measurement}: ${o._field}=${o._value}`);
-      },
-      error(error) {
-        console.error(error);
-        console.log('Finished ERROR');
-      },
-      complete() {
-        console.log('Finished SUCCESS');
-      },
+    const queryResults = <Float64Array[]>[];
+
+    const fluxQuery = flux`from(bucket: "${env.influxDbBucket}") 
+    |> range(start: -10d)
+    |> filter(fn: (r) => r._field == "${field}")
+    |> filter(fn: (r) => r._measurement == "${measurement}")
+    |> last()`;
+
+    return new Promise((resolve, reject) => {
+      this.queryApi.queryRows(fluxQuery, {
+        next(row, tableMeta) {
+          const o = tableMeta.toObject(row);
+          queryResults.push(o._value);
+        },
+        error(error) {
+          console.error(error);
+          reject(error);
+        },
+        complete() {
+          resolve(queryResults);
+        },
+      });
     });
   }
 

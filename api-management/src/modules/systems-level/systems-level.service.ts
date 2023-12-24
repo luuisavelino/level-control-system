@@ -5,12 +5,19 @@ import { SystemsLevelRepository } from 'src/shared/database/repositories/systems
 export class SystemsLevelService {
   constructor(private readonly systemLevelRepo: SystemsLevelRepository) {}
 
-  async findOne(id: any) {
-    console.log(id);
-    this.systemLevelRepo.writeData('test', '10');
+  async findOne(client: any, data: any) {
+    console.log('findOne', data);
 
-    console.log(await this.systemLevelRepo.getData('test', 'used_percent'));
+    clearInterval(client.intervalId);
+    const interval = setInterval(() => {
+      this.systemLevelRepo.getData('test', 'used_percent').then((result) => {
+        console.log('result', result[0]);
+        client.emit('events', result[0]);
+      });
+    }, 1000);
 
-    return `This action returns a systemsLevel`;
+    client.intervalId = interval;
+
+    return;
   }
 }
