@@ -36,7 +36,8 @@
           <div class="lg:flex justify-between items-start mb-6">
             <label class="text-xl font-semibold mb-4">System A</label>
             <select id="interval"
-              class="px-2 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block m-2 w-full xl:w-1/6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              class="px-2 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block m-2 w-full xl:w-1/6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              v-model="selectedInterval">
               <option v-for="(item, index) in intervals" :key="index" class="mr-4" :value="index">
                 {{ item }}
               </option>
@@ -55,14 +56,14 @@
 
           <div class="flex justify-between items-center col-span-2 border border-gray-300 rounded-lg">
             <label for="setpoint" class="modal-label m-2 ml-2">System Enabled</label>
-            <ToogleSwitch class="mr-2" id="enabled" :checked="systemEnabled" @toggle-button="toggleEnabled"/>
+            <ToogleSwitch class="mr-2" id="enabled" :disabled="hasPermissionToEdit" :checked="systemEnabled" @toggle-button="toggleEnabled"/>
           </div>
 
           <div class="col-span-2 border border-gray-300 rounded-lg">
             <label for="setpoint" class="modal-label m-2">Setpoint</label>
             <input type="number" name="setpoint" id="setpoint" required="" class="modal-input m-2 w-full xl:w-3/4"
-              placeholder="20 (cm)" v-model="setpoint">
-            <input type="checkbox" class="ml-2 mt-2 mr-2" v-model="editGroup.scheme">
+              placeholder="20 (cm)" v-model="setpoint" :disabled="hasPermissionToEdit">
+            <input type="checkbox" class="ml-2 mt-2 mr-2" v-model="editGroup.scheme" :disabled="hasPermissionToEdit">
             <label class="text-gray-700 text-sm"
               title="If selected, when saving, you will edit this group, affecting other systems that also use it. If not selected, you will create a new group for this item, which only this system will be using.">
               Edit group
@@ -72,7 +73,7 @@
           <div class="col-span-2 border border-gray-300 rounded-lg">
             <label for="controlType" class="modal-label m-2">Control Type</label>
             <select id="controlType"
-              class="px-2 m-2 mb-4 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full xl:w-3/4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="controlType">
+              class="px-2 m-2 mb-4 bg-gray-20 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500      focus:border-blue-500 block w-full xl:w-3/4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="controlType" :disabled="hasPermissionToEdit">
               <option v-for="(item, index) in controlTypesOptions" :key="index" class="mr-4" :value="item.key">
                 {{ item.value }}
               </option>
@@ -81,30 +82,29 @@
             <div>
               <label for="controlType" class="modal-label ml-2">Proportional gain</label>
               <input type="number" name="setpoint" id="setpoint" required="" class="modal-input ml-2 w-full xl:w-3/4"
-                placeholder="1.123" v-model="gain.proportional">
+                placeholder="1.123" v-model="gain.proportional" :disabled="hasPermissionToEdit">
             </div>
 
             <div v-if="controlType !== 'PD'">
               <label for="controlType" class="modal-label ml-2 mt-2">Integrative gain</label>
               <input type="number" name="setpoint" id="setpoint" required="" class="modal-input ml-2 w-full xl:w-3/4"
-                placeholder="0.345" v-model="gain.integrative">
+                placeholder="0.345" v-model="gain.integrative" :disabled="hasPermissionToEdit">
             </div>
 
             <div v-if="controlType !== 'PI'">
               <label for="controlType" class="modal-label ml-2 mt-2">Derivative gain</label>
               <input type="number" name="setpoint" id="setpoint" required="" class="modal-input m-2 w-full xl:w-3/4"
-                placeholder="3.123" v-model="gain.derivative">
+                placeholder="3.123" v-model="gain.derivative" :disabled="hasPermissionToEdit">
             </div>
 
-            <input type="checkbox" class="ml-2 mt-2 mr-2" v-model="editGroup.control">
+            <input type="checkbox" class="ml-2 mt-2 mr-2" v-model="editGroup.control" :disabled="hasPermissionToEdit">
             <label class="text-gray-700 text-sm"
               title="If selected, when saving, you will edit this group, affecting other systems that also use it. If not selected, you will create a new group for this item, which only this system will be using.">
               Edit group
             </label>
-
           </div>
 
-          <button @click="editSystem()"
+          <button @click="editSystem()" :disabled="hasPermissionToEdit"
             class="bg-blue-500 hover:bg-blue-600 focus:outline-none rounded-lg px-2 py-1 text-white font-semibold shadow">
             Edit System
           </button>
@@ -122,14 +122,32 @@ import ToogleSwitch from '@/components/others/ToogleSwitch.vue'
 import systemService from '@/services/api/rest/systems/index'
 import { notifyError, notifySuccess } from '@/services/notify/errors'
 import io from 'socket.io-client'
+import Cookies from 'js-cookie'
+
+const POPULATE_CHART_EVENT = 'populate-chart';
 
 export default {
   name: 'SystemsCharts',
   components: {
     ToogleSwitch
   },
+  computed: {
+    hasPermissionToEdit() {
+      return this.$store.getters['auth/hasPermissionToEdit']
+    },
+    selectedInterval: {
+      get() {
+        return Cookies.get('interval') ? Cookies.get('interval') : '10m';
+      },
+      set(value) {
+        this.updateChartOptions(value);
+        Cookies.set('interval', value);
+      }
+    },
+  },
   data() {
     return {
+      chart: null,
       socket: null,
       systemEnabled: true,
       setpoint: null,
@@ -147,7 +165,7 @@ export default {
         '1m': '1 minute',
         '5m': '5 minutes',
         '10m': '10 minutes',
-        '15m': '15 minutes',
+        '14m': '15 minutes',
         '30m': '30 minutes',
         '1h': '1 hour',
       },
@@ -160,20 +178,23 @@ export default {
         type: 'line',
         data: {
           labels: Array.from(Array(100).keys()),
-          datasets: [{
-            backgroundColor: "rgba(99,179,237,0.4)",
+          datasets: [
+          {
+            label: "Current system level",
+            backgroundColor: "rgba(99,179,237,0.6)",
             strokeColor: "#63b3ed",
             pointColor: "#fff",
             pointStrokeColor: "#63b3ed",
-            // randon 100 data to populate the chart
-            data: [86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1]
+            data: Array.from({ length: 100 }, () => 10)
           },
           {
-            backgroundColor: "rgba(198,198,198,0.4)",
-            strokeColor: "#f7fafc",
+            label: "Setpoint",
+            backgroundColor: "rgba(254, 202, 202, 0.4)",
+            strokeColor: "#f56565",
             pointColor: "#fff",
-            pointStrokeColor: "#f7fafc",
-            data: [86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1, 86, 97, 144, 114, 94, 108, 1]
+            pointStrokeColor: "#f56565",
+            data: Array.from({ length: 100 }, () => 14.5)
+
           }]
         },
         options: {
@@ -188,10 +209,12 @@ export default {
           scales: {
             yAxes: [{
               gridLines: {
-                display: true
+                display: true,
               },
               ticks: {
-                display: true
+                autoSkip: true,
+                maxTicksLimit: 10,
+                beginAtZero: true
               }
             }],
             xAxes: [{
@@ -200,7 +223,7 @@ export default {
               },
               ticks: {
                 autoSkip: true,
-                maxTicksLimit: 15
+                maxTicksLimit: 10
               }
             }]
           }
@@ -209,31 +232,51 @@ export default {
     }
   },
   mounted() {
-    const chart = new Chart(document.getElementById('buyers-chart'), this.buyersData)
     this.populateOptionsData()
-    this.socket = new io('ws://localhost:3000', {
-      query: {
-        userId: 10,
-        // Add more parameters as needed
-      },
-      extraHeaders: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    this.createChart()
+    this.populateChart()
 
-    this.socket.emit('events', 10);
-
-    this.socket.on('events', (data) => {
-      chart.data.datasets[0].data.shift();
-      chart.data.datasets[0].data.push(data * 100);
-
-      chart.update();
-    });
+    console.log(this.$route.params.uuid)
   },
   beforeDestroy() {
     this.socket.close();
   },
   methods: {
+    createChart() {
+      this.chart = new Chart(document.getElementById('buyers-chart'), this.buyersData)
+      this.socket = new io('ws://localhost:3000', {
+        query: {
+          userId: 10,
+          // Add more parameters as needed
+        },
+        extraHeaders: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      this.socket.emit(POPULATE_CHART_EVENT, {
+        interval: this.selectedInterval,
+        systemUuid: this.$route.params.uuid,
+      });
+    },
+    populateChart() {
+      this.socket.on(POPULATE_CHART_EVENT, (data) => {
+        if (data.err) {
+          console.log(data.err);
+          return;
+        }
+
+        this.chart.data.datasets[0].data.shift();
+        this.chart.data.datasets[0].data.push(data);
+        this.chart.update();
+      });
+    },
+    updateChartOptions(interval) {
+      this.socket.emit(POPULATE_CHART_EVENT, {
+        interval: interval,
+        systemUuid: this.$route.params.uuid,
+      });
+    },
     editSystem() {
       const data = {
         systemEnabled: this.systemEnabled,

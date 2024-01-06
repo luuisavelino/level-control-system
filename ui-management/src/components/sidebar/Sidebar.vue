@@ -20,7 +20,7 @@
           </div>
 
           <div class="mb-4 px-4">
-            <p class="pl-4 text-sm font-semibold mb-1">CONFIGS</p>
+            <p class="pl-4 text-sm font-semibold mb-1">OPTIONS</p>
             <SidebarLink to="/configurations/dashboard" icon="" label="Configurations"/>
             <SidebarLink to="/schedules/dashboard" icon="" label="Schedules"/>
             <SidebarLink to="/notifications/dashboard" icon="" label="Notifications"/>

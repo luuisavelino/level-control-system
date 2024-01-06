@@ -21,8 +21,6 @@ Vue.use(Router)
 Vue.use(Vuesax)
 Vue.use(Datetime)
 
-// Vue.component('datetime', Datetime);
-
 new Vue({
   render: h => h(App),
   router,

@@ -21,28 +21,28 @@
               </select>
             </div>
 
-            <div class="col-span-2 sm:col-span-1">
+            <div class="col-span-2">
               <label for="kp" class="modal-label">KP Gain</label>
               <input
                 :disabled="!canEditModal"
                 type="number" name="kp" id="kp" required=""
-                class="modal-input" placeholder="5 (cm)" v-model="data.kp">
+                class="modal-input" placeholder="2.213" v-model="data.kp">
             </div>
 
-            <div class="col-span-2 sm:col-span-1">
+            <div class="col-span-2" v-if="data.controlType !== 'PD'">
               <label for="ki" class="modal-label">KI Gain</label>
               <input
                 :disabled="!canEditModal"
                 type="number" name="ki" id="ki" required=""
-                class="modal-input" placeholder="30 (cm)" v-model="data.ki">
+                class="modal-input" placeholder="0.213" v-model="data.ki">
             </div>
 
-            <div class="col-span-2">
+            <div class="col-span-2" v-if="data.controlType !== 'PI'">
               <label for="kd" class="modal-label">Kd Gain</label>
               <input
                 :disabled="!canEditModal" 
                 type="number" name="kd" id="kd" required="" 
-                class="modal-input" placeholder="20 (cm)" v-model="data.kd">
+                class="modal-input" placeholder="1.238" v-model="data.kd">
             </div>
 
             <div class="col-span-2">

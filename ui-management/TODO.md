@@ -1,2 +1,8 @@
-- Add validator in each request
--
+- Alterar todos os lists para b-table
+- Adicionar icones
+- ajudar os agendamentos com possibilidade de habilitar ou não
+- Dashboard Home
+  - [] total de sistemas
+  - [] Recentes alterações dos sistemas
+  - [] Próximos agendamentos
+  - [] Quantidade de Systemas por Área
