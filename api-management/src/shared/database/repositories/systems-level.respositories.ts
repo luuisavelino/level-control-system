@@ -5,7 +5,7 @@ import { InfluxDbService } from 'src/shared/database/services/influxdb.service';
 export class SystemsLevelRepository {
   constructor(private readonly prismaService: InfluxDbService) {}
 
-  getData(measurement: string, field: string) {
+  getData(measurement: string, field: string, ) {
     return this.prismaService.getMeasurementData(measurement, field);
   }
 

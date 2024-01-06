@@ -34,23 +34,33 @@ export class InfluxDbService implements OnModuleInit {
     });
   }
 
-  async getMeasurementData(measurement: string, field: string) {
+  async getMeasurementData(
+    measurement: string,
+    field: string,
+    interval: string,
+  ) {
     const point = new Point(measurement).floatField('used_percent', 10);
     this.writeApi.writePoint(point);
 
-    const queryResults = <Float64Array[]>[];
+    const queryResults = [];
 
-    const fluxQuery = flux`from(bucket: "${env.influxDbBucket}") 
-    |> range(start: -10d)
-    |> filter(fn: (r) => r._field == "${field}")
-    |> filter(fn: (r) => r._measurement == "${measurement}")
-    |> last()`;
+    const fluxQuery = flux`
+      from(bucket: "${env.influxDbBucket}") 
+      |> range(start: -"${interval})
+      |> filter(fn: (r) => r._field == "${field}")
+      |> filter(fn: (r) => r._measurement == "${measurement}")
+      |> sample(n: 100, pos: 1)
+      |> keep(columns: ["_time", "_value"])
+    `;
 
     return new Promise((resolve, reject) => {
       this.queryApi.queryRows(fluxQuery, {
         next(row, tableMeta) {
           const o = tableMeta.toObject(row);
-          queryResults.push(o._value);
+          queryResults.push({
+            time: o._time,
+            value: o._value,
+          });
         },
         error(error) {
           console.error(error);
@@ -61,25 +71,5 @@ export class InfluxDbService implements OnModuleInit {
         },
       });
     });
-  }
-
-  async writeMeasurement(measurement: string, data: string) {
-    console.log(measurement, data);
-    const point = new Point(measurement).floatField('used_percent', data);
-    this.writeApi.writePoint(point);
-    this.writeApi;
-    // .close()
-    // .then(() => {
-    //   console.log('FINISHED');
-    // })
-    // .catch((e) => {
-    //   console.error(e);
-    //   console.log('\\nFinished ERROR');
-    // });
-  }
-
-  async createContinuousQuery(query: string) {
-    console.log(query);
-    return Promise.resolve();
   }
 }
